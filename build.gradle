@@ -1,0 +1,54 @@
+
+buildscript {
+    ext.kotlin_version = '1.1.4-3'
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+plugins {
+    id "org.jetbrains.intellij" version "0.2.17"
+}
+ext {
+    blc = '5.2.0-GA'
+}
+group 'com.pss'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'kotlin'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url 'http://nexus.broadleafcommerce.org/nexus/content/groups/community-snapshots/'
+    }
+    maven {
+        url 'http://nexus.broadleafcommerce.org/nexus/content/groups/community-releases/'
+    }
+}
+
+dependencies {
+    compile group: 'org.broadleafcommerce', name: 'broadleaf-framework', version: blc
+    compile group: 'org.broadleafcommerce', name: 'broadleaf-framework-web', version: blc
+    compile group: 'org.broadleafcommerce', name: 'broadleaf-profile', version: blc
+    compile group: 'org.broadleafcommerce', name: 'broadleaf-open-admin-platform', version: blc
+    compile group: 'org.broadleafcommerce', name: 'broadleaf-contentmanagement-module', version: blc
+
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+}
+
+intellij {
+    type = 'IU'
+
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
