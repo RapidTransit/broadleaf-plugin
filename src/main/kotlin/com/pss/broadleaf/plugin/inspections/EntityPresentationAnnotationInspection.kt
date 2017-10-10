@@ -9,6 +9,8 @@ import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.util.PsiTypesUtil
+import com.pss.broadleaf.plugin.BroadleafConstants
+import com.pss.broadleaf.plugin.Utils
 import com.siyeh.ig.psiutils.TypeUtils
 import org.broadleafcommerce.common.presentation.AdminPresentationAdornedTargetCollection
 import org.broadleafcommerce.common.presentation.AdminPresentationCollection
@@ -16,16 +18,7 @@ import javax.persistence.Entity
 
 class EntityPresentationAnnotationInspection : BaseJavaLocalInspectionTool() {
 
-    companion object {
-        val ENTITY = "javax.persistence.Entity"
-        val MAPPED_SUPER_CLASS = "javax.persistence.MappedSuperclass"
-        val EMBEDDABLE = "javax.persistence.Embeddable"
-        val MANAGED_TYPES = setOf<String>(ENTITY, MAPPED_SUPER_CLASS, EMBEDDABLE)
-        val PRESENTATION_COLLECTION = "org.broadleafcommerce.common.presentation.AdminPresentationCollection"
-        val PRESENTATION = "org.broadleafcommerce.common.presentation.AdminPresentation"
-        val PRESENTATION_TO_ONE = "org.broadleafcommerce.common.presentation.AdminPresentationToOneLookup"
-        val ADORNED_TARGET = "org.broadleafcommerce.common.presentation.AdminPresentationAdornedTargetCollection"
-    }
+
 
     override fun getDisplayName(): String {
         return "Entity Presentation"
@@ -48,10 +41,10 @@ class EntityPresentationAnnotationInspection : BaseJavaLocalInspectionTool() {
         override fun visitClass(aClass: PsiClass?) {
             if (aClass != null) {
 
-                if(AnnotationUtil.findAnnotation(aClass, MANAGED_TYPES) != null){
+                if(AnnotationUtil.findAnnotation(aClass, BroadleafConstants.MANAGED_TYPES) != null){
                     aClass.allFields.forEach {
-                        if(AnnotationUtil.isAnnotated(it, setOf("org.broadleafcommerce.common.presentation.AdminPresentationCollection"))){
-                            if(AnnotationUtil.isAnnotated(it, setOf("org.broadleafcommerce.common.presentation.AdminPresentation"))){
+                        if(Utils.isFieldAnnotated(it, BroadleafConstants.PRESENTATION_COLLECTION)){
+                            if(Utils.isFieldAnnotated(it, BroadleafConstants.PRESENTATION)){
                                 holder.registerProblem(AnnotationUtil.findAnnotation(it, "org.broadleafcommerce.common.presentation.AdminPresentation")!!.originalElement, "Field Containes Both Annotation Types", ProblemHighlightType.ERROR)
                             }
                             val collection = JavaPsiFacade.getInstance(aClass.project).findClass("java.util.Collection", aClass.resolveScope)

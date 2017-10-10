@@ -1,0 +1,17 @@
+{
+    parserClass="com.pss.broadleaf.plugin.grammar.parser.BroadleafParser"
+
+    elementTypeHolderClass="com.pss.broadleaf.plugin.grammar.parser.BroadleafTypes"
+
+    psiPackage="com.pss.broadleaf.plugin.grammar.parser.psi"
+    psiImplPackage="com.pss.broadleaf.plugin.grammar.parser.psi.impl"
+    psiClassPrefix="BLC"
+    psiImplClassSuffix="Impl"
+
+    tokens=[
+        DOT='.'
+        prop='regexp:\w+'
+    ]
+}
+
+property ::= prop (DOT prop)*
