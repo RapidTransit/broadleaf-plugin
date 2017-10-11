@@ -49,14 +49,19 @@ object Utils {
     fun containsAnnotation(type: PsiType, fqn: String): Boolean {
         val clazz = PsiTypesUtil.getPsiClass(type)
         if(clazz != null){
-            if(clazz.isInterface){
-                return ClassInheritorsSearch.search(clazz, true ).findAll()
-                        .any { !it.isInterface && it.isAnnotated(fqn) }
-            } else {
-                return clazz.isAnnotated(fqn)
-            }
+            return containsAnnotation(clazz, fqn)
         }
         return false
+    }
+
+    fun containsAnnotation(clazz: PsiClass, fqn: String): Boolean {
+
+        if(clazz.isInterface){
+            return ClassInheritorsSearch.search(clazz, true ).findAll()
+                    .any { !it.isInterface && it.isAnnotated(fqn) }
+        } else {
+            return clazz.isAnnotated(fqn)
+        }
     }
 
 }
@@ -151,6 +156,16 @@ fun PsiType.findAllConcreteTypes(): Collection<PsiClass> {
     return emptySet()
 }
 
+fun PsiClass.findAllConcreteTypes(): Collection<PsiClass> {
+
+        return ClassInheritorsSearch.search(this, true).findAll().filter { !it.isInterface }
+
+}
+
+fun PsiClass.getFields(name: String): Collection<PsiField> {
+    return this.findAllConcreteTypes().flatMap { it.fields.asList() }.filter { it.name == name }
+}
+
 fun PsiType.getFields(name: String): Collection<PsiField> {
     return this.findAllConcreteTypes().flatMap { it.fields.asList() }.filter { it.name == name }
 }
@@ -164,6 +179,10 @@ fun PsiField.getCollectionComponent(): PsiClass? {
         }
     }
     return null
+}
+
+fun PsiClass.isEntity(): Boolean {
+    return Utils.containsAnnotation(this, BroadleafConstants.JpaAnnotations.Entity.CLASS_NAME)
 }
 
 fun PsiClass.getAllFieldsOfType(): List<PsiField> {

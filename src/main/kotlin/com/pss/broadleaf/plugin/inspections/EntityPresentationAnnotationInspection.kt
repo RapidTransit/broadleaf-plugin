@@ -13,9 +13,9 @@ import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.Admin
 import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.AdminPresentationToOneLookup
 import com.pss.broadleaf.plugin.BroadleafConstants.EnumTypes.SupportedFieldType
 import com.siyeh.ig.psiutils.CollectionUtils
+import com.siyeh.ig.psiutils.TypeUtils
 
 class EntityPresentationAnnotationInspection : BaseJavaLocalInspectionTool() {
-
 
 
     override fun getDisplayName(): String {
@@ -40,11 +40,17 @@ class EntityPresentationAnnotationInspection : BaseJavaLocalInspectionTool() {
 
             if (psiClass != null && psiClass.isAnnotated(AcceptableTypes.MANAGED_TYPES)) {
                 psiClass.fields.forEach { psiField ->
+
+                    val isCollection = CollectionUtils.isCollectionClassOrInterface(psiField.type)
+
+
                     if(!psiField.hasModifier(JvmModifier.STATIC)){
+
+                        // @AdminPresentation
                         psiField.doWithAnnotation(AdminPresentation.CLASS_NAME_SET, { field, annotation ->
 
                             // Make Sure it is not a Collection Type
-                            if(CollectionUtils.isCollectionClassOrInterface(field.type)){
+                            if(isCollection){
                                 holder.registerProblem(psiField, InspectionBundle.message("admin.mismatch.presentation"))
                             }
 
@@ -68,10 +74,12 @@ class EntityPresentationAnnotationInspection : BaseJavaLocalInspectionTool() {
                         // @AdminPresentationToOneLookup
                         psiField.doWithAnnotation(AdminPresentationToOneLookup.CLASS_NAME_SET, { field, annotation ->
 
+                            // Can not be a Collection
                             if(CollectionUtils.isCollectionClassOrInterface(field.type)){
                                 holder.registerProblem(psiField, InspectionBundle.message("admin.to-one.collection"))
                             }
 
+                            // If the type is not an entity
                             if(!field.type.isEntity() && !CollectionUtils.isCollectionClassOrInterface(field.type)) {
                                 holder.registerProblem(psiField, InspectionBundle.message("admin.to-one.managed"))
                             }
@@ -80,20 +88,27 @@ class EntityPresentationAnnotationInspection : BaseJavaLocalInspectionTool() {
 
                             if(displayProperty == null) {
                                 val nameType = field.type.getFields("name")
+
+                                // The referenced Entity doesn't have a name property
                                 if (nameType.isEmpty()) {
                                     holder.registerProblem(psiField, InspectionBundle.message("admin.to-one.name-property.none"))
                                 }
 
-                                if (nameType.isNotEmpty() && nameType.any { it.isSimpleType() }) {
+                                // If it is not a Collection Type (A collection type may have the 'name' property), has the
+                                // name property is not a simple type
+                                if (!isCollection && nameType.isNotEmpty() && !nameType.any { it.isSimpleType() }) {
                                     holder.registerProblem(psiField, InspectionBundle.message("admin.to-one.name-property.simple"))
                                 }
                             } else {
                                 if(displayProperty is PsiLiteralExpression){
                                     val nameType = field.type.getFields(displayProperty.value as String)
+
+                                    // If the Field is Not Found
                                     if (nameType.isEmpty()) {
                                         holder.registerProblem(psiField, InspectionBundle.message("admin.to-one.name-property.override.none"))
                                     }
 
+                                    // If the Field is Found, Check the Referenced Property is a 'Simple' type
                                     if (nameType.isNotEmpty() && nameType.any { it.isSimpleType() }) {
                                         holder.registerProblem(psiField, InspectionBundle.message("admin.to-one.name-property.override.simple"))
                                     }
@@ -103,6 +118,52 @@ class EntityPresentationAnnotationInspection : BaseJavaLocalInspectionTool() {
 
 
                         })
+
+                        // @AdminPresentationMap
+                        psiField.doWithAnnotation(AdminPresentationMap.CLASS_NAME_SET, { field, annotation ->
+
+                        })
+
+                        // @AdminPresentationAdornedTargetCollection
+                        psiField.doWithAnnotation(AdminPresentationAdornedTargetCollection.CLASS_NAME_SET, { field, annotation ->
+                            if(!isCollection){
+
+                            }
+
+                            val mappedByField = field.getAnnotation(setOf(BroadleafConstants.JpaAnnotations.OneToMany.CLASS_NAME))?.let{
+                                return@let it.findDeclaredAttributeValue(BroadleafConstants.JpaAnnotations.OneToMany.MAPPED_BY)?.let mapped@ { annotationValue ->
+                                    if(annotationValue is PsiLiteralExpression){
+                                        return@mapped annotationValue.value
+                                    }
+                                    return@mapped null
+                                }
+                            }
+
+                            notNull(mappedByField, {
+                                field.getCollectionComponent()?.let {
+                                    val fields = it.getFields(mappedByField as String)
+
+
+                                    if(fields.isEmpty()){
+
+                                    }
+
+                                    // CHeck to make sure the mapped to field is correct
+                                    if(!fields.any { it.type.isEntity() && it.type.isAssignableFrom(TypeUtils.getType(psiClass)) }){
+
+                                    }
+                                }
+                            })
+
+                            field.getCollectionComponent()?.let {
+                                if(!it.isEntity()){
+
+                                }
+                            }
+
+                        })
+
+
                 }
 
             }
@@ -192,10 +253,17 @@ class EntityPresentationAnnotationInspection : BaseJavaLocalInspectionTool() {
             return false
         }
 
-        inline fun <T>notNull(t: T, function: (T) -> Unit): Unit {
+        inline fun <T>notNull(t: T?, function: (T) -> Unit): Unit {
             if(t != null){
                 function(t)
             }
+        }
+
+        inline fun <T,R>notNull(t: T?, function: (T) -> R, def: R): R {
+            if(t != null){
+               return function(t)
+            }
+            return def
         }
     }
 }
