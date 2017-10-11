@@ -27,8 +27,8 @@
   -->
 
   <extensions defaultExtensionNs="com.intellij">
-    <completion.contributor language="JAVA" implementationClass="com.pss.broadleaf.plugin.completion.AdornedCompletionContributor" />
-    <multiHostInjector implementation="com.pss.broadleaf.plugin.completion.PropertyMultiHostInjector" />
+    <!--<completion.contributor language="JAVA" implementationClass="com.pss.broadleaf.plugin.completion.AdornedCompletionContributor" />-->
+    <!--<multiHostInjector implementation="com.pss.broadleaf.plugin.completion.PropertyMultiHostInjector" />-->
     <inspectionToolProvider implementation="com.pss.broadleaf.plugin.inspections.BroadleafInspectionProvider"/>
     <psi.referenceContributor language="JAVA" implementation="com.pss.broadleaf.plugin.completion.AdornedReferenceContributor" />
     <toolWindow id="Broadleaf" secondary="true" icon="/broadleaf/icon.png" anchor="right"

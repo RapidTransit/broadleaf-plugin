@@ -5,8 +5,18 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url 'https://jitpack.io'}
+        maven {
+            url 'http://nexus.broadleafcommerce.org/nexus/content/groups/community-snapshots/'
+        }
+        maven {
+            url 'http://nexus.broadleafcommerce.org/nexus/content/groups/community-releases/'
+        }
     }
     dependencies {
+        classpath group: 'org.broadleafcommerce', name: 'broadleaf-common', version: '5.2.0-GA'
+        classpath group: 'com.google.guava', name: 'guava', version: '23.0'
+        classpath group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
+
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.github.hurricup:gradle-grammar-kit-plugin:2017.1.1"
     }
@@ -16,13 +26,14 @@ plugins {
 }
 ext {
     blc = '5.2.0-GA'
-
 }
 group 'com.pss'
 version '1.0-SNAPSHOT'
 //
 //apply plugin: 'org.jetbrains.grammarkit'
 apply plugin: 'kotlin'
+
+apply from: 'generation.gradle'
 
 repositories {
     mavenLocal()
@@ -52,29 +63,3 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-import org.jetbrains.grammarkit.tasks.*
-
-//sourceSets {
-//    main {
-//        java.srcDirs 'src', new File(project.buildDir, "/classes/java/main/generated")
-//    }
-//}
-
-//task generateBroadleafParser(type: GenerateParser){
-//    source = "${sourceSets.main.kotlin.srcDirs.first()}/com/pss/broadleaf/plugin/grammar/Broadleaf.bnf"
-//    targetRoot = new File(project.buildDir, "/classes/java/main/generated")
-//    pathToParser = '/com/pss/broadleaf/plugin/grammar/parser/BroadleafParser.java'
-//
-//    // path to a directory with generated psi files, relative to the targetRoot
-//    pathToPsiRoot = '/com/pss/broadleaf/plugin/grammar/parser/psi'
-//    purgeOldFiles = true
-//}
-//
-//task generateBroadleafLexer(type: GenerateLexer){
-//    def kotlinSourceDir =sourceSets.main.kotlin.srcDirs.first()
-//    println(kotlinSourceDir)
-//    source = "${sourceSets.main.kotlin.srcDirs.first()}/com/pss/broadleaf/plugin/grammar/Broadleaf.bnf"
-//    targetDir = new File(project.buildDir, "/classes/java/main/generated")
-//    targetClass = "PerlLexer"
-//    purgeOldFiles = true
-//}

@@ -1,0 +1,181 @@
+buildscript {
+
+    repositories {
+        mavenCentral()
+        maven {
+            url 'http://nexus.broadleafcommerce.org/nexus/content/groups/community-snapshots/'
+        }
+        maven {
+            url 'http://nexus.broadleafcommerce.org/nexus/content/groups/community-releases/'
+        }
+    }
+    dependencies {
+        classpath group: 'org.broadleafcommerce', name: 'broadleaf-common', version: '5.2.0-GA'
+        classpath group: 'com.google.guava', name: 'guava', version: '23.0'
+        classpath group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
+
+    }
+}
+import org.broadleafcommerce.common.BroadleafEnumerationType
+import org.broadleafcommerce.common.admin.domain.AdminMainEntity
+import org.broadleafcommerce.common.classloader.release.ThreadLocalManager
+import org.broadleafcommerce.common.extension.ExtensionHandler
+import org.broadleafcommerce.common.extension.ExtensionResultStatusType
+import org.broadleafcommerce.common.money.Money
+import org.hibernate.annotations.Type
+
+import javax.persistence.Embeddable
+import javax.persistence.Entity
+import javax.persistence.Id
+import javax.persistence.Lob
+import javax.persistence.ManyToMany
+import javax.persistence.ManyToOne
+import javax.persistence.MappedSuperclass
+import javax.persistence.OneToMany
+import javax.persistence.OneToOne
+import javax.persistence.Transient
+import java.time.LocalDate
+import java.time.LocalDateTime
+
+import static org.apache.commons.lang.StringUtils.*
+import org.broadleafcommerce.common.presentation.*
+import org.broadleafcommerce.common.presentation.override.*
+import org.broadleafcommerce.common.presentation.client.*
+import org.jetbrains.grammarkit.tasks.*
+import com.google.common.base.CaseFormat
+
+task GenerateConstants {
+    doLast {
+        StringBuilder.metaClass.repeat = { int count ->
+            delegate.append(repeat("    ", count))
+        }
+        StringBuilder sb = new StringBuilder()
+        sb.append("package com.pss.broadleaf.plugin\n\n")
+        sb.append("import java.util.*\n\n")
+        sb.append("object BroadleafConstants {\n\n")
+        List<Class> classes = [
+                AdminGroupPresentation,
+                AdminPresentation,
+                AdminPresentationAdornedTargetCollection,
+                AdminPresentationClass,
+                AdminPresentationCollection,
+                AdminPresentationDataDrivenEnumeration,
+                AdminPresentationMap,
+                AdminPresentationMapField,
+                AdminPresentationMapFields,
+                AdminPresentationMapKey,
+                AdminPresentationOperationTypes,
+                AdminPresentationToOneLookup,
+                AdminTabPresentation,
+                ConfigurationItem,
+                FieldValueConfiguration,
+                OptionFilterParam,
+                ValidationConfiguration,
+                AdminGroupPresentationOverride,
+                AdminPresentationAdornedTargetCollectionOverride,
+                AdminPresentationCollectionOverride,
+                AdminPresentationDataDrivenEnumerationOverride,
+                AdminPresentationMapOverride,
+                AdminPresentationMergeEntry,
+                AdminPresentationMergeOverride,
+                AdminPresentationMergeOverrides,
+                AdminPresentationOverride,
+                AdminPresentationOverrides,
+                AdminPresentationToOneLookupOverride,
+                AdminTabPresentationOverride
+        ]
+        List<Class> enums = [
+                OptionFilterParamType,
+                PopulateToOneFieldsEnum,
+                RequiredOverride,
+                AddMethodType,
+                AdornedTargetAddMethodType,
+                ForeignKeyRestrictionType,
+                LookupType,
+                OperationType,
+                PersistencePerspectiveItemType,
+                RuleBuilderDisplayType,
+                SupportedCriteriaFieldType,
+                SupportedFieldType,
+                UnspecifiedBooleanType,
+                VisibilityEnum
+        ]
+        sb.repeat(1).append("object PresentationAnnotations {").append('\n')
+        classes.each {
+            sb.repeat(2).append("""object ${it.simpleName} {""").append('\n')
+            sb.repeat(3)append("""val CLASS_NAME = "${it.name}"\n""")
+            sb.repeat(3)append("""val CLASS_NAME_SET = Collections.singleton("${it.name}")\n""")
+            it.declaredMethods.each {
+                sb.repeat(3).append("""val ${CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, it.name)} = "${it.name}" """).append('\n')
+            }
+            sb.repeat(2).append("}\n\n")
+        }
+        sb.repeat(1).append("}\n\n")
+        sb.repeat(1).append("object JpaAnnotations {").append('\n')
+        [Id, OneToMany, OneToOne, ManyToOne, ManyToMany, Entity, Transient, MappedSuperclass, Embeddable, Lob, Type].each {
+            sb.repeat(2).append("""object ${it.simpleName} {""").append('\n')
+            sb.repeat(3)append("""val CLASS_NAME = "${it.name}"\n""")
+            it.declaredMethods.each {
+                sb.repeat(3).append("""val ${CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, it.name)} = "${it.name}" """).append('\n')
+            }
+            sb.repeat(2).append("}\n\n")
+        }
+        sb.repeat(1).append("}\n\n")
+        sb.repeat(1).append("object EnumTypes {").append('\n')
+        enums.each {
+            sb.repeat(2).append("""object ${it.simpleName} {""").append('\n')
+            sb.repeat(3).append("""val CLASS_NAME = "${it.name}"\n""")
+            it.fields.each {
+                sb.repeat(3).append("""val ${ it.name} = "${it.name}" """).append('\n')
+            }
+            sb.repeat(2).append("}\n\n")
+        }
+        sb.repeat(1).append("}\n\n")
+
+        sb.repeat(1).append("object FrameworkTypes {").append('\n')
+        [BroadleafEnumerationType, ExtensionResultStatusType, ExtensionHandler, ThreadLocalManager, AdminMainEntity, Money]
+                .each {
+            sb.repeat(2).append("""val ${CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, it.simpleName)} = "${it.name}" """).append('\n')
+        }
+        sb.repeat(1).append("}\n\n")
+
+
+        sb.repeat(1).append("object AcceptableTypes {").append('\n')
+        [
+                MAP_OR_COLLECTION: [Collection, Map],
+                COLLECTION: [Collection],
+                MAP: [Map],
+                STRING: [String],
+                INTEGER: [int, Integer, long, Long],
+                DECIMAL: [double, Double, Float, float, BigDecimal],
+                MONEY: [BigDecimal],
+                SERIALIZABLE: [Serializable],
+                THREAD_LOCAL: [ThreadLocal],
+                MANAGED_TYPES: [Entity, MappedSuperclass, Embeddable],
+                BOOLEAN: [boolean , Boolean],
+                DATE: [Date],
+                SIMPLE: [String, int, Integer, long, Long, double, Double, Float, float, BigDecimal, boolean, Boolean,
+                         char, Character, Date, LocalDate, LocalDateTime]
+
+        ]
+                .each {
+            if(it.value.size() == 1) {
+                sb.repeat(2).append("""val ${it.key} = ${it.value.collect { '"' + it.name + '"' }.join(", ")} """).append('\n')
+            } else {
+                sb.repeat(2).append("""val ${it.key} = setOf(${it.value.collect { '"' + it.name + '"' }.join(", ")}) """).append('\n')
+            }
+        }
+        sb.repeat(1).append("}\n\n")
+        sb.append("}")
+
+        println(sb.toString())
+        new File(sourceSets.main.kotlin.srcDirs[0], "com/pss/broadleaf/plugin/BroadleafConstants.kt").write(sb.toString())
+        println(sourceSets.main.kotlin.srcDirs[0])
+    }
+
+
+}
+
+configure(GenerateConstants){
+    group = "Code Generation"
+}

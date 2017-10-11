@@ -1,20 +1,18 @@
 package com.pss.broadleaf.plugin.inspections
 
-import com.intellij.codeInsight.AnnotationUtil
 import com.intellij.codeInspection.BaseJavaLocalInspectionTool
-import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
-import com.intellij.psi.JavaElementVisitor
-import com.intellij.psi.JavaPsiFacade
-import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiElementVisitor
-import com.intellij.psi.util.PsiTypesUtil
-import com.pss.broadleaf.plugin.BroadleafConstants
-import com.pss.broadleaf.plugin.Utils
-import com.siyeh.ig.psiutils.TypeUtils
-import org.broadleafcommerce.common.presentation.AdminPresentationAdornedTargetCollection
-import org.broadleafcommerce.common.presentation.AdminPresentationCollection
-import javax.persistence.Entity
+import com.intellij.lang.jvm.JvmModifier
+import com.intellij.psi.*
+import com.pss.broadleaf.plugin.*
+import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.AdminPresentationAdornedTargetCollection
+import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.AdminPresentationCollection
+import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.AdminPresentationMap
+import com.pss.broadleaf.plugin.BroadleafConstants.AcceptableTypes
+import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.AdminPresentation
+import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.AdminPresentationToOneLookup
+import com.pss.broadleaf.plugin.BroadleafConstants.EnumTypes.SupportedFieldType
+import com.siyeh.ig.psiutils.CollectionUtils
 
 class EntityPresentationAnnotationInspection : BaseJavaLocalInspectionTool() {
 
@@ -38,29 +36,160 @@ class EntityPresentationAnnotationInspection : BaseJavaLocalInspectionTool() {
 
     class EntityPresentationVisitor(private val holder: ProblemsHolder) : JavaElementVisitor() {
 
-        override fun visitClass(aClass: PsiClass?) {
-            if (aClass != null) {
+        override fun visitClass(psiClass: PsiClass?) {
 
-                if(AnnotationUtil.findAnnotation(aClass, BroadleafConstants.MANAGED_TYPES) != null){
-                    aClass.allFields.forEach {
-                        if(Utils.isFieldAnnotated(it, BroadleafConstants.PRESENTATION_COLLECTION)){
-                            if(Utils.isFieldAnnotated(it, BroadleafConstants.PRESENTATION)){
-                                holder.registerProblem(AnnotationUtil.findAnnotation(it, "org.broadleafcommerce.common.presentation.AdminPresentation")!!.originalElement, "Field Containes Both Annotation Types", ProblemHighlightType.ERROR)
+            if (psiClass != null && psiClass.isAnnotated(AcceptableTypes.MANAGED_TYPES)) {
+                psiClass.fields.forEach { psiField ->
+                    if(!psiField.hasModifier(JvmModifier.STATIC)){
+                        psiField.doWithAnnotation(AdminPresentation.CLASS_NAME_SET, { field, annotation ->
+
+                            // Make Sure it is not a Collection Type
+                            if(CollectionUtils.isCollectionClassOrInterface(field.type)){
+                                holder.registerProblem(psiField, InspectionBundle.message("admin.mismatch.presentation"))
                             }
-                            val collection = JavaPsiFacade.getInstance(aClass.project).findClass("java.util.Collection", aClass.resolveScope)
-                            if(collection != null) {
-                                val type = TypeUtils.getType(collection)
-                                if(!type.isAssignableFrom(it.type)){
-                                    holder.registerProblem(it, "Field is not a Collection Type", ProblemHighlightType.ERROR)
+
+                            inspectSupportedFieldType(annotation, psiClass, field, psiField)
+
+                            psiField.doWithAnnotation(AdminPresentationAdornedTargetCollection.CLASS_NAME_SET, {field, annotation ->
+                                holder.registerProblem(psiField, InspectionBundle.message("admin.mismatch.adorned"))
+                            })
+
+                            psiField.doWithAnnotation(AdminPresentationMap.CLASS_NAME_SET, {field, annotation ->
+                                holder.registerProblem(psiField, InspectionBundle.message("admin.mismatch.map"))
+                            })
+
+                            psiField.doWithAnnotation(AdminPresentationCollection.CLASS_NAME_SET, {field, annotation ->
+                                holder.registerProblem(psiField, InspectionBundle.message("admin.mismatch.collection"))
+                            })
+
+
+                        })
+
+                        // @AdminPresentationToOneLookup
+                        psiField.doWithAnnotation(AdminPresentationToOneLookup.CLASS_NAME_SET, { field, annotation ->
+
+                            if(CollectionUtils.isCollectionClassOrInterface(field.type)){
+                                holder.registerProblem(psiField, InspectionBundle.message("admin.to-one.collection"))
+                            }
+
+                            if(!field.type.isEntity() && !CollectionUtils.isCollectionClassOrInterface(field.type)) {
+                                holder.registerProblem(psiField, InspectionBundle.message("admin.to-one.managed"))
+                            }
+
+                            val displayProperty = annotation.findDeclaredAttributeValue(AdminPresentationToOneLookup.LOOKUP_DISPLAY_PROPERTY)
+
+                            if(displayProperty == null) {
+                                val nameType = field.type.getFields("name")
+                                if (nameType.isEmpty()) {
+                                    holder.registerProblem(psiField, InspectionBundle.message("admin.to-one.name-property.none"))
+                                }
+
+                                if (nameType.isNotEmpty() && nameType.any { it.isSimpleType() }) {
+                                    holder.registerProblem(psiField, InspectionBundle.message("admin.to-one.name-property.simple"))
+                                }
+                            } else {
+                                if(displayProperty is PsiLiteralExpression){
+                                    val nameType = field.type.getFields(displayProperty.value as String)
+                                    if (nameType.isEmpty()) {
+                                        holder.registerProblem(psiField, InspectionBundle.message("admin.to-one.name-property.override.none"))
+                                    }
+
+                                    if (nameType.isNotEmpty() && nameType.any { it.isSimpleType() }) {
+                                        holder.registerProblem(psiField, InspectionBundle.message("admin.to-one.name-property.override.simple"))
+                                    }
+                                }
+
+                            }
+
+
+                        })
+                }
+
+            }
+
+        }
+    }
+
+        private fun inspectSupportedFieldType(annotation: PsiAnnotation, psiClass: PsiClass, field: PsiField, psiField: PsiField) {
+            annotation.findDeclaredAttributeValue(AdminPresentation.FIELD_TYPE)?.let { annotationValue ->
+                if (annotationValue is PsiReferenceExpression) {
+                    annotationValue.referenceName?.let {
+                        when (it) {
+                            SupportedFieldType.BOOLEAN -> {
+                                if (!psiClass.isAssignable(AcceptableTypes.BOOLEAN, field.type)) {
+                                    holder.registerProblem(psiField, InspectionBundle.message("admin.presentation.supported-field-type.boolean"))
                                 }
                             }
-                            return
+                            SupportedFieldType.DATE -> {
+                                if (!psiClass.isAssignable(AcceptableTypes.DATE, field.type)) {
+                                    holder.registerProblem(psiField, InspectionBundle.message("admin.presentation.supported-field-type.date"))
+                                }
+                            }
+                            SupportedFieldType.EMAIL,
+                            SupportedFieldType.STRING,
+                            SupportedFieldType.PASSWORD,
+                            SupportedFieldType.PASSWORD_CONFIRM -> {
+                                if (!psiClass.isAssignable(AcceptableTypes.STRING, field.type)) {
+                                    holder.registerProblem(psiField, InspectionBundle.message("admin.presentation.supported-field-type.string"))
+                                }
+                            }
+                            SupportedFieldType.HTML,
+                            SupportedFieldType.HTML_BASIC,
+                            SupportedFieldType.CODE,
+                            SupportedFieldType.DESCRIPTION -> {
+                                if (!field.isAnnotated(BroadleafConstants.JpaAnnotations.Type.CLASS_NAME)) {
+                                    holder.registerProblem(psiField, InspectionBundle.message("admin.presentation.supported-field-type.html.user-type"))
+                                }
+                                if (!field.isAnnotated(BroadleafConstants.JpaAnnotations.Lob.CLASS_NAME)) {
+                                    holder.registerProblem(psiField, InspectionBundle.message("admin.presentation.supported-field-type.html.lob"))
+                                }
+                                if (!psiClass.isAssignable(AcceptableTypes.STRING, field.type)) {
+                                    holder.registerProblem(psiField, InspectionBundle.message("admin.presentation.supported-field-type.string"))
+                                }
+                            }
+                            SupportedFieldType.INTEGER -> {
+                                if (!psiClass.isAssignable(AcceptableTypes.INTEGER, field.type)) {
+                                    holder.registerProblem(psiField, InspectionBundle.message("admin.presentation.supported-field-type.integer"))
+                                }
+                            }
+                            SupportedFieldType.DECIMAL -> {
+                                if (!psiClass.isAssignable(AcceptableTypes.DECIMAL, field.type)) {
+                                    holder.registerProblem(psiField, InspectionBundle.message("admin.presentation.supported-field-type.decimal"))
+                                }
+                            }
+                            SupportedFieldType.BROADLEAF_ENUMERATION -> {
+                                if (!psiClass.isAssignable(AcceptableTypes.STRING, field.type)) {
+                                    holder.registerProblem(psiField, InspectionBundle.message("admin.presentation.supported-field-type.broadleaf-enumeration.string"))
+                                }
+                                if (!isBroadleafEnumeration(annotation, psiClass, psiField)) {
+                                    holder.registerProblem(psiField, InspectionBundle.message("admin.presentation.supported-field-type.broadleaf-enumeration.type"))
+                                }
+                            }
+                            SupportedFieldType.MONEY -> {
+                                if (!psiClass.isAssignable(AcceptableTypes.MONEY, field.type)) {
+                                    holder.registerProblem(psiField, InspectionBundle.message("admin.presentation.supported-field-type.money"))
+                                }
+                            }
                         }
+                    }
+                }
 
+            }
+        }
 
+        private fun isBroadleafEnumeration(annotation: PsiAnnotation, psiClass: PsiClass, psiField: PsiField): Boolean {
+            val annotationValue = annotation.findDeclaredAttributeValue(AdminPresentation.BROADLEAF_ENUMERATION)
+            if (annotationValue != null) {
+                if (annotationValue is PsiLiteralExpression) {
+                    val type = psiClass.findPsiType(BroadleafConstants.FrameworkTypes.BROADLEAF_ENUMERATION_TYPE)
+                    if (type != null) {
+                        if (psiClass.isAssignable(annotationValue.value as String, type)) {
+                           return true
+                        }
                     }
                 }
             }
+            return false
         }
 
         inline fun <T>notNull(t: T, function: (T) -> Unit): Unit {

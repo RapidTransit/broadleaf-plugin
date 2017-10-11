@@ -11,6 +11,7 @@ import com.intellij.psi.PsiLiteralExpression
 import com.pss.broadleaf.plugin.Utils
 import com.pss.broadleaf.plugin.getField
 
+//Todo: To do auto complete I think there needs to be some sort of Lexer and Parser
 class PropertyMultiHostInjector : MultiHostInjector {
 
     val elements = mutableListOf<Class<out PsiElement>>(PsiLiteralExpression::class.java)
