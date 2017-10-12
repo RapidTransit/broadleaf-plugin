@@ -4,6 +4,7 @@ import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.util.ProcessingContext
 import com.pss.broadleaf.plugin.*
+import com.pss.broadleaf.plugin.reference.AdornedReferenceContributor
 
 //Todo: Needs a Language Injection First
 class AdornedCompletionContributor : CompletionContributor() {

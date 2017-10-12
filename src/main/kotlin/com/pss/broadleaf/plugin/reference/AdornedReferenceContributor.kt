@@ -1,13 +1,11 @@
-package com.pss.broadleaf.plugin.completion
+package com.pss.broadleaf.plugin.reference
 
-import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.patterns.ElementPattern
 import com.intellij.patterns.PsiJavaPatterns
 import com.intellij.psi.*
-import com.intellij.psi.impl.source.resolve.reference.impl.JavaLangClassMemberReference
 import com.intellij.psi.search.searches.ClassInheritorsSearch
-import com.intellij.psi.util.parentOfType
+
 import com.intellij.util.ProcessingContext
 
 class AdornedReferenceContributor : PsiReferenceContributor() {
@@ -51,7 +49,7 @@ class AdornedReferenceContributor : PsiReferenceContributor() {
                             val fields : List<PsiReference>;
                             if(paramaterClass.isInterface){
                                 fields = ClassInheritorsSearch.search(paramaterClass).findAll().filter { !it.isInterface }
-                                        .map { References(it, element as PsiLiteralExpression)}
+                                        .map { References(it, element as PsiLiteralExpression) }
                             } else {
                                 fields = arrayListOf(References(paramaterClass, element as PsiLiteralExpression))
                             }

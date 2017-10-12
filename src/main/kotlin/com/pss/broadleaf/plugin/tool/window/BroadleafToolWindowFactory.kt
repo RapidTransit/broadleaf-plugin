@@ -2,7 +2,7 @@ package com.pss.broadleaf.plugin.tool.window
 
 import com.intellij.codeInsight.navigation.MethodImplementationsSearch
 import com.intellij.ide.scopeView.nodes.ClassNode
-import com.intellij.lang.jvm.JvmModifier
+
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.progress.ProgressManager
@@ -15,6 +15,7 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiManager
+import com.intellij.psi.PsiModifier
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.GlobalSearchScopeUtil
 import com.intellij.psi.search.searches.AnnotationTargetsSearch
@@ -61,7 +62,7 @@ class BroadleafToolWindowFactory : ToolWindowFactory {
                         val clazz2 = JavaPsiFacade.getInstance(project).findClass(generic.canonicalText, scope)
                         if(clazz2 != null) {
                             ClassInheritorsSearch.search(clazz2, scope, true).forEach({
-                                if(!it.hasModifier(JvmModifier.ABSTRACT)) {
+                                if(!it.hasModifierProperty(PsiModifier.ABSTRACT)) {
                                     top.add(ClassNode(it))
                                 }
                             })

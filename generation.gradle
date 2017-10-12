@@ -151,6 +151,7 @@ task GenerateConstants {
                 MONEY: [BigDecimal],
                 SERIALIZABLE: [Serializable],
                 THREAD_LOCAL: [ThreadLocal],
+                RELATION: [OneToOne, OneToMany, ManyToOne, ManyToMany],
                 MANAGED_TYPES: [Entity, MappedSuperclass, Embeddable],
                 BOOLEAN: [boolean , Boolean],
                 DATE: [Date],
@@ -175,6 +176,8 @@ task GenerateConstants {
 
 
 }
+
+
 
 configure(GenerateConstants){
     group = "Code Generation"

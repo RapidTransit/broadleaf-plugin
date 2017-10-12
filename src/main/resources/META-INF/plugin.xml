@@ -1,6 +1,6 @@
 <idea-plugin>
-  <id>com.your.company.unique.plugin.id</id>
-  <name>Plugin display name here</name>
+  <id>com.pss.broadleaf</id>
+  <name>Broadleaf Framework Support</name>
   <version>1.0</version>
   <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
 
@@ -30,7 +30,7 @@
     <!--<completion.contributor language="JAVA" implementationClass="com.pss.broadleaf.plugin.completion.AdornedCompletionContributor" />-->
     <!--<multiHostInjector implementation="com.pss.broadleaf.plugin.completion.PropertyMultiHostInjector" />-->
     <inspectionToolProvider implementation="com.pss.broadleaf.plugin.inspections.BroadleafInspectionProvider"/>
-    <psi.referenceContributor language="JAVA" implementation="com.pss.broadleaf.plugin.completion.AdornedReferenceContributor" />
+    <psi.referenceContributor language="JAVA" implementation="com.pss.broadleaf.plugin.reference.AdornedReferenceContributor" />
     <toolWindow id="Broadleaf" secondary="true" icon="/broadleaf/icon.png" anchor="right"
                 factoryClass="com.pss.broadleaf.plugin.tool.window.BroadleafToolWindowFactory"/>
   </extensions>

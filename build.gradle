@@ -1,6 +1,6 @@
 
 buildscript {
-    ext.kotlin_version = '1.1.4-3'
+    ext.kotlin_version = '1.1.51'
 
     repositories {
         mavenCentral()
@@ -44,6 +44,12 @@ repositories {
     maven {
         url 'http://nexus.broadleafcommerce.org/nexus/content/groups/community-releases/'
     }
+    maven { url 'https://jitpack.io'}
+}
+
+configurations{
+    internalTestLib
+    internalTestLib.transitive = false
 }
 
 dependencies {
@@ -52,6 +58,8 @@ dependencies {
     compile group: 'org.broadleafcommerce', name: 'broadleaf-profile', version: blc
     compile group: 'org.broadleafcommerce', name: 'broadleaf-open-admin-platform', version: blc
     compile group: 'org.broadleafcommerce', name: 'broadleaf-contentmanagement-module', version: blc
+    internalTestLib group: 'org.broadleafcommerce', name: 'broadleaf-common', version: blc
+    internalTestLib group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.0-api', version: '1.0.1.Final'
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
 }
@@ -63,3 +71,12 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
+intellij {
+     version '2017.2'
+}
+
+// Copies Test Dependencies to /lib
+task copyTestDependencies(type: Copy){
+    from configurations.internalTestLib
+    into "${project.projectDir}/lib"
+}
