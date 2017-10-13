@@ -8,7 +8,7 @@
     <properties/>
     <border type="none"/>
     <children>
-      <tabbedpane id="71e0c" binding="tabpane">
+      <tabbedpane id="71e0c" binding="tabpane" class="com.intellij.ui.components.JBTabbedPane">
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <preferred-size width="200" height="200"/>
@@ -32,7 +32,7 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="e67da" class="javax.swing.JTree" binding="extensionManagersTree">
+                  <component id="e67da" class="com.intellij.ui.treeStructure.Tree" binding="extensionManagersTree">
                     <constraints/>
                     <properties>
                       <rootVisible value="false"/>

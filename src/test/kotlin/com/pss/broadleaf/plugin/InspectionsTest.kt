@@ -33,7 +33,40 @@ class InspectionsTest : LightInspectionTestCase() {
         return File("testData").absoluteFile.path + "/inspections"
     }
 
-    fun testEntityBadTypes(){
+
+    fun testEntityBadStringTypes(){
+        doTest()
+    }
+
+    fun testEntityBadBooleanTypes(){
+        doTest()
+    }
+
+    fun testEntityBadIntegerTypes(){
+        doTest()
+    }
+    fun testEntityBadEmailTypes(){
+        doTest()
+    }
+
+    fun testEntityBadPasswordTypes(){
+        doTest()
+    }
+
+    fun testEntityBadDescriptionTypes(){
+        doTest()
+    }
+
+
+    fun testEntityBadPasswordConfirmTypes(){
+        doTest()
+    }
+
+    fun testEntityBadDecimalTypes(){
+        doTest()
+    }
+
+    fun testEntityBadMoneyTypes(){
         doTest()
     }
 

@@ -6,11 +6,11 @@ import com.intellij.util.ProcessingContext
 import com.pss.broadleaf.plugin.*
 import com.pss.broadleaf.plugin.reference.AdornedReferenceContributor
 
-//Todo: Needs a Language Injection First
+//Todo: Needs a Language Injection First?
 class AdornedCompletionContributor : CompletionContributor() {
 
     init {
-        extend(CompletionType.BASIC, AdornedReferenceContributor.ANNOTATION, AdornedCompletionProvider())
+        extend(CompletionType.BASIC, AdornedReferenceContributor.TARGET_OBJECT_PROPERTY, AdornedCompletionProvider())
     }
 
     override fun fillCompletionVariants(parameters: CompletionParameters, result: CompletionResultSet) {

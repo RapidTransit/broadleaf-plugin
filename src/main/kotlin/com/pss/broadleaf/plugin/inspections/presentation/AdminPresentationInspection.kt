@@ -55,14 +55,16 @@ class AdminPresentationInspection : PresentationAnnotationInspection(BroadleafCo
                         BroadleafConstants.EnumTypes.SupportedFieldType.HTML_BASIC,
                         BroadleafConstants.EnumTypes.SupportedFieldType.CODE,
                         BroadleafConstants.EnumTypes.SupportedFieldType.DESCRIPTION -> {
-                            if (!field.isAnnotated(BroadleafConstants.JpaAnnotations.Type.CLASS_NAME)) {
-                                registerProblem(holder, psiField.typeElement?:field, "admin.presentation.supported-field-type.$it.user-type")
-                            }
-                            if (!field.isAnnotated(BroadleafConstants.JpaAnnotations.Lob.CLASS_NAME)) {
-                                registerProblem(holder, psiField.typeElement?:field, "admin.presentation.supported-field-type.$it.lob")
-                            }
+
                             if (!psiClass.isAssignable(BroadleafConstants.AcceptableTypes.STRING, field.type)) {
                                 registerProblem(holder, psiField.typeElement?:field, "admin.presentation.supported-field-type.$it.type")
+                            } else {
+                                if (!field.isAnnotated(BroadleafConstants.JpaAnnotations.Type.CLASS_NAME)) {
+                                    registerProblem(holder, psiField.typeElement?:field, "admin.presentation.supported-field-type.$it.user-type")
+                                }
+                                if (!field.isAnnotated(BroadleafConstants.JpaAnnotations.Lob.CLASS_NAME)) {
+                                    registerProblem(holder, psiField.typeElement?:field, "admin.presentation.supported-field-type.$it.lob")
+                                }
                             }
                         }
                         BroadleafConstants.EnumTypes.SupportedFieldType.INTEGER -> {

@@ -27,8 +27,10 @@
   -->
 
   <extensions defaultExtensionNs="com.intellij">
-    <!--<completion.contributor language="JAVA" implementationClass="com.pss.broadleaf.plugin.completion.AdornedCompletionContributor" />-->
+    <completion.contributor language="JAVA" implementationClass="com.pss.broadleaf.plugin.completion.AdornedCompletionContributor" id="adornedCompletion" />
     <!--<multiHostInjector implementation="com.pss.broadleaf.plugin.completion.PropertyMultiHostInjector" />-->
+    <completion.confidence language="JAVA" implementationClass="com.pss.broadleaf.plugin.completion.AnnotationCompletionConfidence" id="annotationCompletion" order="before javaSkipAutopopupInStrings" />
+    <xml.xmlExtension implementation="com.pss.broadleaf.plugin.html.ThymeleafExtraNS" order="first"/>
     <inspectionToolProvider implementation="com.pss.broadleaf.plugin.inspections.BroadleafInspectionProvider"/>
     <psi.referenceContributor language="JAVA" implementation="com.pss.broadleaf.plugin.reference.AdornedReferenceContributor" />
     <toolWindow id="Broadleaf" secondary="true" icon="/broadleaf/icon.png" anchor="right"

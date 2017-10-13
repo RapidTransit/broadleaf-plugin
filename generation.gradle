@@ -11,6 +11,7 @@ buildscript {
     }
     dependencies {
         classpath group: 'org.broadleafcommerce', name: 'broadleaf-common', version: '5.2.0-GA'
+        classpath group: 'org.broadleafcommerce', name: 'broadleaf-open-admin-platform', version: '5.2.0-GA'
         classpath group: 'com.google.guava', name: 'guava', version: '23.0'
         classpath group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
 
@@ -22,8 +23,10 @@ import org.broadleafcommerce.common.classloader.release.ThreadLocalManager
 import org.broadleafcommerce.common.extension.ExtensionHandler
 import org.broadleafcommerce.common.extension.ExtensionResultStatusType
 import org.broadleafcommerce.common.money.Money
+import org.broadleafcommerce.openadmin.server.service.handler.CustomPersistenceHandler
+import org.broadleafcommerce.openadmin.server.service.persistence.module.provider.FieldPersistenceProvider
 import org.hibernate.annotations.Type
-
+import org.broadleafcommerce.openadmin.server.service.persistence.module.*
 import javax.persistence.Embeddable
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -133,7 +136,11 @@ task GenerateConstants {
         sb.repeat(1).append("}\n\n")
 
         sb.repeat(1).append("object FrameworkTypes {").append('\n')
-        [BroadleafEnumerationType, ExtensionResultStatusType, ExtensionHandler, ThreadLocalManager, AdminMainEntity, Money]
+        [BroadleafEnumerationType,
+         ExtensionResultStatusType,
+         ExtensionHandler,
+         ThreadLocalManager,
+         AdminMainEntity, Money, CustomPersistenceHandler, FieldPersistenceProvider, PersistenceModule ]
                 .each {
             sb.repeat(2).append("""val ${CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, it.simpleName)} = "${it.name}" """).append('\n')
         }

@@ -115,7 +115,7 @@ fun PsiClass.isAssignable(fqn: Set<String>, type: PsiType): Boolean {
 fun PsiClass.isAssignable(fqn: String, type: PsiType): Boolean {
     val t = TypeUtils.getType(fqn, this)
     if(t != null){
-        return type.isAssignableFrom(t)
+        return t.isAssignableFrom(type)
     }
     return false
 }
@@ -161,6 +161,10 @@ fun PsiType.isEntity(): Boolean {
 
 fun PsiType.isEmbeddable(): Boolean {
     return BroadleafPsiUtils.containsAnnotation(this, BroadleafConstants.JpaAnnotations.Embeddable.CLASS_NAME)
+}
+
+fun PsiType.isArray(): Boolean {
+    return  this is PsiArrayType
 }
 
 fun PsiType.findAllConcreteTypes(): Collection<PsiClass> {

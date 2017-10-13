@@ -21,12 +21,13 @@ public class Examples {
     protected String a;
 
     @AdminPresentation(fieldType = ADDITIONAL_FOREIGN_KEY)
-    @AdminPresentationAdornedTargetCollection(targetObjectProperty = Examples.A)
+
+    @AdminPresentationAdornedTargetCollection(targetObjectProperty = "a")
     @AdminPresentationMap()
     @OneToMany(targetEntity = CategoryProductXrefImpl.class)
     protected List<CategoryProductXref> xrefs = new ArrayList<>();
 
     public void init() throws NoSuchFieldException {
-        ProductImpl.class.getDeclaredField("productAttributes");
+        ProductImpl.class.getDeclaredField("products");
     }
 }

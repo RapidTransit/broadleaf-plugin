@@ -14,6 +14,7 @@ buildscript {
     }
     dependencies {
         classpath group: 'org.broadleafcommerce', name: 'broadleaf-common', version: '5.2.0-GA'
+        classpath group: 'org.broadleafcommerce', name: 'broadleaf-open-admin-platform', version: '5.2.0-GA'
         classpath group: 'com.google.guava', name: 'guava', version: '23.0'
         classpath group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
 
@@ -58,6 +59,7 @@ dependencies {
     compile group: 'org.broadleafcommerce', name: 'broadleaf-profile', version: blc
     compile group: 'org.broadleafcommerce', name: 'broadleaf-open-admin-platform', version: blc
     compile group: 'org.broadleafcommerce', name: 'broadleaf-contentmanagement-module', version: blc
+    internalTestLib group: 'org.hibernate', name: 'hibernate-core', version: '4.1.11.Final'
     internalTestLib group: 'org.broadleafcommerce', name: 'broadleaf-common', version: blc
     internalTestLib group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.0-api', version: '1.0.1.Final'
 
@@ -73,6 +75,9 @@ compileTestKotlin {
 
 intellij {
      version '2017.2'
+    // I think I need IU to import Thymeleaf Support and Spring
+    type = 'IU'
+    plugins = ['thymeleaf', 'Spring']
 }
 
 // Copies Test Dependencies to /lib

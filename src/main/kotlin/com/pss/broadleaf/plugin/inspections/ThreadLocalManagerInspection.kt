@@ -53,7 +53,6 @@ class ThreadLocalManagerInspection : BaseJavaLocalInspectionTool(){
                     }
                 }
             }
-
         }
 
         override fun visitMethodCallExpression(expression: PsiMethodCallExpression?) {

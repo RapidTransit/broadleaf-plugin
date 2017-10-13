@@ -21,7 +21,10 @@ import com.intellij.psi.search.GlobalSearchScopeUtil
 import com.intellij.psi.search.searches.AnnotationTargetsSearch
 import com.intellij.psi.search.searches.ClassInheritorsSearch
 import com.intellij.ui.TabbedPane
+import com.intellij.ui.components.JBTabbedPane
 import com.intellij.ui.content.ContentFactory
+import com.intellij.ui.tabs.JBTabs
+import com.intellij.ui.treeStructure.Tree
 import org.broadleafcommerce.common.extension.ExtensionManager
 import javax.swing.JPanel
 import javax.swing.JTabbedPane
@@ -34,8 +37,8 @@ class BroadleafToolWindowFactory : ToolWindowFactory {
 
 
     lateinit var panel: JPanel
-    lateinit var tabpane: JTabbedPane
-    lateinit var extensionManagersTree: JTree
+    lateinit var tabpane: JBTabbedPane
+    lateinit var extensionManagersTree: Tree
     lateinit var toolWindow: ToolWindow
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
