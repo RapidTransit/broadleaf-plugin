@@ -23,8 +23,17 @@ import org.broadleafcommerce.common.classloader.release.ThreadLocalManager
 import org.broadleafcommerce.common.extension.ExtensionHandler
 import org.broadleafcommerce.common.extension.ExtensionResultStatusType
 import org.broadleafcommerce.common.money.Money
+import org.broadleafcommerce.common.web.expression.AssetURLVariableExpression
+import org.broadleafcommerce.common.web.expression.BRCVariableExpression
+import org.broadleafcommerce.common.web.expression.BreadcrumbVariableExpression
+import org.broadleafcommerce.common.web.expression.DataDrivenEnumVariableExpression
+import org.broadleafcommerce.common.web.expression.ModuleVariableExpression
+import org.broadleafcommerce.common.web.expression.PropertiesVariableExpression
+import org.broadleafcommerce.openadmin.dto.FieldMetadata
 import org.broadleafcommerce.openadmin.server.service.handler.CustomPersistenceHandler
 import org.broadleafcommerce.openadmin.server.service.persistence.module.provider.FieldPersistenceProvider
+import org.broadleafcommerce.openadmin.web.form.component.ListGrid
+import org.broadleafcommerce.openadmin.web.form.entity.EntityForm
 import org.hibernate.annotations.Type
 import org.broadleafcommerce.openadmin.server.service.persistence.module.*
 import javax.persistence.Embeddable
@@ -146,6 +155,27 @@ task GenerateConstants {
         }
         sb.repeat(1).append("}\n\n")
 
+        sb.repeat(1).append("object ThymeleafContextVariables {").append('\n')
+
+            sb.repeat(2).append("""val MODEL = hashMapOf<String, String>()""").append('\n')
+            sb.repeat(2).append("""val EXPRESSIONS = hashMapOf<String, String>()""").append('\n')
+            sb.repeat(2).append("""val FIELD_TEMPLATES = hashSetOf<String>()""").append('\n')
+
+            sb.repeat(2).append("init {\n")
+            ["templateName": String, "listGrid": ListGrid, "inModal": Boolean, "entityForm": EntityForm, "showSingleTab": Boolean ].each {
+                sb.repeat(3).append("""MODEL.put("${it.key}", "${it.value.name}")""").append('\n')
+            }
+            ["#cms": AssetURLVariableExpression, "#brc": BRCVariableExpression, "#breadcrumbs": BreadcrumbVariableExpression, "#enumeration": DataDrivenEnumVariableExpression,
+            "#module": ModuleVariableExpression, "#props": PropertiesVariableExpression].each {
+                sb.repeat(3).append("""EXPRESSIONS.put("${it.key}", "${it.value.name}")""").append('\n')
+            }
+
+            SupportedFieldType.class.fields.each {
+                sb.repeat(3).append("""FIELD_TEMPLATES.add("${CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_UNDERSCORE, it.name)}.html")""").append('\n')
+            }
+
+            sb.repeat(2).append("}")
+        sb.repeat(1).append("}\n\n")
 
         sb.repeat(1).append("object AcceptableTypes {").append('\n')
         [

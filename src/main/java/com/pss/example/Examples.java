@@ -27,7 +27,8 @@ public class Examples {
     @OneToMany(targetEntity = CategoryProductXrefImpl.class)
     protected List<CategoryProductXref> xrefs = new ArrayList<>();
 
-    public void init() throws NoSuchFieldException {
+    public void init(String a) throws NoSuchFieldException {
+
         ProductImpl.class.getDeclaredField("products");
     }
 }

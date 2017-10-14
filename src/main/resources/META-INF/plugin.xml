@@ -11,6 +11,7 @@
   <depends>com.intellij.modules.lang</depends>
   <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.modules.java</depends>
+  <depends>com.intellij.thymeleaf</depends>
   <change-notes><![CDATA[
       Add change notes here.<br>
       <em>most HTML tags may be used</em>
@@ -35,6 +36,9 @@
     <psi.referenceContributor language="JAVA" implementation="com.pss.broadleaf.plugin.reference.AdornedReferenceContributor" />
     <toolWindow id="Broadleaf" secondary="true" icon="/broadleaf/icon.png" anchor="right"
                 factoryClass="com.pss.broadleaf.plugin.tool.window.BroadleafToolWindowFactory"/>
+    <thymeleaf.dialect implementation="com.pss.broadleaf.plugin.html.BroadleafSiteDialect" />
+    <thymeleaf.dialect implementation="com.pss.broadleaf.plugin.html.BroadleafAdminDialect" />
+    <thymeleaf.context.variables implementation="com.pss.broadleaf.plugin.html.BroadleafAdminContextVariablesProvider" />
   </extensions>
 
   <actions>

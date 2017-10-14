@@ -26,6 +26,7 @@ class AdornedReferenceContributor : PsiReferenceContributor() {
                 .annotationParam(Adorned.CLASS_NAME, Adorned.MAINTAINED_ADORNED_TARGET_FIELDS)
     }
 
+
     enum class FieldRestriction {
         NONE, SIMPLE_TYPES_ONLY, ENTITY_TYPES_ONLY
     }

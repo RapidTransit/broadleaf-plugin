@@ -34,6 +34,7 @@ class AnnotationCompletionConfidence : CompletionConfidence() {
 
 
     override fun shouldSkipAutopopup(contextElement: PsiElement, psiFile: PsiFile, offset: Int): ThreeState {
+
         val parent = contextElement.parent
         if(parent != null && MATCHER.accepts(parent)){
             return ThreeState.NO

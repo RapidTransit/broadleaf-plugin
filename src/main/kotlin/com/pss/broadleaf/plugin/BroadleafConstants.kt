@@ -8,9 +8,9 @@ object BroadleafConstants {
         object AdminGroupPresentation {
             val CLASS_NAME = "org.broadleafcommerce.common.presentation.AdminGroupPresentation"
             val CLASS_NAME_SET = Collections.singleton("org.broadleafcommerce.common.presentation.AdminGroupPresentation")
-            val UNTITLED = "untitled" 
-            val COLLAPSED = "collapsed" 
             val TOOLTIP = "tooltip" 
+            val COLLAPSED = "collapsed" 
+            val UNTITLED = "untitled" 
             val COLUMN = "column" 
             val NAME = "name" 
             val ORDER = "order" 
@@ -19,8 +19,12 @@ object BroadleafConstants {
         object AdminPresentation {
             val CLASS_NAME = "org.broadleafcommerce.common.presentation.AdminPresentation"
             val CLASS_NAME_SET = Collections.singleton("org.broadleafcommerce.common.presentation.AdminPresentation")
+            val TOOLTIP = "tooltip" 
+            val FRIENDLY_NAME = "friendlyName" 
+            val BROADLEAF_ENUMERATION = "broadleafEnumeration" 
+            val CAN_LINK_TO_EXTERNAL_ENTITY = "canLinkToExternalEntity" 
             val ADD_FRIENDLY_NAME = "addFriendlyName" 
-            val SECURITY_LEVEL = "securityLevel" 
+            val HIDE_ENUMERATION_IF_EMPTY = "hideEnumerationIfEmpty" 
             val GRID_ORDER = "gridOrder" 
             val DISPLAY_TYPE = "displayType" 
             val GROUP_ORDER = "groupOrder" 
@@ -29,22 +33,18 @@ object BroadleafConstants {
             val LARGE_ENTRY = "largeEntry" 
             val PROMINENT = "prominent" 
             val COLUMN_WIDTH = "columnWidth" 
-            val FIELD_COMPONENT_RENDERER = "fieldComponentRenderer" 
             val VALIDATION_CONFIGURATIONS = "validationConfigurations" 
             val REQUIRED_OVERRIDE = "requiredOverride" 
             val HELP_TEXT = "helpText" 
             val SHOW_IF_PROPERTY = "showIfProperty" 
             val SHOW_IF_FIELD_EQUALS = "showIfFieldEquals" 
-            val CAN_LINK_TO_EXTERNAL_ENTITY = "canLinkToExternalEntity" 
-            val BROADLEAF_ENUMERATION = "broadleafEnumeration" 
-            val TOOLTIP = "tooltip" 
-            val HIDE_ENUMERATION_IF_EMPTY = "hideEnumerationIfEmpty" 
-            val ALLOW_NO_VALUE_ENUM_OPTION = "allowNoValueEnumOption" 
-            val FRIENDLY_NAME = "friendlyName" 
             val CURRENCY_CODE_FIELD = "currencyCodeField" 
             val RULE_IDENTIFIER = "ruleIdentifier" 
             val TRANSLATABLE = "translatable" 
             val ASSOCIATED_FIELD_NAME = "associatedFieldName" 
+            val ALLOW_NO_VALUE_ENUM_OPTION = "allowNoValueEnumOption" 
+            val FIELD_COMPONENT_RENDERER = "fieldComponentRenderer" 
+            val SECURITY_LEVEL = "securityLevel" 
             val VISIBILITY = "visibility" 
             val EXCLUDED = "excluded" 
             val HINT = "hint" 
@@ -59,18 +59,18 @@ object BroadleafConstants {
         object AdminPresentationAdornedTargetCollection {
             val CLASS_NAME = "org.broadleafcommerce.common.presentation.AdminPresentationAdornedTargetCollection"
             val CLASS_NAME_SET = Collections.singleton("org.broadleafcommerce.common.presentation.AdminPresentationAdornedTargetCollection")
-            val SECURITY_LEVEL = "securityLevel" 
+            val FRIENDLY_NAME = "friendlyName" 
+            val MANUAL_FETCH = "manualFetch" 
+            val SORT_PROPERTY = "sortProperty" 
             val TAB_ORDER = "tabOrder" 
             val SHOW_IF_PROPERTY = "showIfProperty" 
             val SHOW_IF_FIELD_EQUALS = "showIfFieldEquals" 
+            val CURRENCY_CODE_FIELD = "currencyCodeField" 
+            val JOIN_ENTITY_CLASS = "joinEntityClass" 
             val USE_SERVER_SIDE_INSPECTION_CACHE = "useServerSideInspectionCache" 
             val PARENT_OBJECT_PROPERTY = "parentObjectProperty" 
             val PARENT_OBJECT_ID_PROPERTY = "parentObjectIdProperty" 
             val TARGET_OBJECT_PROPERTY = "targetObjectProperty" 
-            val SORT_PROPERTY = "sortProperty" 
-            val FRIENDLY_NAME = "friendlyName" 
-            val CURRENCY_CODE_FIELD = "currencyCodeField" 
-            val JOIN_ENTITY_CLASS = "joinEntityClass" 
             val MAINTAINED_ADORNED_TARGET_FIELDS = "maintainedAdornedTargetFields" 
             val GRID_VISIBLE_FIELDS = "gridVisibleFields" 
             val TARGET_OBJECT_ID_PROPERTY = "targetObjectIdProperty" 
@@ -79,12 +79,12 @@ object BroadleafConstants {
             val CUSTOM_CRITERIA = "customCriteria" 
             val OPERATION_TYPES = "operationTypes" 
             val LAZY_FETCH = "lazyFetch" 
-            val MANUAL_FETCH = "manualFetch" 
             val SELECTIZE_VISIBLE_FIELD = "selectizeVisibleField" 
+            val SECURITY_LEVEL = "securityLevel" 
             val EXCLUDED = "excluded" 
             val TAB = "tab" 
-            val ADD_TYPE = "addType" 
             val READ_ONLY = "readOnly" 
+            val ADD_TYPE = "addType" 
             val GROUP = "group" 
             val ORDER = "order" 
         }
@@ -92,11 +92,11 @@ object BroadleafConstants {
         object AdminPresentationClass {
             val CLASS_NAME = "org.broadleafcommerce.common.presentation.AdminPresentationClass"
             val CLASS_NAME_SET = Collections.singleton("org.broadleafcommerce.common.presentation.AdminPresentationClass")
-            val TABS = "tabs" 
             val FRIENDLY_NAME = "friendlyName" 
             val POPULATE_TO_ONE_FIELDS = "populateToOneFields" 
             val CEILING_DISPLAY_ENTITY = "ceilingDisplayEntity" 
             val EXCLUDE_FROM_POLYMORPHISM = "excludeFromPolymorphism" 
+            val TABS = "tabs" 
             val TAB_OVERRIDES = "tabOverrides" 
             val GROUP_OVERRIDES = "groupOverrides" 
         }
@@ -104,26 +104,26 @@ object BroadleafConstants {
         object AdminPresentationCollection {
             val CLASS_NAME = "org.broadleafcommerce.common.presentation.AdminPresentationCollection"
             val CLASS_NAME_SET = Collections.singleton("org.broadleafcommerce.common.presentation.AdminPresentationCollection")
+            val FRIENDLY_NAME = "friendlyName" 
+            val MANUAL_FETCH = "manualFetch" 
             val ADD_FRIENDLY_NAME = "addFriendlyName" 
-            val SECURITY_LEVEL = "securityLevel" 
+            val MANY_TO_FIELD = "manyToField" 
+            val SORT_PROPERTY = "sortProperty" 
             val TAB_ORDER = "tabOrder" 
             val SHOW_IF_PROPERTY = "showIfProperty" 
             val SHOW_IF_FIELD_EQUALS = "showIfFieldEquals" 
-            val MANY_TO_FIELD = "manyToField" 
-            val USE_SERVER_SIDE_INSPECTION_CACHE = "useServerSideInspectionCache" 
-            val SORT_PROPERTY = "sortProperty" 
-            val FRIENDLY_NAME = "friendlyName" 
             val CURRENCY_CODE_FIELD = "currencyCodeField" 
+            val USE_SERVER_SIDE_INSPECTION_CACHE = "useServerSideInspectionCache" 
             val SORT_ASCENDING = "sortAscending" 
             val CUSTOM_CRITERIA = "customCriteria" 
             val OPERATION_TYPES = "operationTypes" 
             val LAZY_FETCH = "lazyFetch" 
-            val MANUAL_FETCH = "manualFetch" 
             val SELECTIZE_VISIBLE_FIELD = "selectizeVisibleField" 
+            val SECURITY_LEVEL = "securityLevel" 
             val EXCLUDED = "excluded" 
             val TAB = "tab" 
-            val ADD_TYPE = "addType" 
             val READ_ONLY = "readOnly" 
+            val ADD_TYPE = "addType" 
             val GROUP = "group" 
             val ORDER = "order" 
         }
@@ -144,22 +144,21 @@ object BroadleafConstants {
             val CLASS_NAME_SET = Collections.singleton("org.broadleafcommerce.common.presentation.AdminPresentationMap")
             val KEY_CLASS = "keyClass" 
             val VALUE_CLASS = "valueClass" 
+            val FRIENDLY_NAME = "friendlyName" 
+            val MANUAL_FETCH = "manualFetch" 
             val ADD_FRIENDLY_NAME = "addFriendlyName" 
-            val SECURITY_LEVEL = "securityLevel" 
+            val IS_SIMPLE_VALUE = "isSimpleValue" 
+            val MAP_KEY_VALUE_PROPERTY = "mapKeyValueProperty" 
+            val MANY_TO_FIELD = "manyToField" 
             val TAB_ORDER = "tabOrder" 
             val SHOW_IF_PROPERTY = "showIfProperty" 
             val SHOW_IF_FIELD_EQUALS = "showIfFieldEquals" 
-            val MAP_KEY_VALUE_PROPERTY = "mapKeyValueProperty" 
-            val KEY_PROPERTY_FRIENDLY_NAME = "keyPropertyFriendlyName" 
-            val IS_SIMPLE_VALUE = "isSimpleValue" 
-            val MANY_TO_FIELD = "manyToField" 
-            val USE_SERVER_SIDE_INSPECTION_CACHE = "useServerSideInspectionCache" 
-            val FRIENDLY_NAME = "friendlyName" 
             val CURRENCY_CODE_FIELD = "currencyCodeField" 
+            val USE_SERVER_SIDE_INSPECTION_CACHE = "useServerSideInspectionCache" 
             val CUSTOM_CRITERIA = "customCriteria" 
             val OPERATION_TYPES = "operationTypes" 
             val LAZY_FETCH = "lazyFetch" 
-            val MANUAL_FETCH = "manualFetch" 
+            val KEY_PROPERTY_FRIENDLY_NAME = "keyPropertyFriendlyName" 
             val DELETE_ENTITY_UPON_REMOVE = "deleteEntityUponRemove" 
             val VALUE_PROPERTY_FRIENDLY_NAME = "valuePropertyFriendlyName" 
             val TO_ONE_TARGET_PROPERTY = "toOneTargetProperty" 
@@ -169,6 +168,7 @@ object BroadleafConstants {
             val MAP_KEY_OPTION_ENTITY_CLASS = "mapKeyOptionEntityClass" 
             val MAP_KEY_OPTION_ENTITY_DISPLAY_FIELD = "mapKeyOptionEntityDisplayField" 
             val MAP_KEY_OPTION_ENTITY_VALUE_FIELD = "mapKeyOptionEntityValueField" 
+            val SECURITY_LEVEL = "securityLevel" 
             val EXCLUDED = "excluded" 
             val TAB = "tab" 
             val READ_ONLY = "readOnly" 
@@ -180,8 +180,8 @@ object BroadleafConstants {
         object AdminPresentationMapField {
             val CLASS_NAME = "org.broadleafcommerce.common.presentation.AdminPresentationMapField"
             val CLASS_NAME_SET = Collections.singleton("org.broadleafcommerce.common.presentation.AdminPresentationMapField")
-            val FIELD_PRESENTATION = "fieldPresentation" 
             val MANY_TO_FIELD = "manyToField" 
+            val FIELD_PRESENTATION = "fieldPresentation" 
             val TARGET_CLASS = "targetClass" 
             val FIELD_NAME = "fieldName" 
         }
@@ -299,9 +299,9 @@ object BroadleafConstants {
         object AdminPresentationMergeEntry {
             val CLASS_NAME = "org.broadleafcommerce.common.presentation.override.AdminPresentationMergeEntry"
             val CLASS_NAME_SET = Collections.singleton("org.broadleafcommerce.common.presentation.override.AdminPresentationMergeEntry")
+            val OPTION_FILTER_PARAMS = "optionFilterParams" 
             val VALIDATION_CONFIGURATIONS = "validationConfigurations" 
             val SHOW_IF_FIELD_EQUALS = "showIfFieldEquals" 
-            val OPTION_FILTER_PARAMS = "optionFilterParams" 
             val OPERATION_TYPES = "operationTypes" 
             val OVERRIDE_VALUE = "overrideValue" 
             val DOUBLE_OVERRIDE_VALUE = "doubleOverrideValue" 
@@ -343,8 +343,8 @@ object BroadleafConstants {
             val CLASS_NAME = "org.broadleafcommerce.common.presentation.override.AdminPresentationOverrides"
             val CLASS_NAME_SET = Collections.singleton("org.broadleafcommerce.common.presentation.override.AdminPresentationOverrides")
             val TO_ONE_LOOKUPS = "toOneLookups" 
-            val DATA_DRIVEN_ENUMS = "dataDrivenEnums" 
             val ADORNED_TARGET_COLLECTIONS = "adornedTargetCollections" 
+            val DATA_DRIVEN_ENUMS = "dataDrivenEnums" 
             val COLLECTIONS = "collections" 
             val MAPS = "maps" 
             val VALUE = "value" 
@@ -374,36 +374,36 @@ object BroadleafConstants {
 
         object OneToMany {
             val CLASS_NAME = "javax.persistence.OneToMany"
-            val CASCADE = "cascade" 
-            val MAPPED_BY = "mappedBy" 
             val ORPHAN_REMOVAL = "orphanRemoval" 
             val TARGET_ENTITY = "targetEntity" 
+            val CASCADE = "cascade" 
+            val MAPPED_BY = "mappedBy" 
             val FETCH = "fetch" 
         }
 
         object OneToOne {
             val CLASS_NAME = "javax.persistence.OneToOne"
-            val CASCADE = "cascade" 
-            val MAPPED_BY = "mappedBy" 
             val ORPHAN_REMOVAL = "orphanRemoval" 
             val TARGET_ENTITY = "targetEntity" 
+            val CASCADE = "cascade" 
+            val MAPPED_BY = "mappedBy" 
             val FETCH = "fetch" 
             val OPTIONAL = "optional" 
         }
 
         object ManyToOne {
             val CLASS_NAME = "javax.persistence.ManyToOne"
-            val CASCADE = "cascade" 
             val TARGET_ENTITY = "targetEntity" 
+            val CASCADE = "cascade" 
             val FETCH = "fetch" 
             val OPTIONAL = "optional" 
         }
 
         object ManyToMany {
             val CLASS_NAME = "javax.persistence.ManyToMany"
+            val TARGET_ENTITY = "targetEntity" 
             val CASCADE = "cascade" 
             val MAPPED_BY = "mappedBy" 
-            val TARGET_ENTITY = "targetEntity" 
             val FETCH = "fetch" 
         }
 
@@ -584,7 +584,64 @@ object BroadleafConstants {
         val THREAD_LOCAL_MANAGER = "org.broadleafcommerce.common.classloader.release.ThreadLocalManager" 
         val ADMIN_MAIN_ENTITY = "org.broadleafcommerce.common.admin.domain.AdminMainEntity" 
         val MONEY = "org.broadleafcommerce.common.money.Money" 
+        val CUSTOM_PERSISTENCE_HANDLER = "org.broadleafcommerce.openadmin.server.service.handler.CustomPersistenceHandler" 
+        val FIELD_PERSISTENCE_PROVIDER = "org.broadleafcommerce.openadmin.server.service.persistence.module.provider.FieldPersistenceProvider" 
+        val PERSISTENCE_MODULE = "org.broadleafcommerce.openadmin.server.service.persistence.module.PersistenceModule" 
     }
+
+    object ThymeleafContextVariables {
+        val MODEL = hashMapOf<String, String>()
+        val EXPRESSIONS = hashMapOf<String, String>()
+        val FIELD_TEMPLATES = hashSetOf<String>()
+        init {
+            MODEL.put("templateName", "java.lang.String")
+            MODEL.put("listGrid", "org.broadleafcommerce.openadmin.web.form.component.ListGrid")
+            MODEL.put("inModal", "java.lang.Boolean")
+            MODEL.put("entityForm", "org.broadleafcommerce.openadmin.web.form.entity.EntityForm")
+            MODEL.put("showSingleTab", "java.lang.Boolean")
+            EXPRESSIONS.put("#cms", "org.broadleafcommerce.common.web.expression.AssetURLVariableExpression")
+            EXPRESSIONS.put("#brc", "org.broadleafcommerce.common.web.expression.BRCVariableExpression")
+            EXPRESSIONS.put("#breadcrumbs", "org.broadleafcommerce.common.web.expression.BreadcrumbVariableExpression")
+            EXPRESSIONS.put("#enumeration", "org.broadleafcommerce.common.web.expression.DataDrivenEnumVariableExpression")
+            EXPRESSIONS.put("#module", "org.broadleafcommerce.common.web.expression.ModuleVariableExpression")
+            EXPRESSIONS.put("#props", "org.broadleafcommerce.common.web.expression.PropertiesVariableExpression")
+            FIELD_TEMPLATES.add("unknown.html")
+            FIELD_TEMPLATES.add("id.html")
+            FIELD_TEMPLATES.add("boolean.html")
+            FIELD_TEMPLATES.add("boolean_link.html")
+            FIELD_TEMPLATES.add("date.html")
+            FIELD_TEMPLATES.add("integer.html")
+            FIELD_TEMPLATES.add("decimal.html")
+            FIELD_TEMPLATES.add("string.html")
+            FIELD_TEMPLATES.add("collection.html")
+            FIELD_TEMPLATES.add("password.html")
+            FIELD_TEMPLATES.add("password_confirm.html")
+            FIELD_TEMPLATES.add("email.html")
+            FIELD_TEMPLATES.add("foreign_key.html")
+            FIELD_TEMPLATES.add("additional_foreign_key.html")
+            FIELD_TEMPLATES.add("money.html")
+            FIELD_TEMPLATES.add("broadleaf_enumeration.html")
+            FIELD_TEMPLATES.add("explicit_enumeration.html")
+            FIELD_TEMPLATES.add("empty_enumeration.html")
+            FIELD_TEMPLATES.add("data_driven_enumeration.html")
+            FIELD_TEMPLATES.add("html.html")
+            FIELD_TEMPLATES.add("html_basic.html")
+            FIELD_TEMPLATES.add("upload.html")
+            FIELD_TEMPLATES.add("hidden.html")
+            FIELD_TEMPLATES.add("asset_url.html")
+            FIELD_TEMPLATES.add("asset_lookup.html")
+            FIELD_TEMPLATES.add("media.html")
+            FIELD_TEMPLATES.add("rule_simple.html")
+            FIELD_TEMPLATES.add("rule_simple_time.html")
+            FIELD_TEMPLATES.add("rule_with_quantity.html")
+            FIELD_TEMPLATES.add("string_list.html")
+            FIELD_TEMPLATES.add("image.html")
+            FIELD_TEMPLATES.add("color.html")
+            FIELD_TEMPLATES.add("code.html")
+            FIELD_TEMPLATES.add("generated_url.html")
+            FIELD_TEMPLATES.add("generated_field_value.html")
+            FIELD_TEMPLATES.add("description.html")
+        }    }
 
     object AcceptableTypes {
         val MAP_OR_COLLECTION = setOf("java.util.Collection", "java.util.Map") 
