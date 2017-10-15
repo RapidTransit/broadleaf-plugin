@@ -13,8 +13,10 @@ buildscript {
         }
     }
     dependencies {
+        classpath group: 'org.broadleafcommerce', name: 'broadleaf-framework', version: '5.2.0-GA'
         classpath group: 'org.broadleafcommerce', name: 'broadleaf-common', version: '5.2.0-GA'
         classpath group: 'org.broadleafcommerce', name: 'broadleaf-open-admin-platform', version: '5.2.0-GA'
+        classpath group: 'org.broadleafcommerce', name: 'broadleaf-framework-web', version: '5.2.0-GA'
         classpath group: 'com.google.guava', name: 'guava', version: '23.0'
         classpath group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
 
