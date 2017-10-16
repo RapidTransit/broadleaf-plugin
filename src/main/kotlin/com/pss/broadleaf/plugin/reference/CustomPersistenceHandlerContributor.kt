@@ -1,9 +1,12 @@
 package com.pss.broadleaf.plugin.reference
 
+import com.intellij.patterns.PsiElementPattern
 import com.intellij.patterns.PsiJavaPatterns.*
+import com.intellij.patterns.PsiMethodPattern
 import com.intellij.psi.*
 import com.intellij.psi.search.searches.ClassInheritorsSearch
 import com.intellij.psi.stubsHierarchy.ClassHierarchy
+import com.intellij.psi.util.PsiMethodUtil
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.PsiUtil
 import com.intellij.spring.model.utils.PsiTypeUtil
@@ -17,7 +20,9 @@ import org.jetbrains.uast.getUastParentOfType
 
 class CustomPersistenceHandlerContributor : PsiReferenceContributor(){
 
+
     companion object {
+
         val MATCHER = psiElement()
                 .methodCallParameter(psiMethod().withName("get").definedInClass("java.util.Map"))
                 .inside(psiClass().inheritorOf(true, BroadleafConstants.FrameworkTypes.CUSTOM_PERSISTENCE_HANDLER))
@@ -25,6 +30,12 @@ class CustomPersistenceHandlerContributor : PsiReferenceContributor(){
                 .withName("canHandleAdd")
 
         val HAS_COMMENT = Regex("@type")
+        val METHOD_MATCH = mutableMapOf<String, PsiMethodPattern>(
+                Pair("add", psiMethod().withName("canHandleAdd")),
+                Pair("remove", psiMethod().withName("canHandleRemove")),
+                Pair("inspect", psiMethod().withName("canHandleInspect")),
+                Pair("update", psiMethod().withName("canHandleUpdate"))
+        )
         val PARSE_COMMENT = Regex("//\\s*@type\\s*=\\s*(.+)").toPattern()
     }
 
@@ -61,6 +72,18 @@ class CustomPersistenceHandlerContributor : PsiReferenceContributor(){
     class PersistenceProvider : PsiReferenceProvider(){
         override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
             if(element is PsiLiteralExpression){
+                element.findParent(PsiMethod::class.java)?.let { method->
+                    if(METHOD_MATCH.containsKey(method.name)) {
+                        METHOD_MATCH.getValue(method.name)?.let { methodPattern ->
+                            element.findParent(PsiClass::class.java)?.let { containingClass ->
+                                containingClass.methods.find { methodPattern.accepts(it) }?.let {
+
+                                }
+                            }
+                        }
+                    }
+
+                }
                 element.findParent(PsiClass::class.java)?.let {
                     val visitor = MethodVisitor()
                     it.acceptChildren(visitor)
