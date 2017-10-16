@@ -5,13 +5,14 @@
   <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
 
   <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <em>most HTML tags may be used</em>
+      A plugin to aid in the development of Broadleaf Commerce
     ]]></description>
   <depends>com.intellij.modules.lang</depends>
   <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.modules.java</depends>
   <depends>com.intellij.thymeleaf</depends>
+  <depends>com.intellij.modules.ultimate</depends>
+  <depends>com.intellij.spring</depends>
   <change-notes><![CDATA[
       Add change notes here.<br>
       <em>most HTML tags may be used</em>
@@ -19,21 +20,20 @@
   </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="145.0"/>
+  <idea-version since-build="172"/>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
-  <!-- uncomment to enable plugin in all products
-  <depends>com.intellij.modules.lang</depends>
-  -->
+
+
+
 
   <extensions defaultExtensionNs="com.intellij">
-    <completion.contributor language="JAVA" implementationClass="com.pss.broadleaf.plugin.completion.AdornedCompletionContributor" id="adornedCompletion" />
-    <!--<multiHostInjector implementation="com.pss.broadleaf.plugin.completion.PropertyMultiHostInjector" />-->
     <completion.confidence language="JAVA" implementationClass="com.pss.broadleaf.plugin.completion.AnnotationCompletionConfidence" id="annotationCompletion" order="before javaSkipAutopopupInStrings" />
     <xml.xmlExtension implementation="com.pss.broadleaf.plugin.html.ThymeleafExtraNS" order="first"/>
     <inspectionToolProvider implementation="com.pss.broadleaf.plugin.inspections.BroadleafInspectionProvider"/>
     <psi.referenceContributor language="JAVA" implementation="com.pss.broadleaf.plugin.reference.AdornedReferenceContributor" />
+    <psi.referenceContributor language="JAVA" implementation="com.pss.broadleaf.plugin.reference.CustomPersistenceHandlerContributor" />
     <toolWindow id="Broadleaf" secondary="true" icon="/broadleaf/icon.png" anchor="right"
                 factoryClass="com.pss.broadleaf.plugin.tool.window.BroadleafToolWindowFactory"/>
     <thymeleaf.dialect implementation="com.pss.broadleaf.plugin.html.BroadleafSiteDialect" />

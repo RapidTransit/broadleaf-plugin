@@ -6,6 +6,7 @@ import com.intellij.patterns.PsiJavaPatterns.*
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.util.ThreeState
+import com.pss.broadleaf.plugin.BroadleafConstants
 import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.AdminPresentationAdornedTargetCollection as Adorned
 import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.AdminPresentationToOneLookup as ToOne
 import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.AdminPresentation
@@ -27,7 +28,10 @@ class AnnotationCompletionConfidence : CompletionConfidence() {
                 literalExpression()
                         .insideAnnotationParam(string().matches(ToOne.CLASS_NAME), ToOne.LOOKUP_DISPLAY_PROPERTY),
                 literalExpression()
-                        .insideAnnotationParam(string().matches(MergeOverride.CLASS_NAME), MergeOverride.NAME)
+                        .insideAnnotationParam(string().matches(MergeOverride.CLASS_NAME), MergeOverride.NAME),
+                literalExpression()
+                        .methodCallParameter(psiMethod().withName("get").definedInClass("java.util.Map"))
+                        .inside(psiClass().inheritorOf(true, BroadleafConstants.FrameworkTypes.CUSTOM_PERSISTENCE_HANDLER))
 
         )
     }

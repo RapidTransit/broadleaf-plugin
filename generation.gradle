@@ -49,6 +49,7 @@ import org.broadleafcommerce.core.workflow.ProcessContextFactory
 import org.broadleafcommerce.core.workflow.Processor
 import org.broadleafcommerce.openadmin.dto.FieldMetadata
 import org.broadleafcommerce.openadmin.server.service.handler.CustomPersistenceHandler
+import org.broadleafcommerce.openadmin.server.service.handler.CustomPersistenceHandlerAdapter
 import org.broadleafcommerce.openadmin.server.service.persistence.module.provider.FieldPersistenceProvider
 import org.broadleafcommerce.openadmin.web.controller.entity.AdminBasicEntityController
 import org.broadleafcommerce.openadmin.web.form.component.ListGrid
@@ -170,6 +171,8 @@ task GenerateConstants {
          ExtensionHandler,
          ExtensionManager,
          BroadleafApplicationListener,
+         CustomPersistenceHandler,
+         CustomPersistenceHandlerAdapter,
          CurrentOrderPaymentRequestService,
          CustomerPaymentGatewayService,
          FailureCountExposable,
@@ -202,7 +205,7 @@ task GenerateConstants {
          Processor,
          ProcessContext,
          ProcessContextFactory,
-         AdminMainEntity, Money, CustomPersistenceHandler, FieldPersistenceProvider, PersistenceModule ]
+         AdminMainEntity, Money, FieldPersistenceProvider, PersistenceModule ]
                 .each {
             sb.repeat(2).append("""val ${CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, it.simpleName)} = "${it.name}" """).append('\n')
         }

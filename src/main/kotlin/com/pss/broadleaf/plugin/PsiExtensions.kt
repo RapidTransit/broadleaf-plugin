@@ -1,12 +1,15 @@
 package com.pss.broadleaf.plugin
 
 import com.intellij.codeInsight.AnnotationUtil
+import com.intellij.openapi.util.Condition
 import com.intellij.psi.*
 import com.intellij.psi.search.searches.ClassInheritorsSearch
 import com.intellij.psi.util.InheritanceUtil
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.PsiTypesUtil
 import com.siyeh.ig.psiutils.CollectionUtils
 import com.siyeh.ig.psiutils.TypeUtils
+import org.jetbrains.uast.getUastParentOfType
 import javax.lang.model.element.TypeElement
 
 /**
@@ -139,6 +142,12 @@ fun PsiClass.isEntity(): Boolean {
     return BroadleafPsiUtils.containsAnnotation(this, BroadleafConstants.JpaAnnotations.Entity.CLASS_NAME)
 }
 
+fun PsiClass.getInheritorsWithThis(): MutableCollection<PsiClass> {
+    val result = ClassInheritorsSearch.search(this).findAll()
+    result.add(this)
+    return result
+}
+
 fun PsiClass.getAllFieldsOfType(): List<PsiField> {
     if(this.isInterface){
         return ClassInheritorsSearch.search(this).findAll().filter { !it.isInterface }
@@ -180,4 +189,12 @@ fun PsiType.getFields(name: String): Collection<PsiField> {
     return this.findAllConcreteTypes().flatMap { it.fields.asList() }.filter { it.name == name }
 }
 
+
+fun <T:  PsiElement>PsiElement.findParent(type: Class<out T>): T? {
+    return PsiTreeUtil.getParentOfType(this, type)
+}
+
+fun PsiElement.findParent(filter: Condition<PsiElement>): PsiElement? {
+    return PsiTreeUtil.findFirstParent(this, filter)
+}
 

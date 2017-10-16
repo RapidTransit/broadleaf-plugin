@@ -3,6 +3,7 @@ package com.pss.broadleaf.plugin.tool.window
 import com.intellij.codeInsight.navigation.ClassImplementationsSearch
 import com.intellij.codeInsight.navigation.MethodImplementationsSearch
 import com.intellij.ide.scopeView.nodes.ClassNode
+import com.intellij.ide.scopeView.nodes.FieldNode
 
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
@@ -22,6 +23,9 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.GlobalSearchScopeUtil
 import com.intellij.psi.search.searches.AnnotationTargetsSearch
 import com.intellij.psi.search.searches.ClassInheritorsSearch
+import com.intellij.psi.util.PsiTypesUtil
+import com.intellij.spring.model.utils.PsiTypeUtil
+import com.intellij.spring.model.utils.PsiTypeUtilImpl
 import com.intellij.ui.TabbedPane
 import com.intellij.ui.components.JBTabbedPane
 import com.intellij.ui.content.ContentFactory
@@ -30,6 +34,7 @@ import com.intellij.ui.treeStructure.Tree
 import com.pss.broadleaf.plugin.BroadleafConstants.FrameworkTypes
 import org.broadleafcommerce.common.extension.ExtensionManager
 import javax.swing.JPanel
+import javax.swing.JScrollPane
 import javax.swing.JTabbedPane
 import javax.swing.JTree
 import javax.swing.tree.DefaultMutableTreeNode
@@ -40,6 +45,7 @@ class BroadleafToolWindowFactory : ToolWindowFactory {
     lateinit var panel: JPanel
     lateinit var tabpane: JBTabbedPane
     lateinit var extensionManagersTree: Tree
+    lateinit var enumerations: Tree
     lateinit var toolWindow: ToolWindow
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
@@ -47,6 +53,8 @@ class BroadleafToolWindowFactory : ToolWindowFactory {
         this.toolWindow = toolWindow;
         val root = extensionManagersTree.model.root as DefaultMutableTreeNode
         root.removeAllChildren()
+        val enumRoot = enumerations.model.root as DefaultMutableTreeNode
+        enumRoot.removeAllChildren()
         val factory = ContentFactory.SERVICE.getInstance()
         val scope = GlobalSearchScope.allScope(project);
         val service = DumbServiceImpl.getInstance(project)
@@ -81,8 +89,32 @@ class BroadleafToolWindowFactory : ToolWindowFactory {
                 })
             }
             psiFacade.findClass(FrameworkTypes.BROADLEAF_ENUMERATION_TYPE, scope)?.let {
-                ClassInheritorsSearch.search(it, scope, false).findAll().forEach {
+                val type = PsiTypesUtil.getClassType(it)
+                val model = enumerations.model as DefaultTreeModel
+                ClassInheritorsSearch.search(it, scope, false).findAll().sortedBy { it.name }.forEach {
+                    val fields = mutableListOf<PsiField>()
+                    it.fields.filter {
+                        it.hasModifierProperty(PsiModifier.PUBLIC) && it.hasModifierProperty(PsiModifier.STATIC) && type.isAssignableFrom(it.type)
+                    }.toCollection(fields)
+                    ClassInheritorsSearch.search(it).findAll().forEach {
+                        it.fields.filter { it.hasModifierProperty(PsiModifier.PUBLIC) && it.hasModifierProperty(PsiModifier.STATIC) && type.isAssignableFrom(it.type) }.toCollection(fields)
+                    }
+                    val top = DefaultMutableTreeNode(it.name)
+                    fields.sortedBy { it.name }.forEach {
+                        top.add(FieldNode(it))
+                    }
+                    model.insertNodeInto(top, enumRoot, enumRoot.childCount)
 
+
+                }
+                model.reload(enumRoot)
+            }
+            enumerations.addTreeSelectionListener {
+                val source = enumerations.lastSelectedPathComponent
+                if(source is FieldNode){
+                    source.psiElement?.let{
+                        OpenFileDescriptor(project, it.navigationElement.containingFile.virtualFile).navigate(true)
+                    }
                 }
             }
             val content = factory.createContent(panel, "", false)
