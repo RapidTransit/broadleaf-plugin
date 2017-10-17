@@ -1,22 +1,15 @@
 package com.pss.broadleaf.plugin.reference
 
-import com.intellij.patterns.PsiElementPattern
 import com.intellij.patterns.PsiJavaPatterns.*
 import com.intellij.patterns.PsiMethodPattern
 import com.intellij.psi.*
 import com.intellij.psi.search.searches.ClassInheritorsSearch
-import com.intellij.psi.stubsHierarchy.ClassHierarchy
-import com.intellij.psi.util.PsiMethodUtil
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.PsiUtil
-import com.intellij.spring.model.utils.PsiTypeUtil
+import com.intellij.psi.search.searches.MethodReferencesSearch
+import com.intellij.psi.util.*
 import com.intellij.util.ProcessingContext
-import com.intellij.util.containers.isNullOrEmpty
-import com.pss.broadleaf.plugin.BroadleafConstants
-import com.pss.broadleaf.plugin.findParent
-import com.pss.broadleaf.plugin.getInheritorsWithThis
-import com.siyeh.ig.psiutils.CollectionUtils
-import org.jetbrains.uast.getUastParentOfType
+import com.pss.broadleaf.plugin.BroadleafConstants.FrameworkTypes
+import com.pss.broadleaf.plugin.*
+import com.siyeh.ig.psiutils.TypeUtils
 
 class CustomPersistenceHandlerContributor : PsiReferenceContributor(){
 
@@ -25,17 +18,26 @@ class CustomPersistenceHandlerContributor : PsiReferenceContributor(){
 
         val MATCHER = psiElement()
                 .methodCallParameter(psiMethod().withName("get").definedInClass("java.util.Map"))
-                .inside(psiClass().inheritorOf(true, BroadleafConstants.FrameworkTypes.CUSTOM_PERSISTENCE_HANDLER))
+                .inside(psiClass().inheritorOf(true, FrameworkTypes.CUSTOM_PERSISTENCE_HANDLER))
         val TRY_INFER_TYPE = psiMethod()
                 .withName("canHandleAdd")
 
         val HAS_COMMENT = Regex("@type")
-        val METHOD_MATCH = mutableMapOf<String, PsiMethodPattern>(
-                Pair("add", psiMethod().withName("canHandleAdd")),
-                Pair("remove", psiMethod().withName("canHandleRemove")),
-                Pair("inspect", psiMethod().withName("canHandleInspect")),
-                Pair("update", psiMethod().withName("canHandleUpdate"))
+        val CAN_HANDLE_METHOD_MATCH = mutableMapOf<String, PsiMethodPattern>(
+                Pair("add", psiMethod().withName("canHandleAdd").withParameters(FrameworkTypes.PERSISTENCE_PACKAGE)),
+                Pair("remove", psiMethod().withName("canHandleRemove").withParameters(FrameworkTypes.PERSISTENCE_PACKAGE)),
+                Pair("inspect", psiMethod().withName("canHandleInspect").withParameters(FrameworkTypes.PERSISTENCE_PACKAGE)),
+                Pair("update", psiMethod().withName("canHandleUpdate").withParameters(FrameworkTypes.PERSISTENCE_PACKAGE))
         )
+        val FIELD_MATCHER = psiField().withoutModifiers(PsiModifier.STATIC)
+        val HANDLER_METHODS_MATCH = or(
+                psiMethod().withName("inspect").withParameters(FrameworkTypes.PERSISTENCE_PACKAGE, FrameworkTypes.DYNAMIC_ENTITY_DAO, FrameworkTypes.INSPECT_HELPER),
+                psiMethod().withName("fetch").withParameters(FrameworkTypes.PERSISTENCE_PACKAGE, FrameworkTypes.CRITERIA_TRANSFER_OBJECT, FrameworkTypes.DYNAMIC_ENTITY_DAO, FrameworkTypes.RECORD_HELPER),
+                psiMethod().withName("add").withParameters(FrameworkTypes.PERSISTENCE_PACKAGE, FrameworkTypes.DYNAMIC_ENTITY_DAO, FrameworkTypes.RECORD_HELPER),
+                psiMethod().withName("remove").withParameters(FrameworkTypes.PERSISTENCE_PACKAGE, FrameworkTypes.DYNAMIC_ENTITY_DAO, FrameworkTypes.RECORD_HELPER),
+                psiMethod().withName("update").withParameters(FrameworkTypes.PERSISTENCE_PACKAGE, FrameworkTypes.DYNAMIC_ENTITY_DAO, FrameworkTypes.RECORD_HELPER)
+        )
+
         val PARSE_COMMENT = Regex("//\\s*@type\\s*=\\s*(.+)").toPattern()
     }
 
@@ -43,54 +45,12 @@ class CustomPersistenceHandlerContributor : PsiReferenceContributor(){
         registrar.registerReferenceProvider(MATCHER, PersistenceProvider())
     }
 
-    class MethodVisitor : JavaElementVisitor(){
-        var result: PsiClass? = null
-        override fun visitMethod(method: PsiMethod?) {
-            if(method != null && TRY_INFER_TYPE.accepts(method)){
-                val found = PsiTreeUtil.findChildrenOfType(method, PsiMethodCallExpression::class.java)
-                  if(found.isNotEmpty()){
-                      val filtered = found.filter {
-                          it.firstChild is PsiReferenceExpression &&
-                              (it.firstChild as PsiReferenceExpression).qualifiedName == "isAssignableFrom" }
-                      if(!(filtered.size > 1 || filtered.isEmpty())){
-                          filtered.first().let {
-                              if(it.argumentList.expressions.size == 2){
-                                  val secondArgument = it.argumentList.expressions[1]
-                                  if(secondArgument is PsiClassObjectAccessExpression){
-                                      val type = secondArgument.operand
-                                      this.result = PsiUtil.resolveClassInClassTypeOnly(type.type.deepComponentType)
-                                  }
-                              }
-                          }
-                      }
-                  }
-            }
-        }
-    }
+
 
 
     class PersistenceProvider : PsiReferenceProvider(){
         override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
-            if(element is PsiLiteralExpression){
-                element.findParent(PsiMethod::class.java)?.let { method->
-                    if(METHOD_MATCH.containsKey(method.name)) {
-                        METHOD_MATCH.getValue(method.name)?.let { methodPattern ->
-                            element.findParent(PsiClass::class.java)?.let { containingClass ->
-                                containingClass.methods.find { methodPattern.accepts(it) }?.let {
-
-                                }
-                            }
-                        }
-                    }
-
-                }
-                element.findParent(PsiClass::class.java)?.let {
-                    val visitor = MethodVisitor()
-                    it.acceptChildren(visitor)
-                    visitor.result?.let {
-                        return@getReferencesByElement it.getInheritorsWithThis().map { References(it, element) }.toTypedArray()
-                    }
-                }
+            if(element is PsiLiteralExpression && isFieldMetadataMap(element)){
                 getComment(element)?.let {
                     val parsed = PARSE_COMMENT.matcher(it.text)
 
@@ -103,8 +63,92 @@ class CustomPersistenceHandlerContributor : PsiReferenceContributor(){
                         }
                     }
                 }
+                element.findParent(PsiMethod::class.java)?.let { method->
+                    if(CAN_HANDLE_METHOD_MATCH.containsKey(method.name)) {
+                        CAN_HANDLE_METHOD_MATCH.getValue(method.name)?.let { methodPattern ->
+                            element.findParent(PsiClass::class.java)?.let { containingClass ->
+                                containingClass.methods.find { methodPattern.accepts(it) }?.let {
+                                    tryToGetType(it)?.let {
+                                        return@getReferencesByElement it.getInheritorsWithThis().map { References(it, element) }.toTypedArray()
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        val reference = MethodReferencesSearch.search(method).findAll()
+                        if(reference.isEmpty()){
+
+                        } else {
+                            element.findParent(PsiClass::class.java)?.let { type ->
+                                val methods = reference.mapNotNull { it.element.findParent(PsiMethod::class.java) }
+                                        .filter { it.containingClass ==  type}
+                                        .filter { HANDLER_METHODS_MATCH.accepts(it) }
+                                if(methods.size == 1){
+                                    methods.first().let {
+                                        it.containingClass?.findMethodsByName("canHandle${it.name.first().toUpperCase()}${it.name.substring(1)}", false)?.let {
+                                            if(it.size == 1){
+                                                tryToGetType(it.first())?.let {
+                                                    return@getReferencesByElement it.getInheritorsWithThis().map { References(it, element) }.toTypedArray()
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+
+                }
+
             }
             return PsiReference.EMPTY_ARRAY
+        }
+
+        private fun tryToGetType(method: PsiMethod): PsiClass? {
+            val found = PsiTreeUtil.findChildrenOfType(method, PsiMethodCallExpression::class.java)
+            if (found.isNotEmpty()) {
+                val filtered = found.filter {
+                    it.firstChild is PsiReferenceExpression &&
+                            (it.firstChild as PsiReferenceExpression).qualifiedName == "isAssignableFrom"
+                }
+                if (!(filtered.size > 1 || filtered.isEmpty())) {
+                    filtered.first().let {
+                        if (it.argumentList.expressions.size == 2) {
+                            val secondArgument = it.argumentList.expressions[1]
+                            if (secondArgument is PsiClassObjectAccessExpression) {
+                                val type = secondArgument.operand
+                                return@tryToGetType PsiUtil.resolveClassInClassTypeOnly(type.type.deepComponentType)
+                            }
+                        }
+                    }
+                }
+            }
+            return null
+        }
+
+        private fun isFieldMetadataMap(element: PsiLiteralExpression): Boolean {
+            element.findParent(PsiMethodCallExpression::class.java)?.let { methodCallExpression ->
+                val psiReferenceExpression = methodCallExpression.firstChild
+                if (psiReferenceExpression is PsiReferenceExpression) {
+                    val psiFacade = element.javaPsiFacade()
+                    val mapPsiClass = psiFacade.findClass(CommonClassNames.JAVA_UTIL_MAP, element.resolveScope)
+                    val stringPsiType = TypeUtils.getType(CommonClassNames.JAVA_LANG_STRING, element)
+                    val fieldMetadataPsiType = TypeUtils.getType(BroadleafConstants.FrameworkTypes.FIELD_METADATA, element)
+                    mapPsiClass?.typeParameters?.let { typeParams ->
+                        val javaResolveResult = psiReferenceExpression.advancedResolve(false)
+                        val substitutor = javaResolveResult.substitutor
+                        val key = substitutor.substitute(typeParams.first())
+                        val value = substitutor.substitute(typeParams.second())
+                        if (key?.isAssignableFrom(stringPsiType) == true && value?.isAssignableFrom(fieldMetadataPsiType) == true) {
+                            return@isFieldMetadataMap true
+                        }
+                    }
+
+
+                }
+            }
+            return false
         }
 
         @Suppress("SENSELESS_COMPARISON")
@@ -144,7 +188,7 @@ class CustomPersistenceHandlerContributor : PsiReferenceContributor(){
         }
 
         override fun getVariants(): Array<Any> {
-            return context.allFields.map {it.name}.toTypedArray() as Array<Any>
+            return context.allFields.filter { FIELD_MATCHER.accepts(it) }.map {it.name}.toTypedArray() as Array<Any>
         }
     }
 

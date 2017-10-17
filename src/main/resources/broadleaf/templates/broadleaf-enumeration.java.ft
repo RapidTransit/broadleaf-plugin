@@ -1,0 +1,62 @@
+package ${PACKAGE_NAME};
+
+import org.broadleafcommerce.common.BroadleafEnumerationType;
+import org.broadleafcommerce.core.catalog.service.type.ProductType;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+public class ${NAME} implements BroadleafEnumerationType, Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private final static Map<String, ${NAME}> TYPES = new HashMap<>();
+
+    public static ${NAME} getInstance(String type) {
+        return TYPES.get(type);
+    }
+
+    private String friendlyType;
+    private String type;
+
+    public ${NAME}() {
+    }
+
+    public ${NAME}(String type, String friendlyType) {
+        this.friendlyType = friendlyType;
+        this.setType(type);
+    }
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    @Override
+    public String getFriendlyType() {
+        return friendlyType;
+    }
+    private void setType(String type) {
+        this.type = type;
+        if (!TYPES.containsKey(type)) {
+            TYPES.put(type, this);
+        }
+
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ${NAME} that = (${NAME}) o;
+
+        return type != null ? type.equals(that.type) : that.type == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return type != null ? type.hashCode() : 0;
+    }
+}

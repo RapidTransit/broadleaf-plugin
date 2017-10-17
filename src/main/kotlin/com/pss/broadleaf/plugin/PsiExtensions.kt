@@ -194,7 +194,16 @@ fun <T:  PsiElement>PsiElement.findParent(type: Class<out T>): T? {
     return PsiTreeUtil.getParentOfType(this, type)
 }
 
+fun PsiElement.javaPsiFacade(): JavaPsiFacade {
+    return JavaPsiFacade.getInstance(this.project)
+}
+
 fun PsiElement.findParent(filter: Condition<PsiElement>): PsiElement? {
     return PsiTreeUtil.findFirstParent(this, filter)
 }
 
+public fun <T> Array<out T>.second(): T {
+    if (isEmpty())
+        throw NoSuchElementException("Array is empty.")
+    return this[1]
+}

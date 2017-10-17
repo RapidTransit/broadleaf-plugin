@@ -47,8 +47,10 @@ import org.broadleafcommerce.core.workflow.Activity
 import org.broadleafcommerce.core.workflow.ProcessContext
 import org.broadleafcommerce.core.workflow.ProcessContextFactory
 import org.broadleafcommerce.core.workflow.Processor
+import org.broadleafcommerce.openadmin.dto.CriteriaTransferObject
 import org.broadleafcommerce.openadmin.dto.FieldMetadata
 import org.broadleafcommerce.openadmin.dto.PersistencePackage
+import org.broadleafcommerce.openadmin.server.dao.DynamicEntityDao
 import org.broadleafcommerce.openadmin.server.service.handler.CustomPersistenceHandler
 import org.broadleafcommerce.openadmin.server.service.handler.CustomPersistenceHandlerAdapter
 import org.broadleafcommerce.openadmin.server.service.persistence.module.provider.FieldPersistenceProvider
@@ -184,7 +186,8 @@ task GenerateConstants {
          PaymentGatewayCreditCardService,
          PaymentGatewayCustomerService,
          PaymentGatewayFraudService,
-         PersistencePackage,
+
+         FieldMetadata,
          PaymentGatewayHostedService,
          PaymentGatewayReportingService,
          PaymentGatewayResolver,
@@ -205,7 +208,12 @@ task GenerateConstants {
          ThreadLocalManager,
          Activity,
          Processor,
+         DynamicEntityDao,
+         RecordHelper,
+         CriteriaTransferObject,
+         InspectHelper,
          ProcessContext,
+         PersistencePackage,
          ProcessContextFactory,
          AdminMainEntity, Money, FieldPersistenceProvider, PersistenceModule ]
                 .each {

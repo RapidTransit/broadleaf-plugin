@@ -81,7 +81,8 @@ intellij {
      version '2017.2'
     // I think I need IU to import Thymeleaf Support and Spring
     type = 'IU'
-    plugins = ['thymeleaf', 'Spring', 'PersistenceSupport', 'Hibernate', 'JavaEE']
+    // $#&#*@ Thymeleaf Needs All THis Crap
+    plugins = ['thymeleaf', 'JavaScriptLanguage', 'CSS','Spring', 'PersistenceSupport', 'Hibernate', 'JavaEE', 'java-i18n', 'properties', 'DatabaseTools', 'jsp']
 }
 
 // Copies Test Dependencies to /lib

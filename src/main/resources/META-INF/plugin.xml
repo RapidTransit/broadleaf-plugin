@@ -10,9 +10,9 @@
   <depends>com.intellij.modules.lang</depends>
   <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.modules.java</depends>
-  <depends>com.intellij.thymeleaf</depends>
-  <depends>com.intellij.modules.ultimate</depends>
-  <depends>com.intellij.spring</depends>
+  <depends optional="true" >com.intellij.thymeleaf</depends>
+  <!--<depends>com.intellij.modules.ultimate</depends>-->
+  <!--<depends>com.intellij.spring</depends>-->
   <change-notes><![CDATA[
       Add change notes here.<br>
       <em>most HTML tags may be used</em>
@@ -39,6 +39,7 @@
     <thymeleaf.dialect implementation="com.pss.broadleaf.plugin.html.BroadleafSiteDialect" />
     <thymeleaf.dialect implementation="com.pss.broadleaf.plugin.html.BroadleafAdminDialect" />
     <thymeleaf.context.variables implementation="com.pss.broadleaf.plugin.html.BroadleafAdminContextVariablesProvider" />
+    <fileTemplateGroup implementation="com.pss.broadleaf.plugin.templates.BroadleafTemplateGroup" />
   </extensions>
 
   <actions>
