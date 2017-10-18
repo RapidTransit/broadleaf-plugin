@@ -23,11 +23,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 @Entity
-public class AdornedReference {
+public class AdornedReferenceMaintained {
 
     protected Long id;
 
-    @AdminPresentationAdornedTargetCollection(targetObjectProperty="bas<caret>")
+    @AdminPresentationAdornedTargetCollection(targetObjectProperty="basicEntity", maintainedAdornedTargetFields = {"da<caret>"})
     protected List<AdornedEntity> adornedEntity;
 
 }
@@ -36,11 +36,13 @@ public class AdornedReference {
 class AdornedEntity{
     protected Long id;
     protected BasicEntity basicEntity;
-    protected AdornedReference adornedReference;
+    protected AdornedReferenceTarget adornedReference;
+    protected Date date;
 
 }
 
 @Entity
 class BasicEntity {
-
+    protected String name;
+    protected String description;
 }

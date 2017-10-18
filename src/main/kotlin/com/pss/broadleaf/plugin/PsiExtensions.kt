@@ -9,9 +9,10 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.PsiTypesUtil
 import com.siyeh.ig.psiutils.CollectionUtils
 import com.siyeh.ig.psiutils.TypeUtils
+
 import org.jetbrains.uast.getUastParentOfType
 import javax.lang.model.element.TypeElement
-
+import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.AdminPresentationClass
 /**
  * Element Types
  */
@@ -123,6 +124,18 @@ fun PsiClass.isAssignable(fqn: String, type: PsiType): Boolean {
     return false
 }
 
+fun PsiClass.isPopulateToOne(): Boolean {
+    return AnnotationUtil.findAnnotation(this, AdminPresentationClass.CLASS_NAME_SET)?.findDeclaredAttributeValue(AdminPresentationClass.POPULATE_TO_ONE_FIELDS)?.let {
+        if(it is PsiReferenceExpression ){
+            it.referenceName?.let {
+                if(it == BroadleafConstants.EnumTypes.PopulateToOneFieldsEnum.TRUE){
+                    return true
+                }
+            }
+        }
+        return false
+    }?: false
+}
 
 fun PsiClass.isAnnotated(annotationFQN: Set<String>): Boolean {
     return annotationFQN.any { AnnotationUtil.isAnnotated(this, it, false, true) }

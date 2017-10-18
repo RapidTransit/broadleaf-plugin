@@ -28,7 +28,7 @@ public class Examples extends CustomPersistenceHandlerAdapter {
 
     @AdminPresentation(fieldType = ADDITIONAL_FOREIGN_KEY)
 
-    @AdminPresentationAdornedTargetCollection(targetObjectProperty = "a")
+    @AdminPresentationAdornedTargetCollection(gridVisibleFields = {"a", "b"})
     @AdminPresentationMap()
     @OneToMany(targetEntity = CategoryProductXrefImpl.class)
     protected List<CategoryProductXref> xrefs = new ArrayList<>();

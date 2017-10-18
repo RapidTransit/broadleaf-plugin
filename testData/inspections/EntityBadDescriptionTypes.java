@@ -94,7 +94,7 @@ public class EntityBadDescriptionTypes {
     @AdminPresentation(fieldType=SupportedFieldType.DESCRIPTION)
     protected <warning descr="admin.presentation.supported-field-type.DESCRIPTION.type">Boolean</warning> s23;
 
-    @Type
+    @Type(type = "StringClobType")
     @Lob
     @AdminPresentation(fieldType=SupportedFieldType.DESCRIPTION)
     protected String s50;

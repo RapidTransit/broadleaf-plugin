@@ -74,17 +74,4 @@ class InspectionsTest : LightInspectionTestCase() {
         return Descriptor()
     }
 
-    class Descriptor : LightProjectDescriptor(){
-        override fun getSdk(): Sdk? {
-            return JavaAwareProjectJdkTableImpl.getInstanceEx().internalJdk
-        }
-
-        override fun configureModule(module: Module, model: ModifiableRootModel, contentEntry: ContentEntry) {
-            model.getModuleExtension(LanguageLevelModuleExtension::class.java).setLanguageLevel(LanguageLevel.JDK_1_8)
-            val lib = PathUtil.toSystemIndependentName(File("lib").absoluteFile.path);
-            VfsRootAccess.allowRootAccess(lib);
-            PsiTestUtil.addLibrary(module, model, "broadleaf-common", lib + '/', "broadleaf-common-5.2.0-GA.jar")
-            PsiTestUtil.addLibrary(module, model, "hibernate-jpa-2.0-api", lib, "hibernate-jpa-2.0-api-1.0.1.Final.jar")
-        }
-    }
 }

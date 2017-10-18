@@ -66,7 +66,7 @@ dependencies {
     internalTestLib group: 'org.hibernate', name: 'hibernate-core', version: '4.1.11.Final'
     internalTestLib group: 'org.broadleafcommerce', name: 'broadleaf-common', version: blc
     internalTestLib group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.0-api', version: '1.0.1.Final'
-
+    testCompile group: 'org.assertj', name: 'assertj-core', version: '3.8.0'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
 }
 
@@ -78,9 +78,12 @@ compileTestKotlin {
 }
 
 intellij {
+    pluginName = 'broadleaf-plugin'
      version '2017.2'
     // I think I need IU to import Thymeleaf Support and Spring
     type = 'IU'
+
+    instrumentCode = false
     // $#&#*@ Thymeleaf Needs All THis Crap
     plugins = ['thymeleaf', 'JavaScriptLanguage', 'CSS','Spring', 'PersistenceSupport', 'Hibernate', 'JavaEE', 'java-i18n', 'properties', 'DatabaseTools', 'jsp']
 }
@@ -90,3 +93,4 @@ task copyTestDependencies(type: Copy){
     from configurations.internalTestLib
     into "${project.projectDir}/lib"
 }
+

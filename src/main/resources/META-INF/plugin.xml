@@ -32,7 +32,7 @@
     <completion.confidence language="JAVA" implementationClass="com.pss.broadleaf.plugin.completion.AnnotationCompletionConfidence" id="annotationCompletion" order="before javaSkipAutopopupInStrings" />
     <xml.xmlExtension implementation="com.pss.broadleaf.plugin.html.ThymeleafExtraNS" order="first"/>
     <inspectionToolProvider implementation="com.pss.broadleaf.plugin.inspections.BroadleafInspectionProvider"/>
-    <psi.referenceContributor language="JAVA" implementation="com.pss.broadleaf.plugin.reference.AdornedReferenceContributor" />
+    <psi.referenceContributor language="JAVA" implementation="com.pss.broadleaf.plugin.reference.AdornedReferenceContributor"  />
     <psi.referenceContributor language="JAVA" implementation="com.pss.broadleaf.plugin.reference.CustomPersistenceHandlerContributor" />
     <toolWindow id="Broadleaf" secondary="true" icon="/broadleaf/icon.png" anchor="right"
                 factoryClass="com.pss.broadleaf.plugin.tool.window.BroadleafToolWindowFactory"/>
