@@ -1,12 +1,55 @@
 package com.pss.broadleaf.plugin
 
 import com.intellij.codeInsight.AnnotationUtil
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.*
 import com.intellij.psi.search.searches.ClassInheritorsSearch
 import com.intellij.psi.util.PsiTypesUtil
+import com.siyeh.ig.psiutils.CollectionUtils
+import org.funktionale.pipe.pipe10
 
 object BroadleafPsiUtils {
 
+
+    //Todo: Try to make this work with inspections and Reference Providers
+    fun navigatePath(
+            literalExpression: PsiLiteralExpression,
+            func: (propertyPath: String, segmentPrefix: List<String>, lastSegment: String, psiField: PsiField, type: PsiClass, concrete: List<PsiClass>) -> Unit) {
+
+        val propertyPath = literalExpression.value as String?
+        val pathSegments = if (propertyPath == null)  mutableListOf<String>() else StringUtil.split(propertyPath, ".")
+        val psiField = literalExpression.getField()
+        if(pathSegments.isNotEmpty() && psiField != null && propertyPath != null){
+            psiField.getClassTypeOrComponentClassType()?.let {
+                val segmentPrefix: List<String>
+                val lastSegment: String
+                if(pathSegments.size == 1){
+                    segmentPrefix = emptyList()
+                    lastSegment = pathSegments.first()
+                } else {
+                    segmentPrefix = pathSegments.dropLast(1)
+                    lastSegment = pathSegments.last()
+                }
+                if(it is PsiClassType){
+                    it.resolve()?.let {
+                        val findConcrete = findConcrete(it)
+                        func(propertyPath, segmentPrefix, lastSegment, psiField, it, findConcrete)
+                    }
+                }
+            }
+        }
+    }
+
+
+
+    fun findConcrete(clazz: PsiClass): List<PsiClass> {
+        ClassInheritorsSearch.search(clazz).findAll().filter { !it.isInterface }.let{
+            if(!clazz.isInterface){
+                return it.plus(clazz)
+            }
+            return it
+        }
+    }
 
     fun parentOfType(element: PsiElement): PsiField? {
         if(element is PsiField){

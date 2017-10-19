@@ -11,7 +11,7 @@ class TargetObjectPropertyReferenceProvider : BaseFieldReferenceProvider(){
                 if(parameter is PsiClassType){
                     val paramaterClass = parameter.resolve()
                     if(paramaterClass != null){
-                        return findConcrete(paramaterClass).map { References(it, element as PsiLiteralExpression) }.toTypedArray()
+                        return findConcrete(paramaterClass).map { References(it, element as PsiLiteralExpression, element.value as String) }.toTypedArray()
                     }
                 }
             }

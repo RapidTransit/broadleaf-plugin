@@ -13,7 +13,7 @@ class MaintainedAdornedTargetFieldsReferenceProvider : BaseFieldReferenceProvide
                val parameter = type.parameters.first()
                if(parameter is PsiClassType){
                    return parameter.resolve()?.let {
-                        return findConcrete(it).map { References(it, element as PsiLiteralExpression) }.toTypedArray()
+                        return findConcrete(it).map { References(it, element as PsiLiteralExpression, element.value as String) }.toTypedArray()
                    }?: PsiReference.EMPTY_ARRAY
                }
            }

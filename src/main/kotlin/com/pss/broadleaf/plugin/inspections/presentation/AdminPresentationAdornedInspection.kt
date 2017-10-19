@@ -1,15 +1,12 @@
 package com.pss.broadleaf.plugin.inspections.presentation
 
 import com.intellij.codeInspection.ProblemsHolder
-import com.intellij.psi.PsiAnnotation
-import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiField
-import com.intellij.psi.PsiLiteralExpression
+import com.intellij.openapi.util.text.StringUtil
+import com.intellij.psi.*
 import com.intellij.util.containers.isNullOrEmpty
 import com.pss.broadleaf.plugin.*
-import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.AdminPresentationAdornedTargetCollection
+import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.AdminPresentationAdornedTargetCollection as Adorned
 import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.AdminPresentationAdornedTargetCollection.CLASS_NAME_SET
-import com.siyeh.ig.psiutils.TypeUtils
 
 class AdminPresentationAdornedInspection : PresentationAnnotationInspection(presentationAnnotation = CLASS_NAME_SET){
 
@@ -31,7 +28,7 @@ class AdminPresentationAdornedInspection : PresentationAnnotationInspection(pres
 
         val mappedByField = psiField.getMappedBy()
 
-        annotation.findDeclaredAttributeValue(AdminPresentationAdornedTargetCollection.TARGET_OBJECT_PROPERTY)?.let { memberValue ->
+        annotation.findDeclaredAttributeValue(Adorned.TARGET_OBJECT_PROPERTY)?.let { memberValue ->
             if(memberValue is PsiLiteralExpression){
                 val fields = psiField.getTargetEntity()?.getFields(memberValue.value as String)
                 if(fields.isNullOrEmpty()){
@@ -44,9 +41,65 @@ class AdminPresentationAdornedInspection : PresentationAnnotationInspection(pres
 
             }
         }
+        val adorned = psiField.getAdornedPsiClasses()
+//        annotation.findDeclaredAttributeValue(Adorned.MAINTAINED_ADORNED_TARGET_FIELDS)?.let { memberValue ->
+//            when(memberValue){
+//                is PsiLiteralExpression -> handleLiteral(memberValue, psiField, adorned, holder)
+//                is PsiReferenceExpression -> handleReference(memberValue, psiField, adorned, holder)
+//                is PsiArrayInitializerMemberValue -> handleArray(memberValue, psiField, adorned, holder)
+//            }
+//        }
 
-
+        annotation.findDeclaredAttributeValue(Adorned.GRID_VISIBLE_FIELDS)?.let { memberValue ->
+            when(memberValue){
+                is PsiLiteralExpression -> handleLiteral(memberValue, psiField, adorned, holder)
+                is PsiReferenceExpression -> handleReference(memberValue, psiField, adorned, holder)
+                is PsiArrayInitializerMemberValue -> handleArray(memberValue, psiField, adorned, holder)
+            }
+        }
 
 
     }
+
+    fun handle(value: String, element: PsiElement, field: PsiField, adorned: List<PsiClass>, holder: ProblemsHolder){
+        val split = StringUtil.split(value, ".")
+        var copy = adorned
+        for((idx, part) in split.withIndex()){
+            copy = copy.reduceFields(part)
+            if(copy.isEmpty()){
+                registerProblem(holder, element, "admin.adorned.target-object-property.not-managed")
+            }
+            if(split.size == (idx + 1)){
+                field.resolveScope
+                if(copy.all { it.isEntity() }){
+                    registerProblem(holder, element, "admin.adorned.target-object-property.not-managed")
+                }
+            }
+
+        }
+    }
+
+    fun handleLiteral(literalValue: PsiLiteralExpression, field: PsiField, adorned: List<PsiClass>, holder: ProblemsHolder){
+        val value = literalValue.value
+        if(value is String){
+            handle(value, literalValue, field, adorned, holder)
+        }
+    }
+
+    fun handleReference(referenceExpression: PsiReferenceExpression, field: PsiField, adorned: List<PsiClass>, holder: ProblemsHolder){
+        val value = JavaPsiFacade.getInstance(referenceExpression.project).getConstantEvaluationHelper().computeConstantExpression(referenceExpression)
+        if(value is String){
+            handle(value, referenceExpression, field, adorned, holder)
+        }
+    }
+
+    fun handleArray(arrayInitializerMemberValue: PsiArrayInitializerMemberValue, field: PsiField, adorned: List<PsiClass>, holder: ProblemsHolder){
+        arrayInitializerMemberValue.initializers.forEach { memberValue ->
+            when(memberValue){
+                is PsiLiteralExpression -> handleLiteral(memberValue, field, adorned, holder)
+                is PsiReferenceExpression -> handleReference(memberValue, field, adorned, holder)
+            }
+        }
+    }
+
 }

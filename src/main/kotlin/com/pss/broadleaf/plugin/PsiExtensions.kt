@@ -2,8 +2,12 @@ package com.pss.broadleaf.plugin
 
 import com.intellij.codeInsight.AnnotationUtil
 import com.intellij.openapi.util.Condition
+import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.*
+import com.intellij.psi.impl.PsiManagerEx
 import com.intellij.psi.search.searches.ClassInheritorsSearch
+import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.InheritanceUtil
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.PsiTypesUtil
@@ -13,17 +17,26 @@ import com.siyeh.ig.psiutils.TypeUtils
 import org.jetbrains.uast.getUastParentOfType
 import javax.lang.model.element.TypeElement
 import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.AdminPresentationClass
+import com.pss.broadleaf.plugin.BroadleafPsiUtils.findConcrete
+import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.AdminPresentationAdornedTargetCollection as Adorned
+import org.jetbrains.uast.java.annotations
+
+
+
+val getField = Key<Boolean>("getField")
 /**
  * Element Types
  */
 fun PsiElement.getField(): PsiField?  = BroadleafPsiUtils.getField(this)
 
 
-
+val isCollectionType = Key<Boolean>("isCollectionType")
 /**
  * PsiFields
  */
-fun PsiField.isCollectionType(): Boolean = CollectionUtils.isCollectionClassOrInterface(this.type)
+fun PsiField.isCollectionType(): Boolean {
+    return this.cacheGet(com.pss.broadleaf.plugin.isCollectionType, {InheritanceUtil.isInheritor(this.type, CommonClassNames.JAVA_UTIL_COLLECTION)})
+}
 
 
 fun PsiField.isSimpleType(): Boolean {
@@ -74,7 +87,20 @@ fun PsiField.getTypeElementOrField(index: Int): PsiElement {
     return this.typeElement?.innermostComponentReferenceElement?.parameterList?.typeParameterElements?.get(index)?: this
 }
 
-
+fun PsiField.getAdornedPsiClasses(): List<PsiClass> {
+    val list = mutableListOf<PsiClass>()
+    this.getCollectionComponent()?.let {
+        val concrete = BroadleafPsiUtils.findConcrete(it)
+        list.addAll(concrete)
+        this.doWithAnnotation(Adorned.CLASS_NAME_SET, { field, annotation ->
+            AnnotationUtil.getStringAttributeValue(annotation, Adorned.TARGET_OBJECT_PROPERTY)?.let{ value->
+                concrete.mapNotNull { it.findFieldByName(value, true) }.map { it.type }.filterIsInstance(PsiClassType::class.java)
+                        .mapNotNull { it.resolve() }.flatMap { findConcrete(it) }.toCollection(list)
+            }
+        })
+    }
+    return list;
+}
 
 fun PsiField.getAnnotation(annotationFQN: Set<String>): PsiAnnotation? {
     return AnnotationUtil.findAnnotation(this, annotationFQN, true)
@@ -88,6 +114,9 @@ fun PsiField.isAnnotated(annotationFQN: Set<String>): Boolean {
     return annotationFQN.any { AnnotationUtil.isAnnotated(this, it, false, true) }
 }
 
+fun PsiField.getClassTypeOrComponentClassType(): PsiClass? {
+    return if (this.isCollectionType())  this.getCollectionComponent() else PsiTypesUtil.getPsiClass(this.type)
+}
 
 fun PsiField.getCollectionComponent(): PsiClass? {
     val type = this.type
@@ -219,4 +248,26 @@ public fun <T> Array<out T>.second(): T {
     if (isEmpty())
         throw NoSuchElementException("Array is empty.")
     return this[1]
+}
+
+
+fun List<PsiClass>.reduceFields(field: String): MutableList<PsiClass>{
+    return this.mapNotNull { it.findFieldByName(field, true) }
+            .filter { it.type is PsiClassType }
+            .mapNotNull { (it.type as PsiClassType).resolve() }
+            .flatMap { findConcrete(it) }
+            .toMutableList()
+}
+
+inline fun <T> PsiElement.cacheGet(key: Key<T>, func: ()->T): T {
+    CachedValueProvider
+    val cache = this.getUserData(key)
+    if(cache != null){
+        return cache
+    } else {
+        val value = func()
+        this.putUserData(key, value)
+        return value
+    }
+
 }

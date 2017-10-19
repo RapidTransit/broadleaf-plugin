@@ -5,6 +5,7 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url 'https://jitpack.io'}
+
         maven {
             url 'http://nexus.broadleafcommerce.org/nexus/content/groups/community-snapshots/'
         }
@@ -41,6 +42,7 @@ apply from: 'generation.gradle'
 repositories {
     mavenLocal()
     mavenCentral()
+    maven { url 'http://jcenter.bintray.com'}
     maven {
         url 'http://nexus.broadleafcommerce.org/nexus/content/groups/community-snapshots/'
     }
@@ -63,6 +65,7 @@ dependencies {
     compile group: 'org.broadleafcommerce', name: 'broadleaf-contentmanagement-module', version: blc
     compile group: 'org.broadleafcommerce', name: 'broadleaf-thymeleaf3-presentation', version: '1.0.2-GA'
     compile group: 'org.broadleafcommerce', name: 'broadleaf-admin-module', version: blc
+    compile group: 'org.funktionale', name: 'funktionale-all', version: '1.1'
     internalTestLib group: 'org.hibernate', name: 'hibernate-core', version: '4.1.11.Final'
     internalTestLib group: 'org.broadleafcommerce', name: 'broadleaf-common', version: blc
     internalTestLib group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.0-api', version: '1.0.1.Final'

@@ -4,5 +4,5 @@ import com.intellij.openapi.util.IconLoader
 import com.intellij.util.IconUtil
 
 object BroadleafIcons {
-    val BLC = IconLoader.findIcon("broadleaf/icon.png")
+    val BLC = IconLoader.getIcon("/broadleaf/icon.png", BroadleafIcons::class.java)
 }
