@@ -88,6 +88,7 @@ object BroadleafPsiUtils {
 
     fun containsAnnotation(type: PsiType, fqn: Set<String>): Boolean {
         val clazz = PsiTypesUtil.getPsiClass(type)
+
         if(clazz != null){
             if(clazz.isInterface){
                 return ClassInheritorsSearch.search(clazz, true ).findAll()

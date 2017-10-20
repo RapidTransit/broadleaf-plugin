@@ -1,5 +1,7 @@
 package com.pss.example;
 
+import com.intellij.psi.PsiIdentifier;
+import com.intellij.psi.PsiJavaCodeReferenceElement;
 import org.broadleafcommerce.common.classloader.release.ThreadLocalManager;
 import org.broadleafcommerce.common.exception.ServiceException;
 import org.broadleafcommerce.common.presentation.AdminPresentation;
@@ -7,6 +9,7 @@ import org.broadleafcommerce.common.presentation.AdminPresentationAdornedTargetC
 import static org.broadleafcommerce.common.presentation.client.SupportedFieldType.*;
 
 import org.broadleafcommerce.common.presentation.AdminPresentationMap;
+import org.broadleafcommerce.common.presentation.AdminPresentationMapKey;
 import org.broadleafcommerce.core.catalog.domain.*;
 import org.broadleafcommerce.openadmin.dto.Entity;
 import org.broadleafcommerce.openadmin.dto.FieldMetadata;
@@ -14,6 +17,7 @@ import org.broadleafcommerce.openadmin.dto.PersistencePackage;
 import org.broadleafcommerce.openadmin.server.dao.DynamicEntityDao;
 import org.broadleafcommerce.openadmin.server.service.handler.CustomPersistenceHandlerAdapter;
 import org.broadleafcommerce.openadmin.server.service.persistence.module.RecordHelper;
+import org.springframework.context.annotation.Bean;
 
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
@@ -29,7 +33,9 @@ public class Examples extends CustomPersistenceHandlerAdapter {
     @AdminPresentation(fieldType = ADDITIONAL_FOREIGN_KEY)
 
     @AdminPresentationAdornedTargetCollection(gridVisibleFields = {"a", "b"}, targetObjectProperty = "a")
-    @AdminPresentationMap()
+    @AdminPresentationMap(forceFreeFormKeys = true, keys =
+            @AdminPresentationMapKey(keyName = "A", friendlyKeyName = "a")
+    )
     @OneToMany(targetEntity = CategoryProductXrefImpl.class)
     protected List<CategoryProductXref> xrefs = new ArrayList<>();
 
@@ -43,6 +49,13 @@ public class Examples extends CustomPersistenceHandlerAdapter {
         isAssignableFrom(persistencePackage.getCeilingEntityFullyQualifiedClassname(), Sku.class) ;
         return !(!isAssignableFrom(persistencePackage.getCeilingEntityFullyQualifiedClassname(), Sku.class)&& persistencePackage.isTreeCollection())&& persistencePackage.isTreeCollection();
     }
+
+//    @Bean("")
+//    public List<Object> bean(){
+//        PsiJavaCodeReferenceElement
+//
+//
+//    }
 
     @Override
     public Entity add(PersistencePackage persistencePackage, DynamicEntityDao dynamicEntityDao, RecordHelper helper) throws ServiceException {

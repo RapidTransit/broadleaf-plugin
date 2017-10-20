@@ -1,6 +1,8 @@
 package com.pss.broadleaf.plugin.inspections
 
 import com.intellij.codeInspection.BaseJavaLocalInspectionTool
+import com.intellij.codeInspection.InspectionManager
+import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemsHolder
 
 import com.intellij.psi.*
@@ -26,6 +28,7 @@ class EntityPresentationAnnotationInspection : BaseJavaLocalInspectionTool() {
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
         return EntityPresentationVisitor(holder)
     }
+
 
     class EntityPresentationVisitor(private val holder: ProblemsHolder) : JavaElementVisitor() {
         private val inspectors : List<PresentationAnnotationInspection>

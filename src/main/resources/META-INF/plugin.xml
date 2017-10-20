@@ -34,6 +34,7 @@
     <inspectionToolProvider implementation="com.pss.broadleaf.plugin.inspections.BroadleafInspectionProvider"/>
     <psi.referenceContributor language="JAVA" implementation="com.pss.broadleaf.plugin.reference.AdornedReferenceContributor"  />
     <psi.referenceContributor language="JAVA" implementation="com.pss.broadleaf.plugin.reference.CustomPersistenceHandlerContributor" />
+    <psi.referenceContributor language="JAVA" implementation="com.pss.broadleaf.plugin.reference.BeanMergeReferenceContributor" />
     <toolWindow id="Broadleaf" secondary="true" icon="/broadleaf/icon.png" anchor="right"
                 factoryClass="com.pss.broadleaf.plugin.tool.window.BroadleafToolWindowFactory"/>
     <thymeleaf.dialect implementation="com.pss.broadleaf.plugin.html.BroadleafSiteDialect" />

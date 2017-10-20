@@ -13,6 +13,8 @@ import com.pss.broadleaf.plugin.ModuleHelper
  */
 class ThymeleafExtraNS : HtmlXmlExtension() {
 
+
+
     override fun getNamespacesFromDocument(parent: XmlDocument?, declarationsExist: Boolean): Array<Array<String>>? {
         val ns = super.getNamespacesFromDocument(parent, declarationsExist)
         if(ModuleHelper.isAdminModule(parent)){

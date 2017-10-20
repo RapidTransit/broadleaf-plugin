@@ -39,4 +39,24 @@ class BroadleafAdminContextVariablesProvider : ThymeleafContextVariablesProvider
         }
         return Collections.emptySet()
     }
+
+    fun getSiteContextVariable(element: PsiElement): MutableCollection<out PsiVariable> {
+        val psiFacade = JavaPsiFacade.getInstance(element.project)
+        val scope = element.resolveScope
+        val collection = mutableSetOf<PsiVariable>()
+        ThymeleafContextVariables.MODEL.forEach { key, value ->
+            psiFacade.findClass(value, scope)?.let {
+                val type = PsiTypesUtil.getClassType(it)
+                collection.add(ThymeleafVariable(key, type, it.navigationElement))
+            }
+        }
+        ThymeleafContextVariables.EXPRESSIONS.forEach { key, value ->
+            psiFacade.findClass(value, scope)?.let {
+                val type = PsiTypesUtil.getClassType(it)
+                collection.add(ThymeleafVariable(key, type, it.navigationElement))
+            }
+
+        }
+        return collection
+    }
 }

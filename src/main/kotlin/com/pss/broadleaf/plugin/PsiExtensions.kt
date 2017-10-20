@@ -7,10 +7,7 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.*
 import com.intellij.psi.impl.PsiManagerEx
 import com.intellij.psi.search.searches.ClassInheritorsSearch
-import com.intellij.psi.util.CachedValueProvider
-import com.intellij.psi.util.InheritanceUtil
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.PsiTypesUtil
+import com.intellij.psi.util.*
 import com.siyeh.ig.psiutils.CollectionUtils
 import com.siyeh.ig.psiutils.TypeUtils
 
@@ -23,7 +20,6 @@ import org.jetbrains.uast.java.annotations
 
 
 
-val getField = Key<Boolean>("getField")
 /**
  * Element Types
  */
@@ -53,16 +49,18 @@ fun PsiField.doWithAnnotation(annotationFQN: Set<String>, function: (PsiField, P
         function(this, annotation)
     }
 }
-
+val getJPATargetEntity = Key<PsiClass?>("getJPATargetEntity")
 fun PsiField.getJPATargetEntity(): PsiClass? {
-    return AnnotationUtil.findAnnotation(this, BroadleafConstants.AcceptableTypes.RELATION)?.let first@ {
-         it.findDeclaredAttributeValue(BroadleafConstants.JpaAnnotations.OneToMany.TARGET_ENTITY)?.let {
-            if(it is PsiClassObjectAccessExpression){
-                return@first PsiTypesUtil.getPsiClass(it.type)
+    return this.cacheGet(getJPATargetEntity, {
+        return AnnotationUtil.findAnnotation(this, BroadleafConstants.AcceptableTypes.RELATION)?.let first@ {
+            it.findDeclaredAttributeValue(BroadleafConstants.JpaAnnotations.OneToMany.TARGET_ENTITY)?.let {
+                if (it is PsiClassObjectAccessExpression) {
+                    return@first PsiTypesUtil.getPsiClass(it.type)
+                }
+                return@first null
             }
-            return@first null
         }
-    }
+    })
 }
 
 fun PsiField.getMappedBy(): String? {
@@ -87,19 +85,23 @@ fun PsiField.getTypeElementOrField(index: Int): PsiElement {
     return this.typeElement?.innermostComponentReferenceElement?.parameterList?.typeParameterElements?.get(index)?: this
 }
 
+
+val getAdornedPsiClasses = Key<List<PsiClass>>("getAdornedPsiClasses")
 fun PsiField.getAdornedPsiClasses(): List<PsiClass> {
-    val list = mutableListOf<PsiClass>()
-    this.getCollectionComponent()?.let {
-        val concrete = BroadleafPsiUtils.findConcrete(it)
-        list.addAll(concrete)
-        this.doWithAnnotation(Adorned.CLASS_NAME_SET, { field, annotation ->
-            AnnotationUtil.getStringAttributeValue(annotation, Adorned.TARGET_OBJECT_PROPERTY)?.let{ value->
-                concrete.mapNotNull { it.findFieldByName(value, true) }.map { it.type }.filterIsInstance(PsiClassType::class.java)
-                        .mapNotNull { it.resolve() }.flatMap { findConcrete(it) }.toCollection(list)
-            }
-        })
-    }
-    return list;
+    return this.cacheGet(getAdornedPsiClasses, {
+        val list = mutableListOf<PsiClass>()
+        this.getCollectionComponent()?.let {
+            val concrete = BroadleafPsiUtils.findConcrete(it)
+            list.addAll(concrete)
+            this.doWithAnnotation(Adorned.CLASS_NAME_SET, { field, annotation ->
+                AnnotationUtil.getStringAttributeValue(annotation, Adorned.TARGET_OBJECT_PROPERTY)?.let { value ->
+                    concrete.mapNotNull { it.findFieldByName(value, true) }.map { it.type }.filterIsInstance(PsiClassType::class.java)
+                            .mapNotNull { it.resolve() }.flatMap { findConcrete(it) }.toCollection(list)
+                }
+            })
+        }
+        return list
+    })
 }
 
 fun PsiField.getAnnotation(annotationFQN: Set<String>): PsiAnnotation? {
@@ -153,7 +155,9 @@ fun PsiClass.isAssignable(fqn: String, type: PsiType): Boolean {
     return false
 }
 
+val isPopulateToOne = Key<Boolean>("isPopulateToOne")
 fun PsiClass.isPopulateToOne(): Boolean {
+    return this.cacheGet(isPopulateToOne, {
     return AnnotationUtil.findAnnotation(this, AdminPresentationClass.CLASS_NAME_SET)?.findDeclaredAttributeValue(AdminPresentationClass.POPULATE_TO_ONE_FIELDS)?.let {
         if(it is PsiReferenceExpression ){
             it.referenceName?.let {
@@ -163,7 +167,7 @@ fun PsiClass.isPopulateToOne(): Boolean {
             }
         }
         return false
-    }?: false
+    }?: false})
 }
 
 fun PsiClass.isAnnotated(annotationFQN: Set<String>): Boolean {
@@ -172,25 +176,44 @@ fun PsiClass.isAnnotated(annotationFQN: Set<String>): Boolean {
 fun PsiClass.isAnnotated(annotationFQN: String): Boolean {
     return AnnotationUtil.isAnnotated(this, annotationFQN, false, true)
 }
-
+val findAllConcreteTypes = Key<Collection<PsiClass>>("findAllConcreteTypes")
 fun PsiClass.findAllConcreteTypes(): Collection<PsiClass> {
-    return ClassInheritorsSearch.search(this, true).findAll().filter { !it.isInterface }
+    return this.cacheGet(findAllConcreteTypes, {
+        return ClassInheritorsSearch.search(this, true).findAll().filter { !it.isInterface }
+    })
 }
 
+fun PsiClass.findAllConcreteTypesWithThis(): Collection<PsiClass> {
+    val concrete = this.cacheGet(findAllConcreteTypes, {
+        return ClassInheritorsSearch.search(this, true).findAll().filter { !it.isInterface }
+    })
+    if(!this.isInterface){
+        val mutable = concrete.toMutableList()
+        mutable.add(this)
+        return mutable
+    }
+    return concrete
+}
+
+
 fun PsiClass.getFields(name: String): Collection<PsiField> {
-    return this.findAllConcreteTypes().flatMap { it.fields.asList() }.filter { it.name == name }
+    return this.findAllConcreteTypesWithThis().flatMap { it.fields.asList() }.filter { it.name == name }
 }
 fun PsiClass.isEntity(): Boolean {
     return BroadleafPsiUtils.containsAnnotation(this, BroadleafConstants.JpaAnnotations.Entity.CLASS_NAME)
 }
 
+val getInheritorsWithThis = Key<MutableCollection<PsiClass>>("getInheritorsWithThis")
 fun PsiClass.getInheritorsWithThis(): MutableCollection<PsiClass> {
-    val result = ClassInheritorsSearch.search(this).findAll()
-    result.add(this)
-    return result
+    return this.cacheGet(com.pss.broadleaf.plugin.getInheritorsWithThis, {
+        val result = ClassInheritorsSearch.search(this).findAll()
+        result.add(this)
+        return result
+    })
 }
 
 fun PsiClass.getAllFieldsOfType(): List<PsiField> {
+
     if(this.isInterface){
         return ClassInheritorsSearch.search(this).findAll().filter { !it.isInterface }
                 .flatMap { it.allFields.asList()}
@@ -202,14 +225,15 @@ fun PsiClass.getAllFieldsOfType(): List<PsiField> {
 /**
  * PsiType
  */
+val isManaged = Key<Boolean>("isManaged")
 fun PsiType.isManaged(): Boolean {
     return BroadleafPsiUtils.containsAnnotation(this, BroadleafConstants.AcceptableTypes.MANAGED_TYPES)
 }
-
+val isEntity = Key<Boolean>("isEntity")
 fun PsiType.isEntity(): Boolean {
     return BroadleafPsiUtils.containsAnnotation(this, BroadleafConstants.JpaAnnotations.Entity.CLASS_NAME)
 }
-
+val isEmbeddable = Key<Boolean>("isEmbeddable")
 fun PsiType.isEmbeddable(): Boolean {
     return BroadleafPsiUtils.containsAnnotation(this, BroadleafConstants.JpaAnnotations.Embeddable.CLASS_NAME)
 }
@@ -217,11 +241,13 @@ fun PsiType.isEmbeddable(): Boolean {
 fun PsiType.isArray(): Boolean {
     return  this is PsiArrayType
 }
-
+val concreteTypes = Key<Collection<PsiClass>>("concreteTypes")
 fun PsiType.findAllConcreteTypes(): Collection<PsiClass> {
     val clazz = PsiTypesUtil.getPsiClass(this)
     if(clazz != null) {
-        return ClassInheritorsSearch.search(clazz, true).findAll().filter { !it.isInterface }
+        return clazz.cacheGet(concreteTypes, {
+            return ClassInheritorsSearch.search(clazz, true).findAll().filter { !it.isInterface }
+        })
     }
     return emptySet()
 }
@@ -244,11 +270,7 @@ fun PsiElement.findParent(filter: Condition<PsiElement>): PsiElement? {
     return PsiTreeUtil.findFirstParent(this, filter)
 }
 
-public fun <T> Array<out T>.second(): T {
-    if (isEmpty())
-        throw NoSuchElementException("Array is empty.")
-    return this[1]
-}
+
 
 
 fun List<PsiClass>.reduceFields(field: String): MutableList<PsiClass>{
@@ -259,8 +281,9 @@ fun List<PsiClass>.reduceFields(field: String): MutableList<PsiClass>{
             .toMutableList()
 }
 
+
+
 inline fun <T> PsiElement.cacheGet(key: Key<T>, func: ()->T): T {
-    CachedValueProvider
     val cache = this.getUserData(key)
     if(cache != null){
         return cache
@@ -270,4 +293,10 @@ inline fun <T> PsiElement.cacheGet(key: Key<T>, func: ()->T): T {
         return value
     }
 
+}
+
+fun <T> Array<out T>.second(): T {
+    if (isEmpty())
+        throw NoSuchElementException("Array is empty.")
+    return this[1]
 }

@@ -247,6 +247,7 @@ task GenerateConstants {
         [
                 MAP_OR_COLLECTION: [Collection, Map],
                 COLLECTION: [Collection],
+                COLLECTION_TYPE: [List, Set],
                 MAP: [Map],
                 STRING: [String],
                 INTEGER: [int, Integer, long, Long],
