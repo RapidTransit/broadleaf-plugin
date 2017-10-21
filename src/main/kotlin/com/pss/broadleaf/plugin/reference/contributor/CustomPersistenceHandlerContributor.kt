@@ -1,4 +1,4 @@
-package com.pss.broadleaf.plugin.reference
+package com.pss.broadleaf.plugin.reference.contributor
 
 import com.intellij.patterns.PsiJavaPatterns.*
 import com.intellij.patterns.PsiMethodPattern
@@ -174,10 +174,7 @@ class CustomPersistenceHandlerContributor : PsiReferenceContributor(){
 
     class References(val context: PsiClass, myElement:  PsiLiteralExpression) : PsiReferenceBase<PsiLiteralExpression>(myElement, false) {
         override fun resolve(): PsiElement? {
-            if(element.value is String) {
-                return context.findFieldByName(element.value as String, true)
-            }
-            return null;
+            return element.supplyValueIsString { context.findFieldByName(it, true) }
         }
 
         override fun bindToElement(element: PsiElement): PsiElement {

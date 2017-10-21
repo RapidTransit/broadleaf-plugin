@@ -281,8 +281,28 @@ fun List<PsiClass>.reduceFields(field: String): MutableList<PsiClass>{
             .toMutableList()
 }
 
+inline fun <T> PsiLiteralExpression.supplyValueIsString(func: (String) -> T): T? {
+    val value = this.value
+    if(value is String){
+        return func(value)
+    }
+    return null
+}
 
+inline fun <T> PsiLiteralExpression.valueIsString(func: (String) -> T, def: T): T {
+    val value = this.value
+    if(value is String){
+        return func(value)
+    }
+    return def
+}
 
+inline fun  PsiLiteralExpression.valueIsString(func: (String) -> Unit) {
+    val value = this.value
+    if(value is String){
+        func(value)
+    }
+}
 inline fun <T> PsiElement.cacheGet(key: Key<T>, func: ()->T): T {
     val cache = this.getUserData(key)
     if(cache != null){

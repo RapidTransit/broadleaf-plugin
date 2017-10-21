@@ -39,8 +39,8 @@ class AdminPresentationToOneInspection : PresentationAnnotationInspection(Broadl
             }
         } else {
             if(displayProperty is PsiLiteralExpression){
-                val nameType = psiField.type.getFields(displayProperty.value as String)
 
+                val nameType = displayProperty.valueIsString ({ psiField.type.getFields(it) }, emptyList())
                 // If the Field is Not Found
                 if (nameType.isEmpty()) {
                     holder.registerProblem(psiField, InspectionBundle.message("admin.to-one.name-property.override.none"))

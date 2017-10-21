@@ -1,9 +1,12 @@
-package com.pss.broadleaf.plugin.reference
+package com.pss.broadleaf.plugin.reference.contributor
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.patterns.ElementPattern
 import com.intellij.patterns.PsiJavaPatterns.*
 import com.intellij.psi.*
+import com.pss.broadleaf.plugin.reference.provider.GridVisibleFieldsReferenceProvider
+import com.pss.broadleaf.plugin.reference.provider.MaintainedAdornedTargetFieldsReferenceProvider
+import com.pss.broadleaf.plugin.reference.provider.TargetObjectPropertyReferenceProvider
 
 import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.AdminPresentationAdornedTargetCollection as Adorned
 

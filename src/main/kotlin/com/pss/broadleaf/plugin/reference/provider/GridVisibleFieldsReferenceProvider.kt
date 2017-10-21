@@ -1,17 +1,13 @@
-package com.pss.broadleaf.plugin.reference
+package com.pss.broadleaf.plugin.reference.provider
 
-import com.intellij.codeInsight.AnnotationUtil
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.*
 import com.intellij.util.ProcessingContext
-import com.intellij.util.containers.filterSmart
+import com.pss.broadleaf.plugin.*
+import com.pss.broadleaf.plugin.reference.PropertyPathReference
+import com.pss.broadleaf.plugin.reference.SimplePathReference
 import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.AdminPresentationAdornedTargetCollection as Adorned
-import com.pss.broadleaf.plugin.doWithAnnotation
-import com.pss.broadleaf.plugin.getAdornedPsiClasses
-import com.pss.broadleaf.plugin.getFields
-
-import com.pss.broadleaf.plugin.reduceFields
 
 class GridVisibleFieldsReferenceProvider : BaseFieldReferenceProvider(){
 
@@ -22,7 +18,7 @@ class GridVisibleFieldsReferenceProvider : BaseFieldReferenceProvider(){
 
         if(element is PsiLiteralExpression){
             val adornedClasses = field.getAdornedPsiClasses()
-            val value = element.value as String
+            val value = element.valueIsString( {it}, "")
             var list = mutableListOf<PsiClass>()
             if(value.contains(".")){
                 val split = StringUtil.split(value, ".")
@@ -35,7 +31,7 @@ class GridVisibleFieldsReferenceProvider : BaseFieldReferenceProvider(){
                 return list.map { PropertyPathReference(element, it, dropped, last) }.toTypedArray()
             } else {
                 list.addAll(adornedClasses)
-                return list.map { SimplePathReference( element, it, value) }.toTypedArray()
+                return list.map { SimplePathReference(element, it, value) }.toTypedArray()
             }
         }
         return PsiReference.EMPTY_ARRAY

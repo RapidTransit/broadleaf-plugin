@@ -1,9 +1,9 @@
-package com.pss.broadleaf.plugin.reference
+package com.pss.broadleaf.plugin.reference.provider
 
 import com.intellij.psi.*
 import com.intellij.util.ProcessingContext
-import com.pss.broadleaf.plugin.findAllConcreteTypes
 import com.pss.broadleaf.plugin.findAllConcreteTypesWithThis
+import com.pss.broadleaf.plugin.reference.References
 
 class TargetObjectPropertyReferenceProvider : BaseFieldReferenceProvider(){
     override fun getReferencesByElement(field: PsiField, element: PsiElement, context: ProcessingContext): Array<PsiReference> {
@@ -12,9 +12,9 @@ class TargetObjectPropertyReferenceProvider : BaseFieldReferenceProvider(){
                 val parameter = type.parameters.first()
                 if(parameter is PsiClassType){
                     val parameterClass = parameter.resolve()
-                    if(parameterClass != null){
-
-                        return parameterClass.findAllConcreteTypesWithThis().map { References(it, element, element.value as String) }.toTypedArray()
+                    val value = element.value
+                    if(parameterClass != null && value is String){
+                        return parameterClass.findAllConcreteTypesWithThis().map { References(it, element, value) }.toTypedArray()
                     }
                 }
             }

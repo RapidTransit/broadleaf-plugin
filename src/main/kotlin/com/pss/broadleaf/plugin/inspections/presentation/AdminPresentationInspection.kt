@@ -102,8 +102,9 @@ class AdminPresentationInspection : PresentationAnnotationInspection(BroadleafCo
         if (annotationValue != null) {
             if (annotationValue is PsiLiteralExpression) {
                 val type = psiClass.findPsiType(BroadleafConstants.FrameworkTypes.BROADLEAF_ENUMERATION_TYPE)
-                if (type != null) {
-                    if (psiClass.isAssignable(annotationValue.value as String, type)) {
+                val value = annotationValue.value
+                if (type != null && value is String) {
+                    if (psiClass.isAssignable(value, type)) {
                         return true
                     }
                 }

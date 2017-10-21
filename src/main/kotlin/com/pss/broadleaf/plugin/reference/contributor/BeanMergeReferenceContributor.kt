@@ -1,19 +1,10 @@
-package com.pss.broadleaf.plugin.reference
+package com.pss.broadleaf.plugin.reference.contributor
 
-import com.intellij.openapi.components.service
-import com.intellij.util.ProcessingContext
 import com.intellij.patterns.PsiJavaPatterns.*
 import com.intellij.psi.*
 import com.intellij.psi.filters.ElementFilter
 import com.intellij.psi.filters.position.FilterPattern
-import com.intellij.psi.util.PsiClassUtil
-import com.intellij.spring.model.SpringModelSearchParameters
-import com.intellij.spring.model.utils.SpringModelUtils
-import com.intellij.spring.model.utils.search.SpringBeanSearchParameters
-import com.intellij.spring.model.utils.search.executors.XmlBeanClassQueryExecutor
-import com.intellij.spring.references.SpringBeanReference
 import com.intellij.spring.references.SpringBeanReferenceProvider
-import com.pss.broadleaf.plugin.BroadleafConstants
 import com.pss.broadleaf.plugin.findParent
 
 

@@ -10,6 +10,10 @@ import static org.broadleafcommerce.common.presentation.client.SupportedFieldTyp
 
 import org.broadleafcommerce.common.presentation.AdminPresentationMap;
 import org.broadleafcommerce.common.presentation.AdminPresentationMapKey;
+import org.broadleafcommerce.common.presentation.override.AdminPresentationMergeEntry;
+import org.broadleafcommerce.common.presentation.override.AdminPresentationMergeOverride;
+import org.broadleafcommerce.common.presentation.override.AdminPresentationMergeOverrides;
+import org.broadleafcommerce.common.presentation.override.PropertyType;
 import org.broadleafcommerce.core.catalog.domain.*;
 import org.broadleafcommerce.openadmin.dto.Entity;
 import org.broadleafcommerce.openadmin.dto.FieldMetadata;
@@ -25,6 +29,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@AdminPresentationMergeOverrides({
+        @AdminPresentationMergeOverride(name = "", mergeEntries = {
+                @AdminPresentationMergeEntry(propertyType = PropertyType.)
+        })
+})
 public class Examples extends CustomPersistenceHandlerAdapter {
     private static final String A = "product";
     private static ThreadLocal<String> THREAD_LOCAL = ThreadLocalManager.createThreadLocal(String.class, true);

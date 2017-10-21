@@ -1,4 +1,4 @@
-package com.pss.broadleaf.plugin.reference
+package com.pss.broadleaf.plugin.reference.provider
 
 import com.intellij.psi.*
 import com.intellij.psi.search.searches.ClassInheritorsSearch

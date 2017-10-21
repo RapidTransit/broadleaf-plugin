@@ -30,14 +30,16 @@ class AdminPresentationAdornedInspection : PresentationAnnotationInspection(pres
 
         annotation.findDeclaredAttributeValue(Adorned.TARGET_OBJECT_PROPERTY)?.let { memberValue ->
             if(memberValue is PsiLiteralExpression){
-                val fields = psiField.getTargetEntity()?.getFields(memberValue.value as String)
-                if(fields.isNullOrEmpty()){
-                    registerProblem(holder, memberValue, "admin.adorned.target-object-property")
-                } else {
-                    if(!fields!!.any { !it.isSimpleType() && it.type.isEntity() }){
-                        registerProblem(holder, memberValue, "admin.adorned.target-object-property.not-managed")
+
+
+                    val fields = memberValue.supplyValueIsString { psiField.getTargetEntity()?.getFields(it) }
+                    if (fields.isNullOrEmpty()) {
+                        registerProblem(holder, memberValue, "admin.adorned.target-object-property")
+                    } else {
+                        if (!fields!!.any { !it.isSimpleType() && it.type.isEntity() }) {
+                            registerProblem(holder, memberValue, "admin.adorned.target-object-property.not-managed")
+                        }
                     }
-                }
 
             }
         }

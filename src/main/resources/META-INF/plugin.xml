@@ -32,9 +32,9 @@
     <completion.confidence language="JAVA" implementationClass="com.pss.broadleaf.plugin.completion.AnnotationCompletionConfidence" id="annotationCompletion" order="before javaSkipAutopopupInStrings" />
     <xml.xmlExtension implementation="com.pss.broadleaf.plugin.html.ThymeleafExtraNS" order="first"/>
     <inspectionToolProvider implementation="com.pss.broadleaf.plugin.inspections.BroadleafInspectionProvider"/>
-    <psi.referenceContributor language="JAVA" implementation="com.pss.broadleaf.plugin.reference.AdornedReferenceContributor"  />
-    <psi.referenceContributor language="JAVA" implementation="com.pss.broadleaf.plugin.reference.CustomPersistenceHandlerContributor" />
-    <psi.referenceContributor language="JAVA" implementation="com.pss.broadleaf.plugin.reference.BeanMergeReferenceContributor" />
+    <psi.referenceContributor language="JAVA" implementation="com.pss.broadleaf.plugin.reference.contributor.AdornedReferenceContributor"  />
+    <psi.referenceContributor language="JAVA" implementation="com.pss.broadleaf.plugin.reference.contributor.CustomPersistenceHandlerContributor" />
+    <psi.referenceContributor language="JAVA" implementation="com.pss.broadleaf.plugin.reference.contributor.BeanMergeReferenceContributor" />
     <toolWindow id="Broadleaf" secondary="true" icon="/broadleaf/icon.png" anchor="right"
                 factoryClass="com.pss.broadleaf.plugin.tool.window.BroadleafToolWindowFactory"/>
     <thymeleaf.dialect implementation="com.pss.broadleaf.plugin.html.BroadleafSiteDialect" />
