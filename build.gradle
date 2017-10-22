@@ -38,7 +38,7 @@ version '1.0-SNAPSHOT'
 apply plugin: 'kotlin'
 
 apply from: 'generation.gradle'
-
+apply from: 'annotation-handlers.gradle'
 repositories {
     mavenLocal()
     mavenCentral()

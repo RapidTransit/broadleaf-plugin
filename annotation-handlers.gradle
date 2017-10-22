@@ -1,0 +1,238 @@
+import com.google.common.base.CaseFormat
+import org.broadleafcommerce.common.presentation.AdminGroupPresentation
+import org.broadleafcommerce.common.presentation.AdminPresentation
+import org.broadleafcommerce.common.presentation.AdminPresentationAdornedTargetCollection
+import org.broadleafcommerce.common.presentation.AdminPresentationClass
+import org.broadleafcommerce.common.presentation.AdminPresentationCollection
+import org.broadleafcommerce.common.presentation.AdminPresentationDataDrivenEnumeration
+import org.broadleafcommerce.common.presentation.AdminPresentationMap
+import org.broadleafcommerce.common.presentation.AdminPresentationMapField
+import org.broadleafcommerce.common.presentation.AdminPresentationMapFields
+import org.broadleafcommerce.common.presentation.AdminPresentationMapKey
+import org.broadleafcommerce.common.presentation.AdminPresentationOperationTypes
+import org.broadleafcommerce.common.presentation.AdminPresentationToOneLookup
+import org.broadleafcommerce.common.presentation.AdminTabPresentation
+import org.broadleafcommerce.common.presentation.ConfigurationItem
+import org.broadleafcommerce.common.presentation.FieldValueConfiguration
+import org.broadleafcommerce.common.presentation.OptionFilterParam
+import org.broadleafcommerce.common.presentation.ValidationConfiguration
+import org.broadleafcommerce.common.presentation.override.AdminGroupPresentationOverride
+import org.broadleafcommerce.common.presentation.override.AdminPresentationAdornedTargetCollectionOverride
+import org.broadleafcommerce.common.presentation.override.AdminPresentationCollectionOverride
+import org.broadleafcommerce.common.presentation.override.AdminPresentationDataDrivenEnumerationOverride
+import org.broadleafcommerce.common.presentation.override.AdminPresentationMapOverride
+import org.broadleafcommerce.common.presentation.override.AdminPresentationMergeEntry
+import org.broadleafcommerce.common.presentation.override.AdminPresentationMergeOverride
+import org.broadleafcommerce.common.presentation.override.AdminPresentationMergeOverrides
+import org.broadleafcommerce.common.presentation.override.AdminPresentationOverride
+import org.broadleafcommerce.common.presentation.override.AdminPresentationOverrides
+import org.broadleafcommerce.common.presentation.override.AdminPresentationToOneLookupOverride
+import org.broadleafcommerce.common.presentation.override.AdminTabPresentationOverride
+
+import java.lang.annotation.Annotation
+
+import static org.apache.commons.lang.StringUtils.repeat
+
+buildscript {
+
+    repositories {
+        mavenCentral()
+        maven {
+            url 'http://nexus.broadleafcommerce.org/nexus/content/groups/community-snapshots/'
+        }
+        maven {
+            url 'http://nexus.broadleafcommerce.org/nexus/content/groups/community-releases/'
+        }
+    }
+    dependencies {
+        classpath group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
+        classpath group: 'org.broadleafcommerce', name: 'broadleaf-framework', version: '5.2.0-GA'
+        classpath group: 'org.broadleafcommerce', name: 'broadleaf-common', version: '5.2.0-GA'
+        classpath group: 'org.broadleafcommerce', name: 'broadleaf-open-admin-platform', version: '5.2.0-GA'
+        classpath group: 'org.broadleafcommerce', name: 'broadleaf-framework-web', version: '5.2.0-GA'
+        classpath group: 'com.google.guava', name: 'guava', version: '23.0'
+        classpath group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
+
+    }
+}
+
+
+
+task GenerateAnnotationHandlers {
+    doLast {
+        StringBuilder.metaClass.repeat = { int count ->
+            delegate.append(repeat("    ", count))
+        }
+        def generateSingular = { String name, String returnType, String key, String calls ->
+"""
+    fun ${name}(): Pair<PsiElement, ${returnType}>? {
+        return annotation.cacheGet(${key}_KEY, { resolveDeclared${calls}(${key}) })
+    }
+    
+    fun _${name}(): Pair<PsiElement, ${returnType}>? {
+        return annotation.cacheGet(${key}_KEY, { resolve${calls}(${key}) })
+    }
+"""
+        }
+        def generateArray = { String name, String returnType, String key, String calls ->
+"""
+    fun ${name}(): List<Pair<PsiElement, ${returnType}>> {
+        return annotation.cacheGet(${key}_KEY, { resolveDeclared${calls}Array(${key}) })
+    }
+    
+    fun _${name}(): List<Pair<PsiElement, ${returnType}>> {
+        return annotation.cacheGet(${key}_KEY, { resolve${calls}Array(${key}) })
+    }
+"""
+        }
+        //noinspection GroovyAssignabilityCheck
+        List<Class> classes = [
+                AdminGroupPresentation,
+                AdminPresentation,
+                AdminPresentationAdornedTargetCollection,
+                AdminPresentationClass,
+                AdminPresentationCollection,
+                AdminPresentationDataDrivenEnumeration,
+                AdminPresentationMap,
+                AdminPresentationMapField,
+                AdminPresentationMapFields,
+                AdminPresentationMapKey,
+                AdminPresentationOperationTypes,
+                AdminPresentationToOneLookup,
+                AdminTabPresentation,
+                ConfigurationItem,
+                FieldValueConfiguration,
+                OptionFilterParam,
+                ValidationConfiguration,
+                AdminGroupPresentationOverride,
+                AdminPresentationAdornedTargetCollectionOverride,
+                AdminPresentationCollectionOverride,
+                AdminPresentationDataDrivenEnumerationOverride,
+                AdminPresentationMapOverride,
+                AdminPresentationMergeEntry,
+                AdminPresentationMergeOverride,
+                AdminPresentationMergeOverrides,
+                AdminPresentationOverride,
+                AdminPresentationOverrides,
+                AdminPresentationToOneLookupOverride,
+                AdminTabPresentationOverride
+        ].each {
+
+            StringBuilder sb = new StringBuilder()
+            List<String> methodDefs = new ArrayList<>()
+            List<String> keys = new ArrayList<>()
+            sb.append("package com.pss.broadleaf.plugin.annotations\n\n")
+            sb.append("import com.intellij.openapi.util.Key\n")
+            sb.append("import com.intellij.psi.PsiAnnotation\n")
+            sb.append("import com.pss.broadleaf.plugin.cacheGet\n")
+            sb.append("import com.intellij.psi.PsiElement\n\n")
+
+
+            sb.append("class ${it.simpleName}Wrapper(annotation: PsiAnnotation) : AnnotationWrapper(annotation) {\n\n")
+
+            sb.repeat(1).append("companion object {\n")
+            sb.repeat(2).append("""val CLASS_NAME = "${it.name}"\n""")
+            sb.repeat(2).append("""val CLASS_NAME_SET = setOf("${it.name}")\n""")
+            it.declaredMethods.sort{it.name}.each{
+                def screamingSnake = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, it.name)
+                sb.repeat(2).append("""val ${screamingSnake} = "${it.name}" """).append('\n')
+                switch(it.returnType){
+                    case String:
+                        keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, String>?>("@${it.name}")\n""")
+                        methodDefs.add(generateSingular(it.name, "String", screamingSnake,  "String"))
+                        break
+                    case String[]:
+                        keys.add("""val ${screamingSnake}_KEY = Key<List<Pair<PsiElement, String>>>("@${it.name}")\n""")
+                        methodDefs.add(generateArray(it.name, "String", screamingSnake, "String"))
+                        break
+                    case int:
+                        keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, Int>?>("@${it.name}")\n""")
+                        methodDefs.add(generateSingular(it.name, "Int", screamingSnake,  "Int"))
+                        break
+                    case int[]:
+                        keys.add("""val ${screamingSnake}_KEY = Key<List<Pair<PsiElement, Int>>>("@${it.name}")\n""")
+                        methodDefs.add(generateArray(it.name, "Int", screamingSnake, "Int"))
+                        break
+                    case boolean:
+                        keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, Boolean>?>("@${it.name}")\n""")
+                        methodDefs.add(generateSingular(it.name, "Boolean", screamingSnake, "Boolean"))
+                        break
+                    case boolean[]:
+                        keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, Boolean>?>("@${it.name}")\n""")
+                        methodDefs.add(generateArray(it.name, "Boolean", screamingSnake, "Boolean"))
+                        break
+                    case Enum:
+                        keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, String>?>("@${it.name}")\n""")
+                        methodDefs.add(
+"""
+    fun ${it.name}(): Pair<PsiElement, String>? {
+        return annotation.cacheGet(${screamingSnake}_KEY, { resolveDeclaredEnum(${screamingSnake}) })
+    }
+    
+    fun _${it.name}(): Pair<PsiElement, String>? {
+        return annotation.cacheGet(${screamingSnake}_KEY, { resolveEnum(${screamingSnake}) })
+    }
+"""
+                        )
+                        break
+                    case it.returnType.isArray() && it.returnType.componentType.isArray():
+                        break
+                    case Annotation:
+                        keys.add("""val ${screamingSnake}_KEY = Key<PsiAnnotation?>("@${it.name}")\n""")
+                        methodDefs.add(
+"""
+    fun ${it.name}(): ${it.returnType.simpleName}Wrapper? {
+        val anno = annotation.cacheGet(${screamingSnake}_KEY, { resolveDeclaredAnnotation(${screamingSnake}) })
+        if(anno != null){
+            return ${it.returnType.simpleName}Wrapper(anno)
+        }
+        return null
+    }
+    
+    fun _${it.name}(): ${it.returnType.simpleName}Wrapper? {
+        val anno =  annotation.cacheGet(${screamingSnake}_KEY, { resolveAnnotation(${screamingSnake}) })
+        if(anno != null){
+            return ${it.returnType.simpleName}Wrapper(anno)
+        }
+        return null
+    }
+"""
+                        )
+                        break
+                    case Annotation[]:
+                        keys.add("""val ${screamingSnake}_KEY = Key<List<PsiAnnotation>?>("@${it.name}")\n""")
+                        methodDefs.add(
+                                """
+    fun ${it.name}(): List<${it.returnType.componentType.simpleName}Wrapper> {
+        val anno = annotation.cacheGet(${screamingSnake}_KEY, { resolveDeclaredAnnotationArray(${screamingSnake}) })
+        if(anno != null){
+            return anno.map{ ${it.returnType.componentType.simpleName}Wrapper(it) }
+        }
+        return emptyList<${it.returnType.componentType.simpleName}Wrapper>()
+    }
+    
+    fun _${it.name}(): List<${it.returnType.componentType.simpleName}Wrapper> {
+        val anno =  annotation.cacheGet(${screamingSnake}_KEY, { resolveAnnotationArray(${screamingSnake}) })
+        if(anno != null){
+            return anno.map{ ${it.returnType.componentType.simpleName}Wrapper(it) }
+        }
+        return emptyList<${it.returnType.componentType.simpleName}Wrapper>()
+    }
+"""
+                        )
+                        break
+                }
+            }
+            sb.append('\n')
+            keys.each {
+                sb.repeat(2).append(it)
+            }
+            sb.repeat(1).append("}\n\n")
+            methodDefs.each {
+                sb.append(it)
+            }
+            sb.append("\n}")
+            new File(sourceSets.main.kotlin.srcDirs[0], "com/pss/broadleaf/plugin/annotations/${it.simpleName}Wrapper.kt").write(sb.toString())
+        }
+    }
+}

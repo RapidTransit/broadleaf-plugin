@@ -10,6 +10,7 @@ import static org.broadleafcommerce.common.presentation.client.SupportedFieldTyp
 
 import org.broadleafcommerce.common.presentation.AdminPresentationMap;
 import org.broadleafcommerce.common.presentation.AdminPresentationMapKey;
+import org.broadleafcommerce.common.presentation.client.AdornedTargetAddMethodType;
 import org.broadleafcommerce.common.presentation.override.AdminPresentationMergeEntry;
 import org.broadleafcommerce.common.presentation.override.AdminPresentationMergeOverride;
 import org.broadleafcommerce.common.presentation.override.AdminPresentationMergeOverrides;
@@ -41,7 +42,7 @@ public class Examples extends CustomPersistenceHandlerAdapter {
 
     @AdminPresentation(fieldType = ADDITIONAL_FOREIGN_KEY)
 
-    @AdminPresentationAdornedTargetCollection(gridVisibleFields = {"a", "b"}, targetObjectProperty = "a")
+    @AdminPresentationAdornedTargetCollection(gridVisibleFields = {"a", "b"}, targetObjectProperty = "a", addType = AdornedTargetAddMethodType.LOOKUP)
     @AdminPresentationMap(forceFreeFormKeys = true, keys =
             @AdminPresentationMapKey(keyName = "A", friendlyKeyName = "a")
     )

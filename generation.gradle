@@ -139,8 +139,8 @@ task GenerateConstants {
         sb.repeat(1).append("object PresentationAnnotations {").append('\n')
         classes.each {
             sb.repeat(2).append("""object ${it.simpleName} {""").append('\n')
-            sb.repeat(3)append("""val CLASS_NAME = "${it.name}"\n""")
-            sb.repeat(3)append("""val CLASS_NAME_SET = Collections.singleton("${it.name}")\n""")
+            sb.repeat(3).append("""val CLASS_NAME = "${it.name}"\n""")
+            sb.repeat(3).append("""val CLASS_NAME_SET = Collections.singleton("${it.name}")\n""")
             it.declaredMethods.each {
                 sb.repeat(3).append("""val ${CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, it.name)} = "${it.name}" """).append('\n')
             }
