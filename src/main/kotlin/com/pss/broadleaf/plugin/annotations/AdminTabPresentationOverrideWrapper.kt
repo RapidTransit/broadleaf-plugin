@@ -2,6 +2,8 @@ package com.pss.broadleaf.plugin.annotations
 
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiAnnotation
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiField
 import com.pss.broadleaf.plugin.cacheGet
 import com.intellij.psi.PsiElement
 
@@ -14,11 +16,16 @@ class AdminTabPresentationOverrideWrapper(annotation: PsiAnnotation) : Annotatio
         val TAB_NAME = "tabName" 
         val VALUE = "value" 
 
+        val METHODS = mapOf<String, Class<out Any>>(Pair("property", String::class.java), Pair("tabName", String::class.java), Pair("value", String::class.java))
         val PROPERTY_KEY = Key<Pair<PsiElement, String>?>("@property")
         val TAB_NAME_KEY = Key<Pair<PsiElement, String>?>("@tabName")
         val VALUE_KEY = Key<Pair<PsiElement, String>?>("@value")
     }
 
+
+    override fun getMethods(): Map<String, Class<out Any>> {
+        return METHODS
+    }
 
     fun property(): Pair<PsiElement, String>? {
         return annotation.cacheGet(PROPERTY_KEY, { resolveDeclaredString(PROPERTY) })

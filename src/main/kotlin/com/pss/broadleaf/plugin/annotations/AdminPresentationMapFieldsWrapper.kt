@@ -2,6 +2,8 @@ package com.pss.broadleaf.plugin.annotations
 
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiAnnotation
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiField
 import com.pss.broadleaf.plugin.cacheGet
 import com.intellij.psi.PsiElement
 
@@ -14,11 +16,16 @@ class AdminPresentationMapFieldsWrapper(annotation: PsiAnnotation) : AnnotationW
         val TO_ONE_PARENT_PROPERTY = "toOneParentProperty" 
         val TO_ONE_TARGET_PROPERTY = "toOneTargetProperty" 
 
+        val METHODS = mapOf<String, Class<out Any>>(Pair("mapDisplayFields)", Array<Annotation>::class.java), Pair("toOneParentProperty", String::class.java), Pair("toOneTargetProperty", String::class.java))
         val MAP_DISPLAY_FIELDS_KEY = Key<List<PsiAnnotation>?>("@mapDisplayFields")
         val TO_ONE_PARENT_PROPERTY_KEY = Key<Pair<PsiElement, String>?>("@toOneParentProperty")
         val TO_ONE_TARGET_PROPERTY_KEY = Key<Pair<PsiElement, String>?>("@toOneTargetProperty")
     }
 
+
+    override fun getMethods(): Map<String, Class<out Any>> {
+        return METHODS
+    }
 
     fun mapDisplayFields(): List<AdminPresentationMapFieldWrapper> {
         val anno = annotation.cacheGet(MAP_DISPLAY_FIELDS_KEY, { resolveDeclaredAnnotationArray(MAP_DISPLAY_FIELDS) })

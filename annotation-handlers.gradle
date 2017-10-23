@@ -116,14 +116,18 @@ task GenerateAnnotationHandlers {
                 AdminPresentationOverrides,
                 AdminPresentationToOneLookupOverride,
                 AdminTabPresentationOverride
-        ].each {
+        ]
+                classes.each {
 
             StringBuilder sb = new StringBuilder()
             List<String> methodDefs = new ArrayList<>()
             List<String> keys = new ArrayList<>()
+            List<String> mapKeys = new ArrayList<>()
             sb.append("package com.pss.broadleaf.plugin.annotations\n\n")
             sb.append("import com.intellij.openapi.util.Key\n")
             sb.append("import com.intellij.psi.PsiAnnotation\n")
+            sb.append("import com.intellij.psi.PsiClass\n")
+            sb.append("import com.intellij.psi.PsiField\n")
             sb.append("import com.pss.broadleaf.plugin.cacheGet\n")
             sb.append("import com.intellij.psi.PsiElement\n\n")
 
@@ -133,51 +137,94 @@ task GenerateAnnotationHandlers {
             sb.repeat(1).append("companion object {\n")
             sb.repeat(2).append("""val CLASS_NAME = "${it.name}"\n""")
             sb.repeat(2).append("""val CLASS_NAME_SET = setOf("${it.name}")\n""")
+
+
             it.declaredMethods.sort{it.name}.each{
                 def screamingSnake = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, it.name)
                 sb.repeat(2).append("""val ${screamingSnake} = "${it.name}" """).append('\n')
                 switch(it.returnType){
                     case String:
+                        mapKeys.add("Pair(\"${it.name}\", String::class.java)")
                         keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, String>?>("@${it.name}")\n""")
                         methodDefs.add(generateSingular(it.name, "String", screamingSnake,  "String"))
                         break
                     case String[]:
+                        mapKeys.add("Pair(\"${it.name}\", Array<String>::class.java)")
                         keys.add("""val ${screamingSnake}_KEY = Key<List<Pair<PsiElement, String>>>("@${it.name}")\n""")
                         methodDefs.add(generateArray(it.name, "String", screamingSnake, "String"))
                         break
+                    case float:
+                        mapKeys.add("Pair(\"${it.name}\", Float::class.javaPrimitiveType!!)")
+                        keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, Float>?>("@${it.name}")\n""")
+                        methodDefs.add(generateSingular(it.name, "Float", screamingSnake,  "Float"))
+                        break
+                    case float[]:
+                        mapKeys.add("Pair(\"${it.name}\", Array<Float>::class.javaPrimitiveType!!)")
+                        keys.add("""val ${screamingSnake}_KEY = Key<List<Pair<PsiElement, Float>>>("@${it.name}")\n""")
+                        methodDefs.add(generateArray(it.name, "Float", screamingSnake, "Float"))
+                        break
+                    case long:
+                        mapKeys.add("Pair(\"${it.name}\", Long::class.javaPrimitiveType!!)")
+                        keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, Long>?>("@${it.name}")\n""")
+                        methodDefs.add(generateSingular(it.name, "Long", screamingSnake,  "Long"))
+                        break
+                    case long[]:
+                        mapKeys.add("Pair(\"${it.name}\", Array<Long>::class.javaPrimitiveType)")
+                        keys.add("""val ${screamingSnake}_KEY = Key<List<Pair<PsiElement, Long>>>("@${it.name}")\n""")
+                        methodDefs.add(generateArray(it.name, "Long", screamingSnake, "Long"))
+                        break
+                    case double :
+                        mapKeys.add("Pair(\"${it.name}\", Double::class.javaPrimitiveType!!)")
+                        keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, Double>?>("@${it.name}")\n""")
+                        methodDefs.add(generateSingular(it.name, "Double", screamingSnake,  "Double"))
+                        break
+                    case double[]:
+                        mapKeys.add("Pair(\"${it.name}\", Array<Double>::class.javaPrimitiveType!!)")
+                        keys.add("""val ${screamingSnake}_KEY = Key<List<Pair<PsiElement, Double>>>("@${it.name}")\n""")
+                        methodDefs.add(generateArray(it.name, "Double", screamingSnake, "Double"))
+                        break
                     case int:
+                        mapKeys.add("Pair(\"${it.name}\", Int::class.javaPrimitiveType!!)")
                         keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, Int>?>("@${it.name}")\n""")
                         methodDefs.add(generateSingular(it.name, "Int", screamingSnake,  "Int"))
                         break
                     case int[]:
+                        mapKeys.add("Pair(\"${it.name}\", Array<Int>::class.javaPrimitiveType!!)")
                         keys.add("""val ${screamingSnake}_KEY = Key<List<Pair<PsiElement, Int>>>("@${it.name}")\n""")
                         methodDefs.add(generateArray(it.name, "Int", screamingSnake, "Int"))
                         break
                     case boolean:
+                        mapKeys.add("Pair(\"${it.name}\", Boolean::class.javaPrimitiveType!!)")
                         keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, Boolean>?>("@${it.name}")\n""")
                         methodDefs.add(generateSingular(it.name, "Boolean", screamingSnake, "Boolean"))
                         break
                     case boolean[]:
-                        keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, Boolean>?>("@${it.name}")\n""")
+                        mapKeys.add("Pair(\"${it.name}\", Array<Boolean>::class.javaPrimitiveType!!)")
+                        keys.add("""val ${screamingSnake}_KEY = Key<List<Pair<PsiElement, Boolean>>>("@${it.name}")\n""")
                         methodDefs.add(generateArray(it.name, "Boolean", screamingSnake, "Boolean"))
                         break
                     case Enum:
-                        keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, String>?>("@${it.name}")\n""")
-                        methodDefs.add(
-"""
-    fun ${it.name}(): Pair<PsiElement, String>? {
-        return annotation.cacheGet(${screamingSnake}_KEY, { resolveDeclaredEnum(${screamingSnake}) })
-    }
-    
-    fun _${it.name}(): Pair<PsiElement, String>? {
-        return annotation.cacheGet(${screamingSnake}_KEY, { resolveEnum(${screamingSnake}) })
-    }
-"""
-                        )
+                        mapKeys.add("Pair(\"${it.name}\", Enum::class.java)")
+                        keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, PsiField>?>("@${it.name}")\n""")
+                        methodDefs.add(generateSingular(it.name, "PsiField", screamingSnake, "Enum"))
                         break
-                    case it.returnType.isArray() && it.returnType.componentType.isArray():
+                    case Enum[]:
+                        mapKeys.add("Pair(\"${it.name}\", Array<Enum>::class.java)")
+                        keys.add("""val ${screamingSnake}_KEY = Key<List<Pair<PsiElement, PsiField>>>("@${it.name}")\n""")
+                        methodDefs.add(generateArray(it.name, "PsiField", screamingSnake, "Enum"))
+                        break
+                    case Class:
+                        mapKeys.add("Pair(\"${it.name}\", Class::class.java)")
+                        keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, PsiClass>?>("@${it.name}")\n""")
+                        methodDefs.add(generateSingular(it.name, "PsiClass", screamingSnake, "Class"))
+                        break
+                    case Class[]:
+                        mapKeys.add("Pair(\"${it.name})\", Array<Class>::class.java)")
+                        keys.add("""val ${screamingSnake}_KEY = Key<List<Pair<PsiElement, PsiClass>>>("@${it.name}")\n""")
+                        methodDefs.add(generateArray(it.name, "PsiClass", screamingSnake, "Class"))
                         break
                     case Annotation:
+                        mapKeys.add("Pair(\"${it.name})\", Annotation::class.java)")
                         keys.add("""val ${screamingSnake}_KEY = Key<PsiAnnotation?>("@${it.name}")\n""")
                         methodDefs.add(
 """
@@ -200,6 +247,7 @@ task GenerateAnnotationHandlers {
                         )
                         break
                     case Annotation[]:
+                        mapKeys.add("Pair(\"${it.name})\", Array<Annotation>::class.java)")
                         keys.add("""val ${screamingSnake}_KEY = Key<List<PsiAnnotation>?>("@${it.name}")\n""")
                         methodDefs.add(
                                 """
@@ -224,15 +272,45 @@ task GenerateAnnotationHandlers {
                 }
             }
             sb.append('\n')
+
+            sb.repeat(2).append("""val METHODS = mapOf<String, Class<out Any>>(${mapKeys.join(", ")})\n""")
             keys.each {
                 sb.repeat(2).append(it)
             }
             sb.repeat(1).append("}\n\n")
+sb.append("""
+    override fun getMethods(): Map<String, Class<out Any>> {
+        return METHODS
+    }
+""")
             methodDefs.each {
                 sb.append(it)
             }
             sb.append("\n}")
             new File(sourceSets.main.kotlin.srcDirs[0], "com/pss/broadleaf/plugin/annotations/${it.simpleName}Wrapper.kt").write(sb.toString())
+            new File(sourceSets.main.kotlin.srcDirs[0], "com/pss/broadleaf/plugin/annotations/AnnotationFactory.kt").write(
+"""
+package com.pss.broadleaf.plugin.annotations
+
+import com.intellij.psi.PsiAnnotation
+
+object AnnotationFactory {
+
+    private val MAP_FACTORY: MutableMap<String, (PsiAnnotation)-> AnnotationWrapper> = mutableMapOf()
+
+    init {
+        ${classes.collect{"MAP_FACTORY.put(\"${it.name}\", {annotation-> ${it.simpleName}Wrapper(annotation)})"}.join("\n        ")}
+    }
+
+    fun getFactory(): Map<String, (PsiAnnotation)-> AnnotationWrapper> {
+        return MAP_FACTORY
+    }
+
+}
+"""
+            )
+
+
         }
     }
 }

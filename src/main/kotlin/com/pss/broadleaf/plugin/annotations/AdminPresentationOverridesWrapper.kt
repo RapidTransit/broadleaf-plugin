@@ -2,6 +2,8 @@ package com.pss.broadleaf.plugin.annotations
 
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiAnnotation
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiField
 import com.pss.broadleaf.plugin.cacheGet
 import com.intellij.psi.PsiElement
 
@@ -17,6 +19,7 @@ class AdminPresentationOverridesWrapper(annotation: PsiAnnotation) : AnnotationW
         val TO_ONE_LOOKUPS = "toOneLookups" 
         val VALUE = "value" 
 
+        val METHODS = mapOf<String, Class<out Any>>(Pair("adornedTargetCollections)", Array<Annotation>::class.java), Pair("collections)", Array<Annotation>::class.java), Pair("dataDrivenEnums)", Array<Annotation>::class.java), Pair("maps)", Array<Annotation>::class.java), Pair("toOneLookups)", Array<Annotation>::class.java), Pair("value)", Array<Annotation>::class.java))
         val ADORNED_TARGET_COLLECTIONS_KEY = Key<List<PsiAnnotation>?>("@adornedTargetCollections")
         val COLLECTIONS_KEY = Key<List<PsiAnnotation>?>("@collections")
         val DATA_DRIVEN_ENUMS_KEY = Key<List<PsiAnnotation>?>("@dataDrivenEnums")
@@ -25,6 +28,10 @@ class AdminPresentationOverridesWrapper(annotation: PsiAnnotation) : AnnotationW
         val VALUE_KEY = Key<List<PsiAnnotation>?>("@value")
     }
 
+
+    override fun getMethods(): Map<String, Class<out Any>> {
+        return METHODS
+    }
 
     fun adornedTargetCollections(): List<AdminPresentationAdornedTargetCollectionOverrideWrapper> {
         val anno = annotation.cacheGet(ADORNED_TARGET_COLLECTIONS_KEY, { resolveDeclaredAnnotationArray(ADORNED_TARGET_COLLECTIONS) })

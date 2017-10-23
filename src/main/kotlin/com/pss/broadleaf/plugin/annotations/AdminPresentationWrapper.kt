@@ -2,6 +2,8 @@ package com.pss.broadleaf.plugin.annotations
 
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiAnnotation
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiField
 import com.pss.broadleaf.plugin.cacheGet
 import com.intellij.psi.PsiElement
 
@@ -46,6 +48,7 @@ class AdminPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapper(an
         val VALIDATION_CONFIGURATIONS = "validationConfigurations" 
         val VISIBILITY = "visibility" 
 
+        val METHODS = mapOf<String, Class<out Any>>(Pair("addFriendlyName", String::class.java), Pair("allowNoValueEnumOption", Boolean::class.javaPrimitiveType!!), Pair("associatedFieldName", String::class.java), Pair("broadleafEnumeration", String::class.java), Pair("canLinkToExternalEntity", Boolean::class.javaPrimitiveType!!), Pair("columnWidth", String::class.java), Pair("currencyCodeField", String::class.java), Pair("defaultValue", String::class.java), Pair("displayType", Enum::class.java), Pair("excluded", Boolean::class.javaPrimitiveType!!), Pair("fieldComponentRenderer", Enum::class.java), Pair("fieldType", Enum::class.java), Pair("friendlyName", String::class.java), Pair("gridOrder", Int::class.javaPrimitiveType!!), Pair("group", String::class.java), Pair("groupCollapsed", Boolean::class.javaPrimitiveType!!), Pair("groupOrder", Int::class.javaPrimitiveType!!), Pair("helpText", String::class.java), Pair("hideEnumerationIfEmpty", Boolean::class.javaPrimitiveType!!), Pair("hint", String::class.java), Pair("largeEntry", Boolean::class.javaPrimitiveType!!), Pair("order", Int::class.javaPrimitiveType!!), Pair("prominent", Boolean::class.javaPrimitiveType!!), Pair("readOnly", Boolean::class.javaPrimitiveType!!), Pair("requiredOverride", Enum::class.java), Pair("ruleIdentifier", String::class.java), Pair("securityLevel", String::class.java), Pair("showIfFieldEquals)", Array<Annotation>::class.java), Pair("showIfProperty", String::class.java), Pair("tab", String::class.java), Pair("tabOrder", Int::class.javaPrimitiveType!!), Pair("tooltip", String::class.java), Pair("translatable", Boolean::class.javaPrimitiveType!!), Pair("validationConfigurations)", Array<Annotation>::class.java), Pair("visibility", Enum::class.java))
         val ADD_FRIENDLY_NAME_KEY = Key<Pair<PsiElement, String>?>("@addFriendlyName")
         val ALLOW_NO_VALUE_ENUM_OPTION_KEY = Key<Pair<PsiElement, Boolean>?>("@allowNoValueEnumOption")
         val ASSOCIATED_FIELD_NAME_KEY = Key<Pair<PsiElement, String>?>("@associatedFieldName")
@@ -54,10 +57,10 @@ class AdminPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapper(an
         val COLUMN_WIDTH_KEY = Key<Pair<PsiElement, String>?>("@columnWidth")
         val CURRENCY_CODE_FIELD_KEY = Key<Pair<PsiElement, String>?>("@currencyCodeField")
         val DEFAULT_VALUE_KEY = Key<Pair<PsiElement, String>?>("@defaultValue")
-        val DISPLAY_TYPE_KEY = Key<Pair<PsiElement, String>?>("@displayType")
+        val DISPLAY_TYPE_KEY = Key<Pair<PsiElement, PsiField>?>("@displayType")
         val EXCLUDED_KEY = Key<Pair<PsiElement, Boolean>?>("@excluded")
-        val FIELD_COMPONENT_RENDERER_KEY = Key<Pair<PsiElement, String>?>("@fieldComponentRenderer")
-        val FIELD_TYPE_KEY = Key<Pair<PsiElement, String>?>("@fieldType")
+        val FIELD_COMPONENT_RENDERER_KEY = Key<Pair<PsiElement, PsiField>?>("@fieldComponentRenderer")
+        val FIELD_TYPE_KEY = Key<Pair<PsiElement, PsiField>?>("@fieldType")
         val FRIENDLY_NAME_KEY = Key<Pair<PsiElement, String>?>("@friendlyName")
         val GRID_ORDER_KEY = Key<Pair<PsiElement, Int>?>("@gridOrder")
         val GROUP_KEY = Key<Pair<PsiElement, String>?>("@group")
@@ -70,7 +73,7 @@ class AdminPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapper(an
         val ORDER_KEY = Key<Pair<PsiElement, Int>?>("@order")
         val PROMINENT_KEY = Key<Pair<PsiElement, Boolean>?>("@prominent")
         val READ_ONLY_KEY = Key<Pair<PsiElement, Boolean>?>("@readOnly")
-        val REQUIRED_OVERRIDE_KEY = Key<Pair<PsiElement, String>?>("@requiredOverride")
+        val REQUIRED_OVERRIDE_KEY = Key<Pair<PsiElement, PsiField>?>("@requiredOverride")
         val RULE_IDENTIFIER_KEY = Key<Pair<PsiElement, String>?>("@ruleIdentifier")
         val SECURITY_LEVEL_KEY = Key<Pair<PsiElement, String>?>("@securityLevel")
         val SHOW_IF_FIELD_EQUALS_KEY = Key<List<PsiAnnotation>?>("@showIfFieldEquals")
@@ -80,9 +83,13 @@ class AdminPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapper(an
         val TOOLTIP_KEY = Key<Pair<PsiElement, String>?>("@tooltip")
         val TRANSLATABLE_KEY = Key<Pair<PsiElement, Boolean>?>("@translatable")
         val VALIDATION_CONFIGURATIONS_KEY = Key<List<PsiAnnotation>?>("@validationConfigurations")
-        val VISIBILITY_KEY = Key<Pair<PsiElement, String>?>("@visibility")
+        val VISIBILITY_KEY = Key<Pair<PsiElement, PsiField>?>("@visibility")
     }
 
+
+    override fun getMethods(): Map<String, Class<out Any>> {
+        return METHODS
+    }
 
     fun addFriendlyName(): Pair<PsiElement, String>? {
         return annotation.cacheGet(ADD_FRIENDLY_NAME_KEY, { resolveDeclaredString(ADD_FRIENDLY_NAME) })
@@ -148,11 +155,11 @@ class AdminPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapper(an
         return annotation.cacheGet(DEFAULT_VALUE_KEY, { resolveString(DEFAULT_VALUE) })
     }
 
-    fun displayType(): Pair<PsiElement, String>? {
+    fun displayType(): Pair<PsiElement, PsiField>? {
         return annotation.cacheGet(DISPLAY_TYPE_KEY, { resolveDeclaredEnum(DISPLAY_TYPE) })
     }
     
-    fun _displayType(): Pair<PsiElement, String>? {
+    fun _displayType(): Pair<PsiElement, PsiField>? {
         return annotation.cacheGet(DISPLAY_TYPE_KEY, { resolveEnum(DISPLAY_TYPE) })
     }
 
@@ -164,19 +171,19 @@ class AdminPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapper(an
         return annotation.cacheGet(EXCLUDED_KEY, { resolveBoolean(EXCLUDED) })
     }
 
-    fun fieldComponentRenderer(): Pair<PsiElement, String>? {
+    fun fieldComponentRenderer(): Pair<PsiElement, PsiField>? {
         return annotation.cacheGet(FIELD_COMPONENT_RENDERER_KEY, { resolveDeclaredEnum(FIELD_COMPONENT_RENDERER) })
     }
     
-    fun _fieldComponentRenderer(): Pair<PsiElement, String>? {
+    fun _fieldComponentRenderer(): Pair<PsiElement, PsiField>? {
         return annotation.cacheGet(FIELD_COMPONENT_RENDERER_KEY, { resolveEnum(FIELD_COMPONENT_RENDERER) })
     }
 
-    fun fieldType(): Pair<PsiElement, String>? {
+    fun fieldType(): Pair<PsiElement, PsiField>? {
         return annotation.cacheGet(FIELD_TYPE_KEY, { resolveDeclaredEnum(FIELD_TYPE) })
     }
     
-    fun _fieldType(): Pair<PsiElement, String>? {
+    fun _fieldType(): Pair<PsiElement, PsiField>? {
         return annotation.cacheGet(FIELD_TYPE_KEY, { resolveEnum(FIELD_TYPE) })
     }
 
@@ -189,11 +196,11 @@ class AdminPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapper(an
     }
 
     fun gridOrder(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(GRID_ORDER_KEY, { resolveDeclaredInteger(GRID_ORDER) })
+        return annotation.cacheGet(GRID_ORDER_KEY, { resolveDeclaredInt(GRID_ORDER) })
     }
     
     fun _gridOrder(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(GRID_ORDER_KEY, { resolveInteger(GRID_ORDER) })
+        return annotation.cacheGet(GRID_ORDER_KEY, { resolveInt(GRID_ORDER) })
     }
 
     fun group(): Pair<PsiElement, String>? {
@@ -213,11 +220,11 @@ class AdminPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapper(an
     }
 
     fun groupOrder(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(GROUP_ORDER_KEY, { resolveDeclaredInteger(GROUP_ORDER) })
+        return annotation.cacheGet(GROUP_ORDER_KEY, { resolveDeclaredInt(GROUP_ORDER) })
     }
     
     fun _groupOrder(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(GROUP_ORDER_KEY, { resolveInteger(GROUP_ORDER) })
+        return annotation.cacheGet(GROUP_ORDER_KEY, { resolveInt(GROUP_ORDER) })
     }
 
     fun helpText(): Pair<PsiElement, String>? {
@@ -253,11 +260,11 @@ class AdminPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapper(an
     }
 
     fun order(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(ORDER_KEY, { resolveDeclaredInteger(ORDER) })
+        return annotation.cacheGet(ORDER_KEY, { resolveDeclaredInt(ORDER) })
     }
     
     fun _order(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(ORDER_KEY, { resolveInteger(ORDER) })
+        return annotation.cacheGet(ORDER_KEY, { resolveInt(ORDER) })
     }
 
     fun prominent(): Pair<PsiElement, Boolean>? {
@@ -276,11 +283,11 @@ class AdminPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapper(an
         return annotation.cacheGet(READ_ONLY_KEY, { resolveBoolean(READ_ONLY) })
     }
 
-    fun requiredOverride(): Pair<PsiElement, String>? {
+    fun requiredOverride(): Pair<PsiElement, PsiField>? {
         return annotation.cacheGet(REQUIRED_OVERRIDE_KEY, { resolveDeclaredEnum(REQUIRED_OVERRIDE) })
     }
     
-    fun _requiredOverride(): Pair<PsiElement, String>? {
+    fun _requiredOverride(): Pair<PsiElement, PsiField>? {
         return annotation.cacheGet(REQUIRED_OVERRIDE_KEY, { resolveEnum(REQUIRED_OVERRIDE) })
     }
 
@@ -333,11 +340,11 @@ class AdminPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapper(an
     }
 
     fun tabOrder(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(TAB_ORDER_KEY, { resolveDeclaredInteger(TAB_ORDER) })
+        return annotation.cacheGet(TAB_ORDER_KEY, { resolveDeclaredInt(TAB_ORDER) })
     }
     
     fun _tabOrder(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(TAB_ORDER_KEY, { resolveInteger(TAB_ORDER) })
+        return annotation.cacheGet(TAB_ORDER_KEY, { resolveInt(TAB_ORDER) })
     }
 
     fun tooltip(): Pair<PsiElement, String>? {
@@ -372,11 +379,11 @@ class AdminPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapper(an
         return emptyList<ValidationConfigurationWrapper>()
     }
 
-    fun visibility(): Pair<PsiElement, String>? {
+    fun visibility(): Pair<PsiElement, PsiField>? {
         return annotation.cacheGet(VISIBILITY_KEY, { resolveDeclaredEnum(VISIBILITY) })
     }
     
-    fun _visibility(): Pair<PsiElement, String>? {
+    fun _visibility(): Pair<PsiElement, PsiField>? {
         return annotation.cacheGet(VISIBILITY_KEY, { resolveEnum(VISIBILITY) })
     }
 

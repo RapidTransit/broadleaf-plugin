@@ -2,6 +2,8 @@ package com.pss.broadleaf.plugin.annotations
 
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiAnnotation
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiField
 import com.pss.broadleaf.plugin.cacheGet
 import com.intellij.psi.PsiElement
 
@@ -14,11 +16,16 @@ class OptionFilterParamWrapper(annotation: PsiAnnotation) : AnnotationWrapper(an
         val PARAM_TYPE = "paramType" 
         val VALUE = "value" 
 
+        val METHODS = mapOf<String, Class<out Any>>(Pair("param", String::class.java), Pair("paramType", Enum::class.java), Pair("value", String::class.java))
         val PARAM_KEY = Key<Pair<PsiElement, String>?>("@param")
-        val PARAM_TYPE_KEY = Key<Pair<PsiElement, String>?>("@paramType")
+        val PARAM_TYPE_KEY = Key<Pair<PsiElement, PsiField>?>("@paramType")
         val VALUE_KEY = Key<Pair<PsiElement, String>?>("@value")
     }
 
+
+    override fun getMethods(): Map<String, Class<out Any>> {
+        return METHODS
+    }
 
     fun param(): Pair<PsiElement, String>? {
         return annotation.cacheGet(PARAM_KEY, { resolveDeclaredString(PARAM) })
@@ -28,11 +35,11 @@ class OptionFilterParamWrapper(annotation: PsiAnnotation) : AnnotationWrapper(an
         return annotation.cacheGet(PARAM_KEY, { resolveString(PARAM) })
     }
 
-    fun paramType(): Pair<PsiElement, String>? {
+    fun paramType(): Pair<PsiElement, PsiField>? {
         return annotation.cacheGet(PARAM_TYPE_KEY, { resolveDeclaredEnum(PARAM_TYPE) })
     }
     
-    fun _paramType(): Pair<PsiElement, String>? {
+    fun _paramType(): Pair<PsiElement, PsiField>? {
         return annotation.cacheGet(PARAM_TYPE_KEY, { resolveEnum(PARAM_TYPE) })
     }
 

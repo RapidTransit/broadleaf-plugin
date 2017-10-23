@@ -2,6 +2,8 @@ package com.pss.broadleaf.plugin.annotations
 
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiAnnotation
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiField
 import com.pss.broadleaf.plugin.cacheGet
 import com.intellij.psi.PsiElement
 
@@ -17,6 +19,7 @@ class AdminGroupPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapp
         val TOOLTIP = "tooltip" 
         val UNTITLED = "untitled" 
 
+        val METHODS = mapOf<String, Class<out Any>>(Pair("collapsed", Boolean::class.javaPrimitiveType!!), Pair("column", Int::class.javaPrimitiveType!!), Pair("name", String::class.java), Pair("order", Int::class.javaPrimitiveType!!), Pair("tooltip", String::class.java), Pair("untitled", Boolean::class.javaPrimitiveType!!))
         val COLLAPSED_KEY = Key<Pair<PsiElement, Boolean>?>("@collapsed")
         val COLUMN_KEY = Key<Pair<PsiElement, Int>?>("@column")
         val NAME_KEY = Key<Pair<PsiElement, String>?>("@name")
@@ -25,6 +28,10 @@ class AdminGroupPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapp
         val UNTITLED_KEY = Key<Pair<PsiElement, Boolean>?>("@untitled")
     }
 
+
+    override fun getMethods(): Map<String, Class<out Any>> {
+        return METHODS
+    }
 
     fun collapsed(): Pair<PsiElement, Boolean>? {
         return annotation.cacheGet(COLLAPSED_KEY, { resolveDeclaredBoolean(COLLAPSED) })
@@ -35,11 +42,11 @@ class AdminGroupPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapp
     }
 
     fun column(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(COLUMN_KEY, { resolveDeclaredInteger(COLUMN) })
+        return annotation.cacheGet(COLUMN_KEY, { resolveDeclaredInt(COLUMN) })
     }
     
     fun _column(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(COLUMN_KEY, { resolveInteger(COLUMN) })
+        return annotation.cacheGet(COLUMN_KEY, { resolveInt(COLUMN) })
     }
 
     fun name(): Pair<PsiElement, String>? {
@@ -51,11 +58,11 @@ class AdminGroupPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapp
     }
 
     fun order(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(ORDER_KEY, { resolveDeclaredInteger(ORDER) })
+        return annotation.cacheGet(ORDER_KEY, { resolveDeclaredInt(ORDER) })
     }
     
     fun _order(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(ORDER_KEY, { resolveInteger(ORDER) })
+        return annotation.cacheGet(ORDER_KEY, { resolveInt(ORDER) })
     }
 
     fun tooltip(): Pair<PsiElement, String>? {

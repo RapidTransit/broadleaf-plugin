@@ -2,6 +2,8 @@ package com.pss.broadleaf.plugin.annotations
 
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiAnnotation
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiField
 import com.pss.broadleaf.plugin.cacheGet
 import com.intellij.psi.PsiElement
 
@@ -15,11 +17,17 @@ class AdminPresentationMapFieldWrapper(annotation: PsiAnnotation) : AnnotationWr
         val MANY_TO_FIELD = "manyToField" 
         val TARGET_CLASS = "targetClass" 
 
+        val METHODS = mapOf<String, Class<out Any>>(Pair("fieldName", String::class.java), Pair("fieldPresentation)", Annotation::class.java), Pair("manyToField", String::class.java), Pair("targetClass", Class::class.java))
         val FIELD_NAME_KEY = Key<Pair<PsiElement, String>?>("@fieldName")
         val FIELD_PRESENTATION_KEY = Key<PsiAnnotation?>("@fieldPresentation")
         val MANY_TO_FIELD_KEY = Key<Pair<PsiElement, String>?>("@manyToField")
+        val TARGET_CLASS_KEY = Key<Pair<PsiElement, PsiClass>?>("@targetClass")
     }
 
+
+    override fun getMethods(): Map<String, Class<out Any>> {
+        return METHODS
+    }
 
     fun fieldName(): Pair<PsiElement, String>? {
         return annotation.cacheGet(FIELD_NAME_KEY, { resolveDeclaredString(FIELD_NAME) })
@@ -51,6 +59,14 @@ class AdminPresentationMapFieldWrapper(annotation: PsiAnnotation) : AnnotationWr
     
     fun _manyToField(): Pair<PsiElement, String>? {
         return annotation.cacheGet(MANY_TO_FIELD_KEY, { resolveString(MANY_TO_FIELD) })
+    }
+
+    fun targetClass(): Pair<PsiElement, PsiClass>? {
+        return annotation.cacheGet(TARGET_CLASS_KEY, { resolveDeclaredClass(TARGET_CLASS) })
+    }
+    
+    fun _targetClass(): Pair<PsiElement, PsiClass>? {
+        return annotation.cacheGet(TARGET_CLASS_KEY, { resolveClass(TARGET_CLASS) })
     }
 
 }

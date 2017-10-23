@@ -71,6 +71,7 @@ dependencies {
     internalTestLib group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.0-api', version: '1.0.1.Final'
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.8.0'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 }
 
 compileKotlin {

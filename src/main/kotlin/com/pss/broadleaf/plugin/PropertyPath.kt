@@ -3,38 +3,69 @@ package com.pss.broadleaf.plugin
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiClassType
+import com.intellij.psi.PsiField
 import org.funktionale.collections.tail
 
 class PropertyPath(val entry: PsiClass, path: String) {
 
-    val classes: MutableCollection<PsiClass>
     val segments: List<String>
     val next: Segment
 
     init {
-        classes = entry.getInheritorsWithThis()
         segments = StringUtil.split(path, ".")
-        next = Segment(segments.first(), classes, "", segments.tail())
+        next = Segment(segments.first(), entry.getInheritorsWithThis(), segments.tail())
+    }
+
+    fun isResolved(): Boolean {
+        return next.isResolved()
+    }
+
+    fun resolve(): Segment {
+        return next.resolve()
     }
 
 
-    class Segment(val field: String, val entry: MutableCollection<PsiClass>, val path: String, val remainingSegments: List<String> = emptyList()) {
-        val next: Segment?
+
+    class Segment(val field: String, val entry: Collection<PsiClass>, val remainingSegments: List<String>) {
+
+         val fields: List<PsiField>
+        private val next: Segment?
+        private val failed: Boolean
         init {
-            if(remainingSegments.isEmpty()){
+            fields = entry.mapNotNull { it.findFieldByName(field, true) }
+            failed = fields.isEmpty()
+            if(remainingSegments.isEmpty() || failed){
                 next = null
             } else {
-                val first = remainingSegments.first()
-                val entries = entry.mapNotNull { it.findFieldByName(first, true) }.map { it.type }.filterIsInstance(PsiClassType::class.java)
-                        .mapNotNull { it.resolve() }
-                        .flatMap { it.getInheritorsWithThis() }
-                next = Segment(
-                        field = first,
-                        entry = entry,
-                        path = if(path.isEmpty()) field else "$path.$field",
-                        remainingSegments = remainingSegments.tail())
+                next = Segment(remainingSegments.first(),
+                        fields.map { it.type }
+                                .filterIsInstance(PsiClassType::class.java)
+                                .mapNotNull { it.resolve() }
+                                .flatMap { it.findAllConcreteTypesWithThis() },
+                        remainingSegments.tail()
+                )
             }
         }
+
+        fun resolve(): Segment {
+            if(next != null){
+                return next.resolve()
+            }
+            return this
+        }
+
+        fun isResolved(): Boolean {
+            if(failed){
+                return false
+            } else {
+                if(next != null){
+                    return next.isResolved()
+                } else {
+                    return true
+                }
+            }
+        }
+
     }
 
 }

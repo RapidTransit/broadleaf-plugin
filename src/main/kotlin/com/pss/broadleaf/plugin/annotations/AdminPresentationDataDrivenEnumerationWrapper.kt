@@ -2,6 +2,8 @@ package com.pss.broadleaf.plugin.annotations
 
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiAnnotation
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiField
 import com.pss.broadleaf.plugin.cacheGet
 import com.intellij.psi.PsiElement
 
@@ -17,13 +19,19 @@ class AdminPresentationDataDrivenEnumerationWrapper(annotation: PsiAnnotation) :
         val OPTION_LIST_ENTITY = "optionListEntity" 
         val OPTION_VALUE_FIELD_NAME = "optionValueFieldName" 
 
+        val METHODS = mapOf<String, Class<out Any>>(Pair("optionCanEditValues", Boolean::class.javaPrimitiveType!!), Pair("optionDisplayFieldName", String::class.java), Pair("optionFilterParams)", Array<Annotation>::class.java), Pair("optionHideIfEmpty", Boolean::class.javaPrimitiveType!!), Pair("optionListEntity", Class::class.java), Pair("optionValueFieldName", String::class.java))
         val OPTION_CAN_EDIT_VALUES_KEY = Key<Pair<PsiElement, Boolean>?>("@optionCanEditValues")
         val OPTION_DISPLAY_FIELD_NAME_KEY = Key<Pair<PsiElement, String>?>("@optionDisplayFieldName")
         val OPTION_FILTER_PARAMS_KEY = Key<List<PsiAnnotation>?>("@optionFilterParams")
         val OPTION_HIDE_IF_EMPTY_KEY = Key<Pair<PsiElement, Boolean>?>("@optionHideIfEmpty")
+        val OPTION_LIST_ENTITY_KEY = Key<Pair<PsiElement, PsiClass>?>("@optionListEntity")
         val OPTION_VALUE_FIELD_NAME_KEY = Key<Pair<PsiElement, String>?>("@optionValueFieldName")
     }
 
+
+    override fun getMethods(): Map<String, Class<out Any>> {
+        return METHODS
+    }
 
     fun optionCanEditValues(): Pair<PsiElement, Boolean>? {
         return annotation.cacheGet(OPTION_CAN_EDIT_VALUES_KEY, { resolveDeclaredBoolean(OPTION_CAN_EDIT_VALUES) })
@@ -63,6 +71,14 @@ class AdminPresentationDataDrivenEnumerationWrapper(annotation: PsiAnnotation) :
     
     fun _optionHideIfEmpty(): Pair<PsiElement, Boolean>? {
         return annotation.cacheGet(OPTION_HIDE_IF_EMPTY_KEY, { resolveBoolean(OPTION_HIDE_IF_EMPTY) })
+    }
+
+    fun optionListEntity(): Pair<PsiElement, PsiClass>? {
+        return annotation.cacheGet(OPTION_LIST_ENTITY_KEY, { resolveDeclaredClass(OPTION_LIST_ENTITY) })
+    }
+    
+    fun _optionListEntity(): Pair<PsiElement, PsiClass>? {
+        return annotation.cacheGet(OPTION_LIST_ENTITY_KEY, { resolveClass(OPTION_LIST_ENTITY) })
     }
 
     fun optionValueFieldName(): Pair<PsiElement, String>? {

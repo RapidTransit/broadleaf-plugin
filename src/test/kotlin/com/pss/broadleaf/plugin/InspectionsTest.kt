@@ -32,7 +32,9 @@ class InspectionsTest : LightInspectionTestCase() {
 
         return File("testData").absoluteFile.path + "/inspections"
     }
-
+    fun testEntityBadMapTypes(){
+        doTest()
+    }
 
     fun testEntityBadStringTypes(){
         doTest()

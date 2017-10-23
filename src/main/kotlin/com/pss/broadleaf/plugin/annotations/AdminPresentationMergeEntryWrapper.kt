@@ -2,6 +2,8 @@ package com.pss.broadleaf.plugin.annotations
 
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiAnnotation
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiField
 import com.pss.broadleaf.plugin.cacheGet
 import com.intellij.psi.PsiElement
 
@@ -29,11 +31,18 @@ class AdminPresentationMergeEntryWrapper(annotation: PsiAnnotation) : Annotation
         val STRING_ARRAY_OVERRIDE_VALUE = "stringArrayOverrideValue" 
         val VALIDATION_CONFIGURATIONS = "validationConfigurations" 
 
-        val BOOLEAN_ARRAY_OVERRIDE_VALUE_KEY = Key<Pair<PsiElement, Boolean>?>("@booleanArrayOverrideValue")
+        val METHODS = mapOf<String, Class<out Any>>(Pair("booleanArrayOverrideValue", Array<Boolean>::class.javaPrimitiveType!!), Pair("booleanOverrideValue", Boolean::class.javaPrimitiveType!!), Pair("doubleArrayOverrideValue", Array<Double>::class.javaPrimitiveType!!), Pair("doubleOverrideValue", Double::class.javaPrimitiveType!!), Pair("floatArrayOverrideValue", Array<Float>::class.javaPrimitiveType!!), Pair("floatOverrideValue", Float::class.javaPrimitiveType!!), Pair("intArrayOverrideValue", Array<Int>::class.javaPrimitiveType!!), Pair("intOverrideValue", Int::class.javaPrimitiveType!!), Pair("keys)", Array<Annotation>::class.java), Pair("longArrayOverrideValue", Array<Long>::class.javaPrimitiveType), Pair("longOverrideValue", Long::class.javaPrimitiveType!!), Pair("operationTypes)", Annotation::class.java), Pair("optionFilterParams)", Array<Annotation>::class.java), Pair("overrideValue", String::class.java), Pair("propertyType", String::class.java), Pair("showIfFieldEquals)", Array<Annotation>::class.java), Pair("stringArrayOverrideValue", Array<String>::class.java), Pair("validationConfigurations)", Array<Annotation>::class.java))
+        val BOOLEAN_ARRAY_OVERRIDE_VALUE_KEY = Key<List<Pair<PsiElement, Boolean>>>("@booleanArrayOverrideValue")
         val BOOLEAN_OVERRIDE_VALUE_KEY = Key<Pair<PsiElement, Boolean>?>("@booleanOverrideValue")
+        val DOUBLE_ARRAY_OVERRIDE_VALUE_KEY = Key<List<Pair<PsiElement, Double>>>("@doubleArrayOverrideValue")
+        val DOUBLE_OVERRIDE_VALUE_KEY = Key<Pair<PsiElement, Double>?>("@doubleOverrideValue")
+        val FLOAT_ARRAY_OVERRIDE_VALUE_KEY = Key<List<Pair<PsiElement, Float>>>("@floatArrayOverrideValue")
+        val FLOAT_OVERRIDE_VALUE_KEY = Key<Pair<PsiElement, Float>?>("@floatOverrideValue")
         val INT_ARRAY_OVERRIDE_VALUE_KEY = Key<List<Pair<PsiElement, Int>>>("@intArrayOverrideValue")
         val INT_OVERRIDE_VALUE_KEY = Key<Pair<PsiElement, Int>?>("@intOverrideValue")
         val KEYS_KEY = Key<List<PsiAnnotation>?>("@keys")
+        val LONG_ARRAY_OVERRIDE_VALUE_KEY = Key<List<Pair<PsiElement, Long>>>("@longArrayOverrideValue")
+        val LONG_OVERRIDE_VALUE_KEY = Key<Pair<PsiElement, Long>?>("@longOverrideValue")
         val OPERATION_TYPES_KEY = Key<PsiAnnotation?>("@operationTypes")
         val OPTION_FILTER_PARAMS_KEY = Key<List<PsiAnnotation>?>("@optionFilterParams")
         val OVERRIDE_VALUE_KEY = Key<Pair<PsiElement, String>?>("@overrideValue")
@@ -43,6 +52,10 @@ class AdminPresentationMergeEntryWrapper(annotation: PsiAnnotation) : Annotation
         val VALIDATION_CONFIGURATIONS_KEY = Key<List<PsiAnnotation>?>("@validationConfigurations")
     }
 
+
+    override fun getMethods(): Map<String, Class<out Any>> {
+        return METHODS
+    }
 
     fun booleanArrayOverrideValue(): List<Pair<PsiElement, Boolean>> {
         return annotation.cacheGet(BOOLEAN_ARRAY_OVERRIDE_VALUE_KEY, { resolveDeclaredBooleanArray(BOOLEAN_ARRAY_OVERRIDE_VALUE) })
@@ -60,20 +73,52 @@ class AdminPresentationMergeEntryWrapper(annotation: PsiAnnotation) : Annotation
         return annotation.cacheGet(BOOLEAN_OVERRIDE_VALUE_KEY, { resolveBoolean(BOOLEAN_OVERRIDE_VALUE) })
     }
 
+    fun doubleArrayOverrideValue(): List<Pair<PsiElement, Double>> {
+        return annotation.cacheGet(DOUBLE_ARRAY_OVERRIDE_VALUE_KEY, { resolveDeclaredDoubleArray(DOUBLE_ARRAY_OVERRIDE_VALUE) })
+    }
+    
+    fun _doubleArrayOverrideValue(): List<Pair<PsiElement, Double>> {
+        return annotation.cacheGet(DOUBLE_ARRAY_OVERRIDE_VALUE_KEY, { resolveDoubleArray(DOUBLE_ARRAY_OVERRIDE_VALUE) })
+    }
+
+    fun doubleOverrideValue(): Pair<PsiElement, Double>? {
+        return annotation.cacheGet(DOUBLE_OVERRIDE_VALUE_KEY, { resolveDeclaredDouble(DOUBLE_OVERRIDE_VALUE) })
+    }
+    
+    fun _doubleOverrideValue(): Pair<PsiElement, Double>? {
+        return annotation.cacheGet(DOUBLE_OVERRIDE_VALUE_KEY, { resolveDouble(DOUBLE_OVERRIDE_VALUE) })
+    }
+
+    fun floatArrayOverrideValue(): List<Pair<PsiElement, Float>> {
+        return annotation.cacheGet(FLOAT_ARRAY_OVERRIDE_VALUE_KEY, { resolveDeclaredFloatArray(FLOAT_ARRAY_OVERRIDE_VALUE) })
+    }
+    
+    fun _floatArrayOverrideValue(): List<Pair<PsiElement, Float>> {
+        return annotation.cacheGet(FLOAT_ARRAY_OVERRIDE_VALUE_KEY, { resolveFloatArray(FLOAT_ARRAY_OVERRIDE_VALUE) })
+    }
+
+    fun floatOverrideValue(): Pair<PsiElement, Float>? {
+        return annotation.cacheGet(FLOAT_OVERRIDE_VALUE_KEY, { resolveDeclaredFloat(FLOAT_OVERRIDE_VALUE) })
+    }
+    
+    fun _floatOverrideValue(): Pair<PsiElement, Float>? {
+        return annotation.cacheGet(FLOAT_OVERRIDE_VALUE_KEY, { resolveFloat(FLOAT_OVERRIDE_VALUE) })
+    }
+
     fun intArrayOverrideValue(): List<Pair<PsiElement, Int>> {
-        return annotation.cacheGet(INT_ARRAY_OVERRIDE_VALUE_KEY, { resolveDeclaredIntegerArray(INT_ARRAY_OVERRIDE_VALUE) })
+        return annotation.cacheGet(INT_ARRAY_OVERRIDE_VALUE_KEY, { resolveDeclaredIntArray(INT_ARRAY_OVERRIDE_VALUE) })
     }
     
     fun _intArrayOverrideValue(): List<Pair<PsiElement, Int>> {
-        return annotation.cacheGet(INT_ARRAY_OVERRIDE_VALUE_KEY, { resolveIntegerArray(INT_ARRAY_OVERRIDE_VALUE) })
+        return annotation.cacheGet(INT_ARRAY_OVERRIDE_VALUE_KEY, { resolveIntArray(INT_ARRAY_OVERRIDE_VALUE) })
     }
 
     fun intOverrideValue(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(INT_OVERRIDE_VALUE_KEY, { resolveDeclaredInteger(INT_OVERRIDE_VALUE) })
+        return annotation.cacheGet(INT_OVERRIDE_VALUE_KEY, { resolveDeclaredInt(INT_OVERRIDE_VALUE) })
     }
     
     fun _intOverrideValue(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(INT_OVERRIDE_VALUE_KEY, { resolveInteger(INT_OVERRIDE_VALUE) })
+        return annotation.cacheGet(INT_OVERRIDE_VALUE_KEY, { resolveInt(INT_OVERRIDE_VALUE) })
     }
 
     fun keys(): List<AdminPresentationMapKeyWrapper> {
@@ -90,6 +135,22 @@ class AdminPresentationMergeEntryWrapper(annotation: PsiAnnotation) : Annotation
             return anno.map{ AdminPresentationMapKeyWrapper(it) }
         }
         return emptyList<AdminPresentationMapKeyWrapper>()
+    }
+
+    fun longArrayOverrideValue(): List<Pair<PsiElement, Long>> {
+        return annotation.cacheGet(LONG_ARRAY_OVERRIDE_VALUE_KEY, { resolveDeclaredLongArray(LONG_ARRAY_OVERRIDE_VALUE) })
+    }
+    
+    fun _longArrayOverrideValue(): List<Pair<PsiElement, Long>> {
+        return annotation.cacheGet(LONG_ARRAY_OVERRIDE_VALUE_KEY, { resolveLongArray(LONG_ARRAY_OVERRIDE_VALUE) })
+    }
+
+    fun longOverrideValue(): Pair<PsiElement, Long>? {
+        return annotation.cacheGet(LONG_OVERRIDE_VALUE_KEY, { resolveDeclaredLong(LONG_OVERRIDE_VALUE) })
+    }
+    
+    fun _longOverrideValue(): Pair<PsiElement, Long>? {
+        return annotation.cacheGet(LONG_OVERRIDE_VALUE_KEY, { resolveLong(LONG_OVERRIDE_VALUE) })
     }
 
     fun operationTypes(): AdminPresentationOperationTypesWrapper? {

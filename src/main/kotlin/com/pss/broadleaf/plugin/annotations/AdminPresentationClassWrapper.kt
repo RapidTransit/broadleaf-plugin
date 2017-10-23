@@ -2,6 +2,8 @@ package com.pss.broadleaf.plugin.annotations
 
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiAnnotation
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiField
 import com.pss.broadleaf.plugin.cacheGet
 import com.intellij.psi.PsiElement
 
@@ -18,15 +20,20 @@ class AdminPresentationClassWrapper(annotation: PsiAnnotation) : AnnotationWrapp
         val TAB_OVERRIDES = "tabOverrides" 
         val TABS = "tabs" 
 
+        val METHODS = mapOf<String, Class<out Any>>(Pair("ceilingDisplayEntity", String::class.java), Pair("excludeFromPolymorphism", Boolean::class.javaPrimitiveType!!), Pair("friendlyName", String::class.java), Pair("groupOverrides)", Array<Annotation>::class.java), Pair("populateToOneFields", Enum::class.java), Pair("tabOverrides)", Array<Annotation>::class.java), Pair("tabs)", Array<Annotation>::class.java))
         val CEILING_DISPLAY_ENTITY_KEY = Key<Pair<PsiElement, String>?>("@ceilingDisplayEntity")
         val EXCLUDE_FROM_POLYMORPHISM_KEY = Key<Pair<PsiElement, Boolean>?>("@excludeFromPolymorphism")
         val FRIENDLY_NAME_KEY = Key<Pair<PsiElement, String>?>("@friendlyName")
         val GROUP_OVERRIDES_KEY = Key<List<PsiAnnotation>?>("@groupOverrides")
-        val POPULATE_TO_ONE_FIELDS_KEY = Key<Pair<PsiElement, String>?>("@populateToOneFields")
+        val POPULATE_TO_ONE_FIELDS_KEY = Key<Pair<PsiElement, PsiField>?>("@populateToOneFields")
         val TAB_OVERRIDES_KEY = Key<List<PsiAnnotation>?>("@tabOverrides")
         val TABS_KEY = Key<List<PsiAnnotation>?>("@tabs")
     }
 
+
+    override fun getMethods(): Map<String, Class<out Any>> {
+        return METHODS
+    }
 
     fun ceilingDisplayEntity(): Pair<PsiElement, String>? {
         return annotation.cacheGet(CEILING_DISPLAY_ENTITY_KEY, { resolveDeclaredString(CEILING_DISPLAY_ENTITY) })
@@ -68,11 +75,11 @@ class AdminPresentationClassWrapper(annotation: PsiAnnotation) : AnnotationWrapp
         return emptyList<AdminGroupPresentationOverrideWrapper>()
     }
 
-    fun populateToOneFields(): Pair<PsiElement, String>? {
+    fun populateToOneFields(): Pair<PsiElement, PsiField>? {
         return annotation.cacheGet(POPULATE_TO_ONE_FIELDS_KEY, { resolveDeclaredEnum(POPULATE_TO_ONE_FIELDS) })
     }
     
-    fun _populateToOneFields(): Pair<PsiElement, String>? {
+    fun _populateToOneFields(): Pair<PsiElement, PsiField>? {
         return annotation.cacheGet(POPULATE_TO_ONE_FIELDS_KEY, { resolveEnum(POPULATE_TO_ONE_FIELDS) })
     }
 

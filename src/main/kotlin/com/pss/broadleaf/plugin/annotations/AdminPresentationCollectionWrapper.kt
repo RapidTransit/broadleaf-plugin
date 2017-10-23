@@ -2,6 +2,8 @@ package com.pss.broadleaf.plugin.annotations
 
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiAnnotation
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiField
 import com.pss.broadleaf.plugin.cacheGet
 import com.intellij.psi.PsiElement
 
@@ -33,8 +35,9 @@ class AdminPresentationCollectionWrapper(annotation: PsiAnnotation) : Annotation
         val TAB_ORDER = "tabOrder" 
         val USE_SERVER_SIDE_INSPECTION_CACHE = "useServerSideInspectionCache" 
 
+        val METHODS = mapOf<String, Class<out Any>>(Pair("addFriendlyName", String::class.java), Pair("addType", Enum::class.java), Pair("currencyCodeField", String::class.java), Pair("customCriteria", Array<String>::class.java), Pair("excluded", Boolean::class.javaPrimitiveType!!), Pair("friendlyName", String::class.java), Pair("group", String::class.java), Pair("lazyFetch", Boolean::class.javaPrimitiveType!!), Pair("manualFetch", Boolean::class.javaPrimitiveType!!), Pair("manyToField", String::class.java), Pair("operationTypes)", Annotation::class.java), Pair("order", Int::class.javaPrimitiveType!!), Pair("readOnly", Boolean::class.javaPrimitiveType!!), Pair("securityLevel", String::class.java), Pair("selectizeVisibleField", String::class.java), Pair("showIfFieldEquals)", Array<Annotation>::class.java), Pair("showIfProperty", String::class.java), Pair("sortAscending", Boolean::class.javaPrimitiveType!!), Pair("sortProperty", String::class.java), Pair("tab", String::class.java), Pair("tabOrder", Int::class.javaPrimitiveType!!), Pair("useServerSideInspectionCache", Boolean::class.javaPrimitiveType!!))
         val ADD_FRIENDLY_NAME_KEY = Key<Pair<PsiElement, String>?>("@addFriendlyName")
-        val ADD_TYPE_KEY = Key<Pair<PsiElement, String>?>("@addType")
+        val ADD_TYPE_KEY = Key<Pair<PsiElement, PsiField>?>("@addType")
         val CURRENCY_CODE_FIELD_KEY = Key<Pair<PsiElement, String>?>("@currencyCodeField")
         val CUSTOM_CRITERIA_KEY = Key<List<Pair<PsiElement, String>>>("@customCriteria")
         val EXCLUDED_KEY = Key<Pair<PsiElement, Boolean>?>("@excluded")
@@ -58,6 +61,10 @@ class AdminPresentationCollectionWrapper(annotation: PsiAnnotation) : Annotation
     }
 
 
+    override fun getMethods(): Map<String, Class<out Any>> {
+        return METHODS
+    }
+
     fun addFriendlyName(): Pair<PsiElement, String>? {
         return annotation.cacheGet(ADD_FRIENDLY_NAME_KEY, { resolveDeclaredString(ADD_FRIENDLY_NAME) })
     }
@@ -66,11 +73,11 @@ class AdminPresentationCollectionWrapper(annotation: PsiAnnotation) : Annotation
         return annotation.cacheGet(ADD_FRIENDLY_NAME_KEY, { resolveString(ADD_FRIENDLY_NAME) })
     }
 
-    fun addType(): Pair<PsiElement, String>? {
+    fun addType(): Pair<PsiElement, PsiField>? {
         return annotation.cacheGet(ADD_TYPE_KEY, { resolveDeclaredEnum(ADD_TYPE) })
     }
     
-    fun _addType(): Pair<PsiElement, String>? {
+    fun _addType(): Pair<PsiElement, PsiField>? {
         return annotation.cacheGet(ADD_TYPE_KEY, { resolveEnum(ADD_TYPE) })
     }
 
@@ -155,11 +162,11 @@ class AdminPresentationCollectionWrapper(annotation: PsiAnnotation) : Annotation
     }
 
     fun order(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(ORDER_KEY, { resolveDeclaredInteger(ORDER) })
+        return annotation.cacheGet(ORDER_KEY, { resolveDeclaredInt(ORDER) })
     }
     
     fun _order(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(ORDER_KEY, { resolveInteger(ORDER) })
+        return annotation.cacheGet(ORDER_KEY, { resolveInt(ORDER) })
     }
 
     fun readOnly(): Pair<PsiElement, Boolean>? {
@@ -235,11 +242,11 @@ class AdminPresentationCollectionWrapper(annotation: PsiAnnotation) : Annotation
     }
 
     fun tabOrder(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(TAB_ORDER_KEY, { resolveDeclaredInteger(TAB_ORDER) })
+        return annotation.cacheGet(TAB_ORDER_KEY, { resolveDeclaredInt(TAB_ORDER) })
     }
     
     fun _tabOrder(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(TAB_ORDER_KEY, { resolveInteger(TAB_ORDER) })
+        return annotation.cacheGet(TAB_ORDER_KEY, { resolveInt(TAB_ORDER) })
     }
 
     fun useServerSideInspectionCache(): Pair<PsiElement, Boolean>? {

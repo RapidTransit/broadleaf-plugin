@@ -1,20 +1,27 @@
 package com.pss.broadleaf.plugin.inspections.presentation
 
 import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.jam.model.util.JamCommonUtil
 import com.intellij.psi.*
+import com.intellij.refactoring.util.EnumConstantsUtil
 import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.AdminPresentationMap.CLASS_NAME_SET
+import com.pss.broadleaf.plugin.annotations.AdminPresentationMapWrapper
 import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.AdminPresentationMap as PM
 import com.pss.broadleaf.plugin.BroadleafConstants.PresentationAnnotations.AdminPresentationMapKey as MK
 import com.pss.broadleaf.plugin.isArray
 import com.pss.broadleaf.plugin.isCollectionType
 import com.pss.broadleaf.plugin.isManaged
 import com.siyeh.ig.psiutils.ExpressionUtils
+import javax.lang.model.type.ArrayType
 
 class AdminPresentationMapInspection : PresentationAnnotationInspection(presentationAnnotation = CLASS_NAME_SET){
 
     override fun inspect(psiClass: PsiClass, psiField: PsiField, annotation: PsiAnnotation, holder: ProblemsHolder) {
         val isCollection = psiField.isCollectionType()
         val type = psiField.type
+
+        val an = AdminPresentationMapWrapper(annotation)
+        val b = an.keyClass()
         if(type is PsiClassType && type.resolve()?.qualifiedName == "java.util.Map"){
             val parameterCount = type.parameterCount
             if(parameterCount == 2) {

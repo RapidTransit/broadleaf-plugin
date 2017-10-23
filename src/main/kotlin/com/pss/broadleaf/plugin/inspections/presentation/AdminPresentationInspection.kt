@@ -3,12 +3,15 @@ package com.pss.broadleaf.plugin.inspections.presentation
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.*
 import com.pss.broadleaf.plugin.*
+import com.pss.broadleaf.plugin.annotations.AdminPresentationWrapper
 
 class AdminPresentationInspection : PresentationAnnotationInspection(BroadleafConstants.PresentationAnnotations.AdminPresentation.CLASS_NAME_SET){
     override fun inspect(psiClass: PsiClass, psiField: PsiField, annotation: PsiAnnotation, holder: ProblemsHolder) {
 
         val isCollection = psiField.isCollectionType()
 
+        val anno  = AdminPresentationWrapper(annotation)
+        val ft = anno.fieldType()
         if(isCollection){
            registerProblem(holder, psiField, "admin.mismatch.presentation")
         }

@@ -2,6 +2,8 @@ package com.pss.broadleaf.plugin.annotations
 
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiAnnotation
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiField
 import com.pss.broadleaf.plugin.cacheGet
 import com.intellij.psi.PsiElement
 
@@ -17,14 +19,19 @@ class AdminPresentationToOneLookupWrapper(annotation: PsiAnnotation) : Annotatio
         val LOOKUP_TYPE = "lookupType" 
         val USE_SERVER_SIDE_INSPECTION_CACHE = "useServerSideInspectionCache" 
 
+        val METHODS = mapOf<String, Class<out Any>>(Pair("customCriteria", Array<String>::class.java), Pair("enableTypeaheadLookup", Boolean::class.javaPrimitiveType!!), Pair("forcePopulateChildProperties", Boolean::class.javaPrimitiveType!!), Pair("lookupDisplayProperty", String::class.java), Pair("lookupType", Enum::class.java), Pair("useServerSideInspectionCache", Boolean::class.javaPrimitiveType!!))
         val CUSTOM_CRITERIA_KEY = Key<List<Pair<PsiElement, String>>>("@customCriteria")
         val ENABLE_TYPEAHEAD_LOOKUP_KEY = Key<Pair<PsiElement, Boolean>?>("@enableTypeaheadLookup")
         val FORCE_POPULATE_CHILD_PROPERTIES_KEY = Key<Pair<PsiElement, Boolean>?>("@forcePopulateChildProperties")
         val LOOKUP_DISPLAY_PROPERTY_KEY = Key<Pair<PsiElement, String>?>("@lookupDisplayProperty")
-        val LOOKUP_TYPE_KEY = Key<Pair<PsiElement, String>?>("@lookupType")
+        val LOOKUP_TYPE_KEY = Key<Pair<PsiElement, PsiField>?>("@lookupType")
         val USE_SERVER_SIDE_INSPECTION_CACHE_KEY = Key<Pair<PsiElement, Boolean>?>("@useServerSideInspectionCache")
     }
 
+
+    override fun getMethods(): Map<String, Class<out Any>> {
+        return METHODS
+    }
 
     fun customCriteria(): List<Pair<PsiElement, String>> {
         return annotation.cacheGet(CUSTOM_CRITERIA_KEY, { resolveDeclaredStringArray(CUSTOM_CRITERIA) })
@@ -58,11 +65,11 @@ class AdminPresentationToOneLookupWrapper(annotation: PsiAnnotation) : Annotatio
         return annotation.cacheGet(LOOKUP_DISPLAY_PROPERTY_KEY, { resolveString(LOOKUP_DISPLAY_PROPERTY) })
     }
 
-    fun lookupType(): Pair<PsiElement, String>? {
+    fun lookupType(): Pair<PsiElement, PsiField>? {
         return annotation.cacheGet(LOOKUP_TYPE_KEY, { resolveDeclaredEnum(LOOKUP_TYPE) })
     }
     
-    fun _lookupType(): Pair<PsiElement, String>? {
+    fun _lookupType(): Pair<PsiElement, PsiField>? {
         return annotation.cacheGet(LOOKUP_TYPE_KEY, { resolveEnum(LOOKUP_TYPE) })
     }
 

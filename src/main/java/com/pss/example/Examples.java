@@ -30,11 +30,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@AdminPresentationMergeOverrides({
-        @AdminPresentationMergeOverride(name = "", mergeEntries = {
-                @AdminPresentationMergeEntry(propertyType = PropertyType.)
-        })
-})
+//@AdminPresentationMergeOverrides({
+//        @AdminPresentationMergeOverride(name = "", mergeEntries = {
+//               @AdminPresentationMergeEntry(propertyType = )
+//        })
+//})
 public class Examples extends CustomPersistenceHandlerAdapter {
     private static final String A = "product";
     private static ThreadLocal<String> THREAD_LOCAL = ThreadLocalManager.createThreadLocal(String.class, true);
@@ -43,7 +43,7 @@ public class Examples extends CustomPersistenceHandlerAdapter {
     @AdminPresentation(fieldType = ADDITIONAL_FOREIGN_KEY)
 
     @AdminPresentationAdornedTargetCollection(gridVisibleFields = {"a", "b"}, targetObjectProperty = "a", addType = AdornedTargetAddMethodType.LOOKUP)
-    @AdminPresentationMap(forceFreeFormKeys = true, keys =
+    @AdminPresentationMap(forceFreeFormKeys = true, keyClass = String.class, keys =
             @AdminPresentationMapKey(keyName = "A", friendlyKeyName = "a")
     )
     @OneToMany(targetEntity = CategoryProductXrefImpl.class)

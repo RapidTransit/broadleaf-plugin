@@ -3,30 +3,11 @@ package com.pss.broadleaf.plugin.annotations
 import com.intellij.openapi.util.Key
 import com.intellij.psi.*
 
-open class AnnotationWrapper(val annotation: PsiAnnotation) {
+abstract class AnnotationWrapper(val annotation: PsiAnnotation) {
 
     val evaluater: PsiConstantEvaluationHelper = JavaPsiFacade.getInstance(annotation.project).constantEvaluationHelper
 
-
-    protected fun resolveDeclaredStringArray(name: String): List<Pair<PsiElement, String>> {
-        val value = annotation.findDeclaredAttributeValue(name)
-        return extractStringArray(value)
-    }
-
-    protected fun resolveStringArray(name: String): List<Pair<PsiElement, String>> {
-        val value = annotation.findAttributeValue(name)
-        return extractStringArray(value)
-    }
-
-    protected fun resolveDeclaredAnnotationArray(name: String): List<PsiAnnotation> {
-        val value = annotation.findDeclaredAttributeValue(name)
-        return extractAnnotationArrray(value)
-    }
-
-    protected fun resolveAnnotationArray(name: String): List<PsiAnnotation> {
-        val value = annotation.findAttributeValue(name)
-        return extractAnnotationArrray(value)
-    }
+    abstract fun getMethods(): Map<String,  Class<out Any>>
 
     protected fun resolveDeclaredString(name: String): Pair<PsiElement, String>? {
         val value = annotation.findDeclaredAttributeValue(name)
@@ -38,15 +19,58 @@ open class AnnotationWrapper(val annotation: PsiAnnotation) {
         return extractString(value)
     }
 
-    protected fun resolveDeclaredInteger(name: String): Pair<PsiElement, Int>? {
+    protected fun resolveDeclaredStringArray(name: String): List<Pair<PsiElement, String>> {
         val value = annotation.findDeclaredAttributeValue(name)
-        return extractInteger(value)
+        return extractStringArray(value)
     }
 
-    protected fun resolveInteger(name: String): Pair<PsiElement, Int>? {
+    protected fun resolveStringArray(name: String): List<Pair<PsiElement, String>> {
         val value = annotation.findAttributeValue(name)
-        return extractInteger(value)
+        return extractStringArray(value)
     }
+
+    protected fun resolveDeclaredAnnotation(name: String): PsiAnnotation? {
+        val value = annotation.findDeclaredAttributeValue(name)
+        return extractAnnotation(value)
+    }
+
+    protected fun resolveAnnotation(name: String): PsiAnnotation? {
+        val value = annotation.findAttributeValue(name)
+        return extractAnnotation(value)
+    }
+
+    protected fun resolveDeclaredAnnotationArray(name: String): List<PsiAnnotation> {
+        val value = annotation.findDeclaredAttributeValue(name)
+        return extractAnnotationArray(value)
+    }
+
+    protected fun resolveAnnotationArray(name: String): List<PsiAnnotation> {
+        val value = annotation.findAttributeValue(name)
+        return extractAnnotationArray(value)
+    }
+
+
+
+    protected fun resolveDeclaredInt(name: String): Pair<PsiElement, Int>? {
+        val value = annotation.findDeclaredAttributeValue(name)
+        return extractInt(value)
+    }
+
+    protected fun resolveInt(name: String): Pair<PsiElement, Int>? {
+        val value = annotation.findAttributeValue(name)
+        return extractInt(value)
+    }
+
+    protected fun resolveDeclaredIntArray(name: String): List<Pair<PsiElement, Int>> {
+        val value = annotation.findDeclaredAttributeValue(name)
+        return extractIntArray(value)
+    }
+
+    protected fun resolveIntArray(name: String): List<Pair<PsiElement, Int>> {
+        val value = annotation.findAttributeValue(name)
+        return extractIntArray(value)
+    }
+
 
     protected fun resolveDeclaredDouble(name: String): Pair<PsiElement, Double>? {
         val value = annotation.findDeclaredAttributeValue(name)
@@ -58,6 +82,16 @@ open class AnnotationWrapper(val annotation: PsiAnnotation) {
         return extractDouble(value)
     }
 
+    protected fun resolveDeclaredDoubleArray(name: String): List<Pair<PsiElement, Double>> {
+        val value = annotation.findDeclaredAttributeValue(name)
+        return extractDoubleArray(value)
+    }
+
+    protected fun resolveDoubleArray(name: String): List<Pair<PsiElement, Double>> {
+        val value = annotation.findAttributeValue(name)
+        return extractDoubleArray(value)
+    }
+
     protected fun resolveDeclaredLong(name: String): Pair<PsiElement, Long>? {
         val value = annotation.findDeclaredAttributeValue(name)
         return extractLong(value)
@@ -67,6 +101,16 @@ open class AnnotationWrapper(val annotation: PsiAnnotation) {
         val value = annotation.findAttributeValue(name)
         return extractLong(value)
     }
+    protected fun resolveDeclaredLongArray(name: String): List<Pair<PsiElement, Long>> {
+        val value = annotation.findDeclaredAttributeValue(name)
+        return extractLongArray(value)
+    }
+
+    protected fun resolveLongArray(name: String): List<Pair<PsiElement, Long>> {
+        val value = annotation.findAttributeValue(name)
+        return extractLongArray(value)
+    }
+
     protected fun resolveBoolean(name: String): Pair<PsiElement, Boolean>? {
         val value = annotation.findAttributeValue(name)
         return extractBoolean(value)
@@ -75,37 +119,50 @@ open class AnnotationWrapper(val annotation: PsiAnnotation) {
         val value = annotation.findDeclaredAttributeValue(name)
         return extractBoolean(value)
     }
-
-
-    protected fun resolveDeclaredClass(name: String): Pair<PsiElement, Int>? {
-        val value = annotation.findDeclaredAttributeValue(name)
-        return extractInteger(value)
-    }
-
-    protected fun resolveClass(name: String): Pair<PsiElement, Int>? {
+    protected fun resolveBooleanArray(name: String): List<Pair<PsiElement, Boolean>> {
         val value = annotation.findAttributeValue(name)
-        return extractInteger(value)
+        return extractBooleanArray(value)
     }
-
-    protected fun resolveDeclaredEnum(name: String): Pair<PsiElement, String>? {
+    protected fun resolveDeclaredBooleanArray(name: String): List<Pair<PsiElement, Boolean>> {
         val value = annotation.findDeclaredAttributeValue(name)
-        return extractString(value)
+        return extractBooleanArray(value)
     }
 
-    protected fun resolveEnum(name: String): Pair<PsiElement, String>? {
-        val value = annotation.findAttributeValue(name)
-        return extractString(value)
-    }
-
-
-    protected fun resolveDeclaredAnnotation(name: String): PsiAnnotation? {
+    protected fun resolveDeclaredClass(name: String): Pair<PsiElement, PsiClass>? {
         val value = annotation.findDeclaredAttributeValue(name)
-        return extractAnnotation(value)
+        return extractClass(value)
     }
 
-    protected fun resolveAnnotation(name: String): PsiAnnotation? {
+    protected fun resolveClass(name: String): Pair<PsiElement, PsiClass>? {
         val value = annotation.findAttributeValue(name)
-        return extractAnnotation(value)
+        return extractClass(value)
+    }
+    protected fun resolveDeclaredClassArray(name: String): List<Pair<PsiElement, PsiClass>> {
+        val value = annotation.findDeclaredAttributeValue(name)
+        return extractClassArray(value)
+    }
+
+    protected fun resolveClassArray(name: String): List<Pair<PsiElement, PsiClass>> {
+        val value = annotation.findAttributeValue(name)
+        return extractClassArray(value)
+    }
+    protected fun resolveDeclaredEnum(name: String): Pair<PsiElement, PsiField>? {
+        val value = annotation.findDeclaredAttributeValue(name)
+        return extractEnum(value)
+    }
+
+    protected fun resolveEnum(name: String): Pair<PsiElement, PsiField>? {
+        val value = annotation.findAttributeValue(name)
+        return extractEnum(value)
+    }
+    protected fun resolveDeclaredEnumArray(name: String): List<Pair<PsiElement, PsiField>> {
+        val value = annotation.findDeclaredAttributeValue(name)
+        return extractEnumArray(value)
+    }
+
+    protected fun resolveEnumArray(name: String): List<Pair<PsiElement, PsiField>> {
+        val value = annotation.findAttributeValue(name)
+        return extractEnumArray(value)
     }
 
 
@@ -119,6 +176,15 @@ open class AnnotationWrapper(val annotation: PsiAnnotation) {
         return extractFloat(value)
     }
 
+    protected fun resolveDeclaredFloatArray(name: String): List<Pair<PsiElement, Float>> {
+        val value = annotation.findDeclaredAttributeValue(name)
+        return extractFloatArray(value)
+    }
+
+    protected fun resolveFloatArray(name: String): List<Pair<PsiElement, Float>> {
+        val value = annotation.findAttributeValue(name)
+        return extractFloatArray(value)
+    }
 
 
 
@@ -149,8 +215,30 @@ open class AnnotationWrapper(val annotation: PsiAnnotation) {
         }
         return emptyList()
     }
+    private fun extractClass(value: PsiAnnotationMemberValue?): Pair<PsiElement, PsiClass>? {
+        if (value != null) {
+            val resolved = evaluater.computeConstantExpression(value)
+            if (resolved is PsiClass) {
+                return Pair(value, resolved)
+            }
+        }
+        return null
+    }
 
-    private fun extractInteger(value: PsiAnnotationMemberValue?): Pair<PsiElement, Int>? {
+    private fun extractClassArray(value: PsiAnnotationMemberValue?): List<Pair<PsiElement, PsiClass>> {
+        if (value != null) {
+            if(value is PsiArrayInitializerMemberValue){
+                return value.initializers.mapNotNull { extractClass(it) }
+            } else {
+                val extracted = extractClass(value)
+                if(extracted != null){
+                    return listOf(extracted)
+                }
+            }
+        }
+        return emptyList()
+    }
+    private fun extractInt(value: PsiAnnotationMemberValue?): Pair<PsiElement, Int>? {
         if (value != null) {
             val resolved = evaluater.computeConstantExpression(value)
             if (resolved is Int) {
@@ -159,7 +247,19 @@ open class AnnotationWrapper(val annotation: PsiAnnotation) {
         }
         return null
     }
-
+    private fun extractIntArray(value: PsiAnnotationMemberValue?): List<Pair<PsiElement, Int>> {
+        if (value != null) {
+            if(value is PsiArrayInitializerMemberValue){
+                return value.initializers.mapNotNull { extractInt(it) }
+            } else {
+                val extracted = extractInt(value)
+                if(extracted != null){
+                    return listOf(extracted)
+                }
+            }
+        }
+        return emptyList()
+    }
 
 
     private fun extractDouble(value: PsiAnnotationMemberValue?): Pair<PsiElement, Double>? {
@@ -171,7 +271,19 @@ open class AnnotationWrapper(val annotation: PsiAnnotation) {
         }
         return null
     }
-
+    private fun extractDoubleArray(value: PsiAnnotationMemberValue?): List<Pair<PsiElement, Double>> {
+        if (value != null) {
+            if(value is PsiArrayInitializerMemberValue){
+                return value.initializers.mapNotNull { extractDouble(it) }
+            } else {
+                val extracted = extractDouble(value)
+                if(extracted != null){
+                    return listOf(extracted)
+                }
+            }
+        }
+        return emptyList()
+    }
     private fun extractFloat(value: PsiAnnotationMemberValue?): Pair<PsiElement, Float>? {
         if (value != null) {
             val resolved = evaluater.computeConstantExpression(value)
@@ -182,6 +294,19 @@ open class AnnotationWrapper(val annotation: PsiAnnotation) {
         return null
     }
 
+    private fun extractFloatArray(value: PsiAnnotationMemberValue?): List<Pair<PsiElement, Float>> {
+        if (value != null) {
+            if(value is PsiArrayInitializerMemberValue){
+                return value.initializers.mapNotNull { extractFloat(it) }
+            } else {
+                val extracted = extractFloat(value)
+                if(extracted != null){
+                    return listOf(extracted)
+                }
+            }
+        }
+        return emptyList()
+    }
     private fun extractAnnotation(value: PsiAnnotationMemberValue?): PsiAnnotation? {
         if (value != null && value is PsiAnnotation) {
             return value
@@ -190,7 +315,7 @@ open class AnnotationWrapper(val annotation: PsiAnnotation) {
     }
 
 
-    private fun extractAnnotationArrray(value: PsiAnnotationMemberValue?): List<PsiAnnotation> {
+    private fun extractAnnotationArray(value: PsiAnnotationMemberValue?): List<PsiAnnotation> {
         if (value != null) {
             if(value is PsiArrayInitializerMemberValue){
                 return value.initializers.mapNotNull { extractAnnotation(it) }
@@ -213,6 +338,19 @@ open class AnnotationWrapper(val annotation: PsiAnnotation) {
         }
         return null
     }
+    private fun extractLongArray(value: PsiAnnotationMemberValue?): List<Pair<PsiElement, Long>> {
+        if (value != null) {
+            if(value is PsiArrayInitializerMemberValue){
+                return value.initializers.mapNotNull { extractLong(it) }
+            } else {
+                val extracted = extractLong(value)
+                if(extracted != null){
+                    return listOf(extracted)
+                }
+            }
+        }
+        return emptyList()
+    }
     private fun extractBoolean(value: PsiAnnotationMemberValue?): Pair<PsiElement, Boolean>? {
         if (value != null) {
             val resolved = evaluater.computeConstantExpression(value)
@@ -222,17 +360,31 @@ open class AnnotationWrapper(val annotation: PsiAnnotation) {
         }
         return null
     }
-    private fun extractEnum(value: PsiAnnotationMemberValue?): Pair<PsiElement, String>? {
+
+    private fun extractBooleanArray(value: PsiAnnotationMemberValue?): List<Pair<PsiElement, Boolean>> {
         if (value != null) {
-            val resolved = evaluater.computeConstantExpression(value)
-            if (resolved is String) {
+            if(value is PsiArrayInitializerMemberValue){
+                return value.initializers.mapNotNull { extractBoolean(it) }
+            } else {
+                val extracted = extractBoolean(value)
+                if(extracted != null){
+                    return listOf(extracted)
+                }
+            }
+        }
+        return emptyList()
+    }
+    private fun extractEnum(value: PsiAnnotationMemberValue?): Pair<PsiElement, PsiField>? {
+        if (value != null && value is PsiReferenceExpression) {
+            val resolved = value.resolve()
+            if (resolved is PsiField) {
                 return Pair(value, resolved)
             }
         }
         return null
     }
 
-    private fun extractEnumArray(value: PsiAnnotationMemberValue?): List<Pair<PsiElement, String>> {
+    private fun extractEnumArray(value: PsiAnnotationMemberValue?): List<Pair<PsiElement, PsiField>> {
         if (value != null) {
             if(value is PsiArrayInitializerMemberValue){
                 return value.initializers.mapNotNull { extractEnum(it) }

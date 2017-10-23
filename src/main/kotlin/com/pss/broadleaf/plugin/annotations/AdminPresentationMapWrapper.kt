@@ -2,6 +2,8 @@ package com.pss.broadleaf.plugin.annotations
 
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiAnnotation
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiField
 import com.pss.broadleaf.plugin.cacheGet
 import com.intellij.psi.PsiElement
 
@@ -44,6 +46,7 @@ class AdminPresentationMapWrapper(annotation: PsiAnnotation) : AnnotationWrapper
         val VALUE_CLASS = "valueClass" 
         val VALUE_PROPERTY_FRIENDLY_NAME = "valuePropertyFriendlyName" 
 
+        val METHODS = mapOf<String, Class<out Any>>(Pair("addFriendlyName", String::class.java), Pair("currencyCodeField", String::class.java), Pair("customCriteria", Array<String>::class.java), Pair("deleteEntityUponRemove", Boolean::class.javaPrimitiveType!!), Pair("excluded", Boolean::class.javaPrimitiveType!!), Pair("forceFreeFormKeys", Boolean::class.javaPrimitiveType!!), Pair("friendlyName", String::class.java), Pair("group", String::class.java), Pair("isSimpleValue", Enum::class.java), Pair("keyClass", Class::class.java), Pair("keyPropertyFriendlyName", String::class.java), Pair("keys)", Array<Annotation>::class.java), Pair("lazyFetch", Boolean::class.javaPrimitiveType!!), Pair("manualFetch", Boolean::class.javaPrimitiveType!!), Pair("manyToField", String::class.java), Pair("mapKeyOptionEntityClass", Class::class.java), Pair("mapKeyOptionEntityDisplayField", String::class.java), Pair("mapKeyOptionEntityValueField", String::class.java), Pair("mapKeyValueProperty", String::class.java), Pair("mediaField", String::class.java), Pair("operationTypes)", Annotation::class.java), Pair("order", Int::class.javaPrimitiveType!!), Pair("readOnly", Boolean::class.javaPrimitiveType!!), Pair("securityLevel", String::class.java), Pair("showIfFieldEquals)", Array<Annotation>::class.java), Pair("showIfProperty", String::class.java), Pair("tab", String::class.java), Pair("tabOrder", Int::class.javaPrimitiveType!!), Pair("toOneParentProperty", String::class.java), Pair("toOneTargetProperty", String::class.java), Pair("useServerSideInspectionCache", Boolean::class.javaPrimitiveType!!), Pair("valueClass", Class::class.java), Pair("valuePropertyFriendlyName", String::class.java))
         val ADD_FRIENDLY_NAME_KEY = Key<Pair<PsiElement, String>?>("@addFriendlyName")
         val CURRENCY_CODE_FIELD_KEY = Key<Pair<PsiElement, String>?>("@currencyCodeField")
         val CUSTOM_CRITERIA_KEY = Key<List<Pair<PsiElement, String>>>("@customCriteria")
@@ -52,12 +55,14 @@ class AdminPresentationMapWrapper(annotation: PsiAnnotation) : AnnotationWrapper
         val FORCE_FREE_FORM_KEYS_KEY = Key<Pair<PsiElement, Boolean>?>("@forceFreeFormKeys")
         val FRIENDLY_NAME_KEY = Key<Pair<PsiElement, String>?>("@friendlyName")
         val GROUP_KEY = Key<Pair<PsiElement, String>?>("@group")
-        val IS_SIMPLE_VALUE_KEY = Key<Pair<PsiElement, String>?>("@isSimpleValue")
+        val IS_SIMPLE_VALUE_KEY = Key<Pair<PsiElement, PsiField>?>("@isSimpleValue")
+        val KEY_CLASS_KEY = Key<Pair<PsiElement, PsiClass>?>("@keyClass")
         val KEY_PROPERTY_FRIENDLY_NAME_KEY = Key<Pair<PsiElement, String>?>("@keyPropertyFriendlyName")
         val KEYS_KEY = Key<List<PsiAnnotation>?>("@keys")
         val LAZY_FETCH_KEY = Key<Pair<PsiElement, Boolean>?>("@lazyFetch")
         val MANUAL_FETCH_KEY = Key<Pair<PsiElement, Boolean>?>("@manualFetch")
         val MANY_TO_FIELD_KEY = Key<Pair<PsiElement, String>?>("@manyToField")
+        val MAP_KEY_OPTION_ENTITY_CLASS_KEY = Key<Pair<PsiElement, PsiClass>?>("@mapKeyOptionEntityClass")
         val MAP_KEY_OPTION_ENTITY_DISPLAY_FIELD_KEY = Key<Pair<PsiElement, String>?>("@mapKeyOptionEntityDisplayField")
         val MAP_KEY_OPTION_ENTITY_VALUE_FIELD_KEY = Key<Pair<PsiElement, String>?>("@mapKeyOptionEntityValueField")
         val MAP_KEY_VALUE_PROPERTY_KEY = Key<Pair<PsiElement, String>?>("@mapKeyValueProperty")
@@ -73,9 +78,14 @@ class AdminPresentationMapWrapper(annotation: PsiAnnotation) : AnnotationWrapper
         val TO_ONE_PARENT_PROPERTY_KEY = Key<Pair<PsiElement, String>?>("@toOneParentProperty")
         val TO_ONE_TARGET_PROPERTY_KEY = Key<Pair<PsiElement, String>?>("@toOneTargetProperty")
         val USE_SERVER_SIDE_INSPECTION_CACHE_KEY = Key<Pair<PsiElement, Boolean>?>("@useServerSideInspectionCache")
+        val VALUE_CLASS_KEY = Key<Pair<PsiElement, PsiClass>?>("@valueClass")
         val VALUE_PROPERTY_FRIENDLY_NAME_KEY = Key<Pair<PsiElement, String>?>("@valuePropertyFriendlyName")
     }
 
+
+    override fun getMethods(): Map<String, Class<out Any>> {
+        return METHODS
+    }
 
     fun addFriendlyName(): Pair<PsiElement, String>? {
         return annotation.cacheGet(ADD_FRIENDLY_NAME_KEY, { resolveDeclaredString(ADD_FRIENDLY_NAME) })
@@ -141,12 +151,20 @@ class AdminPresentationMapWrapper(annotation: PsiAnnotation) : AnnotationWrapper
         return annotation.cacheGet(GROUP_KEY, { resolveString(GROUP) })
     }
 
-    fun isSimpleValue(): Pair<PsiElement, String>? {
+    fun isSimpleValue(): Pair<PsiElement, PsiField>? {
         return annotation.cacheGet(IS_SIMPLE_VALUE_KEY, { resolveDeclaredEnum(IS_SIMPLE_VALUE) })
     }
     
-    fun _isSimpleValue(): Pair<PsiElement, String>? {
+    fun _isSimpleValue(): Pair<PsiElement, PsiField>? {
         return annotation.cacheGet(IS_SIMPLE_VALUE_KEY, { resolveEnum(IS_SIMPLE_VALUE) })
+    }
+
+    fun keyClass(): Pair<PsiElement, PsiClass>? {
+        return annotation.cacheGet(KEY_CLASS_KEY, { resolveDeclaredClass(KEY_CLASS) })
+    }
+    
+    fun _keyClass(): Pair<PsiElement, PsiClass>? {
+        return annotation.cacheGet(KEY_CLASS_KEY, { resolveClass(KEY_CLASS) })
     }
 
     fun keyPropertyFriendlyName(): Pair<PsiElement, String>? {
@@ -195,6 +213,14 @@ class AdminPresentationMapWrapper(annotation: PsiAnnotation) : AnnotationWrapper
     
     fun _manyToField(): Pair<PsiElement, String>? {
         return annotation.cacheGet(MANY_TO_FIELD_KEY, { resolveString(MANY_TO_FIELD) })
+    }
+
+    fun mapKeyOptionEntityClass(): Pair<PsiElement, PsiClass>? {
+        return annotation.cacheGet(MAP_KEY_OPTION_ENTITY_CLASS_KEY, { resolveDeclaredClass(MAP_KEY_OPTION_ENTITY_CLASS) })
+    }
+    
+    fun _mapKeyOptionEntityClass(): Pair<PsiElement, PsiClass>? {
+        return annotation.cacheGet(MAP_KEY_OPTION_ENTITY_CLASS_KEY, { resolveClass(MAP_KEY_OPTION_ENTITY_CLASS) })
     }
 
     fun mapKeyOptionEntityDisplayField(): Pair<PsiElement, String>? {
@@ -246,11 +272,11 @@ class AdminPresentationMapWrapper(annotation: PsiAnnotation) : AnnotationWrapper
     }
 
     fun order(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(ORDER_KEY, { resolveDeclaredInteger(ORDER) })
+        return annotation.cacheGet(ORDER_KEY, { resolveDeclaredInt(ORDER) })
     }
     
     fun _order(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(ORDER_KEY, { resolveInteger(ORDER) })
+        return annotation.cacheGet(ORDER_KEY, { resolveInt(ORDER) })
     }
 
     fun readOnly(): Pair<PsiElement, Boolean>? {
@@ -302,11 +328,11 @@ class AdminPresentationMapWrapper(annotation: PsiAnnotation) : AnnotationWrapper
     }
 
     fun tabOrder(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(TAB_ORDER_KEY, { resolveDeclaredInteger(TAB_ORDER) })
+        return annotation.cacheGet(TAB_ORDER_KEY, { resolveDeclaredInt(TAB_ORDER) })
     }
     
     fun _tabOrder(): Pair<PsiElement, Int>? {
-        return annotation.cacheGet(TAB_ORDER_KEY, { resolveInteger(TAB_ORDER) })
+        return annotation.cacheGet(TAB_ORDER_KEY, { resolveInt(TAB_ORDER) })
     }
 
     fun toOneParentProperty(): Pair<PsiElement, String>? {
@@ -331,6 +357,14 @@ class AdminPresentationMapWrapper(annotation: PsiAnnotation) : AnnotationWrapper
     
     fun _useServerSideInspectionCache(): Pair<PsiElement, Boolean>? {
         return annotation.cacheGet(USE_SERVER_SIDE_INSPECTION_CACHE_KEY, { resolveBoolean(USE_SERVER_SIDE_INSPECTION_CACHE) })
+    }
+
+    fun valueClass(): Pair<PsiElement, PsiClass>? {
+        return annotation.cacheGet(VALUE_CLASS_KEY, { resolveDeclaredClass(VALUE_CLASS) })
+    }
+    
+    fun _valueClass(): Pair<PsiElement, PsiClass>? {
+        return annotation.cacheGet(VALUE_CLASS_KEY, { resolveClass(VALUE_CLASS) })
     }
 
     fun valuePropertyFriendlyName(): Pair<PsiElement, String>? {
