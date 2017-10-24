@@ -16,6 +16,7 @@ class AdminPresentationMapFieldsWrapper(annotation: PsiAnnotation) : AnnotationW
         val TO_ONE_PARENT_PROPERTY = "toOneParentProperty" 
         val TO_ONE_TARGET_PROPERTY = "toOneTargetProperty" 
 
+        val INVOKERS = mapOf<String, (AdminPresentationMapFieldsWrapper)->Any?>(Pair("mapDisplayFields", {wrapper-> wrapper.mapDisplayFields() }) , Pair("toOneParentProperty", {wrapper-> wrapper.toOneParentProperty() }) , Pair("toOneTargetProperty", {wrapper-> wrapper.toOneTargetProperty() }) )
         val METHODS = mapOf<String, Class<out Any>>(Pair("mapDisplayFields)", Array<Annotation>::class.java), Pair("toOneParentProperty", String::class.java), Pair("toOneTargetProperty", String::class.java))
         val MAP_DISPLAY_FIELDS_KEY = Key<List<PsiAnnotation>?>("@mapDisplayFields")
         val TO_ONE_PARENT_PROPERTY_KEY = Key<Pair<PsiElement, String>?>("@toOneParentProperty")

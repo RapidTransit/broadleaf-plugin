@@ -15,6 +15,7 @@ class FieldValueConfigurationWrapper(annotation: PsiAnnotation) : AnnotationWrap
         val FIELD_NAME = "fieldName" 
         val FIELD_VALUES = "fieldValues" 
 
+        val INVOKERS = mapOf<String, (FieldValueConfigurationWrapper)->Any?>(Pair("fieldName", {wrapper-> wrapper.fieldName() }) , Pair("fieldValues", {wrapper-> wrapper.fieldValues() }) )
         val METHODS = mapOf<String, Class<out Any>>(Pair("fieldName", String::class.java), Pair("fieldValues", Array<String>::class.java))
         val FIELD_NAME_KEY = Key<Pair<PsiElement, String>?>("@fieldName")
         val FIELD_VALUES_KEY = Key<List<Pair<PsiElement, String>>>("@fieldValues")

@@ -15,6 +15,7 @@ class AdminPresentationMergeOverrideWrapper(annotation: PsiAnnotation) : Annotat
         val MERGE_ENTRIES = "mergeEntries" 
         val NAME = "name" 
 
+        val INVOKERS = mapOf<String, (AdminPresentationMergeOverrideWrapper)->Any?>(Pair("mergeEntries", {wrapper-> wrapper.mergeEntries() }) , Pair("name", {wrapper-> wrapper.name() }) )
         val METHODS = mapOf<String, Class<out Any>>(Pair("mergeEntries)", Array<Annotation>::class.java), Pair("name", String::class.java))
         val MERGE_ENTRIES_KEY = Key<List<PsiAnnotation>?>("@mergeEntries")
         val NAME_KEY = Key<Pair<PsiElement, String>?>("@name")

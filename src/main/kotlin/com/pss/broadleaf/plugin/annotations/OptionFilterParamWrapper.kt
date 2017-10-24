@@ -16,6 +16,7 @@ class OptionFilterParamWrapper(annotation: PsiAnnotation) : AnnotationWrapper(an
         val PARAM_TYPE = "paramType" 
         val VALUE = "value" 
 
+        val INVOKERS = mapOf<String, (OptionFilterParamWrapper)->Any?>(Pair("param", {wrapper-> wrapper.param() }) , Pair("paramType", {wrapper-> wrapper.paramType() }) , Pair("value", {wrapper-> wrapper.value() }) )
         val METHODS = mapOf<String, Class<out Any>>(Pair("param", String::class.java), Pair("paramType", Enum::class.java), Pair("value", String::class.java))
         val PARAM_KEY = Key<Pair<PsiElement, String>?>("@param")
         val PARAM_TYPE_KEY = Key<Pair<PsiElement, PsiField>?>("@paramType")

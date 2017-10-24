@@ -19,6 +19,7 @@ class AdminPresentationDataDrivenEnumerationWrapper(annotation: PsiAnnotation) :
         val OPTION_LIST_ENTITY = "optionListEntity" 
         val OPTION_VALUE_FIELD_NAME = "optionValueFieldName" 
 
+        val INVOKERS = mapOf<String, (AdminPresentationDataDrivenEnumerationWrapper)->Any?>(Pair("optionCanEditValues", {wrapper-> wrapper.optionCanEditValues() }) , Pair("optionDisplayFieldName", {wrapper-> wrapper.optionDisplayFieldName() }) , Pair("optionFilterParams", {wrapper-> wrapper.optionFilterParams() }) , Pair("optionHideIfEmpty", {wrapper-> wrapper.optionHideIfEmpty() }) , Pair("optionListEntity", {wrapper-> wrapper.optionListEntity() }) , Pair("optionValueFieldName", {wrapper-> wrapper.optionValueFieldName() }) )
         val METHODS = mapOf<String, Class<out Any>>(Pair("optionCanEditValues", Boolean::class.javaPrimitiveType!!), Pair("optionDisplayFieldName", String::class.java), Pair("optionFilterParams)", Array<Annotation>::class.java), Pair("optionHideIfEmpty", Boolean::class.javaPrimitiveType!!), Pair("optionListEntity", Class::class.java), Pair("optionValueFieldName", String::class.java))
         val OPTION_CAN_EDIT_VALUES_KEY = Key<Pair<PsiElement, Boolean>?>("@optionCanEditValues")
         val OPTION_DISPLAY_FIELD_NAME_KEY = Key<Pair<PsiElement, String>?>("@optionDisplayFieldName")

@@ -19,6 +19,7 @@ class AdminPresentationOverridesWrapper(annotation: PsiAnnotation) : AnnotationW
         val TO_ONE_LOOKUPS = "toOneLookups" 
         val VALUE = "value" 
 
+        val INVOKERS = mapOf<String, (AdminPresentationOverridesWrapper)->Any?>(Pair("adornedTargetCollections", {wrapper-> wrapper.adornedTargetCollections() }) , Pair("collections", {wrapper-> wrapper.collections() }) , Pair("dataDrivenEnums", {wrapper-> wrapper.dataDrivenEnums() }) , Pair("maps", {wrapper-> wrapper.maps() }) , Pair("toOneLookups", {wrapper-> wrapper.toOneLookups() }) , Pair("value", {wrapper-> wrapper.value() }) )
         val METHODS = mapOf<String, Class<out Any>>(Pair("adornedTargetCollections)", Array<Annotation>::class.java), Pair("collections)", Array<Annotation>::class.java), Pair("dataDrivenEnums)", Array<Annotation>::class.java), Pair("maps)", Array<Annotation>::class.java), Pair("toOneLookups)", Array<Annotation>::class.java), Pair("value)", Array<Annotation>::class.java))
         val ADORNED_TARGET_COLLECTIONS_KEY = Key<List<PsiAnnotation>?>("@adornedTargetCollections")
         val COLLECTIONS_KEY = Key<List<PsiAnnotation>?>("@collections")

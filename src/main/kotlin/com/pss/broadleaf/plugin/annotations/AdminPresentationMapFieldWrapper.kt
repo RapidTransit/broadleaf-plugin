@@ -17,6 +17,7 @@ class AdminPresentationMapFieldWrapper(annotation: PsiAnnotation) : AnnotationWr
         val MANY_TO_FIELD = "manyToField" 
         val TARGET_CLASS = "targetClass" 
 
+        val INVOKERS = mapOf<String, (AdminPresentationMapFieldWrapper)->Any?>(Pair("fieldName", {wrapper-> wrapper.fieldName() }) , Pair("fieldPresentation", {wrapper-> wrapper.fieldPresentation() }) , Pair("manyToField", {wrapper-> wrapper.manyToField() }) , Pair("targetClass", {wrapper-> wrapper.targetClass() }) )
         val METHODS = mapOf<String, Class<out Any>>(Pair("fieldName", String::class.java), Pair("fieldPresentation)", Annotation::class.java), Pair("manyToField", String::class.java), Pair("targetClass", Class::class.java))
         val FIELD_NAME_KEY = Key<Pair<PsiElement, String>?>("@fieldName")
         val FIELD_PRESENTATION_KEY = Key<PsiAnnotation?>("@fieldPresentation")

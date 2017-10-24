@@ -19,6 +19,7 @@ class AdminGroupPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapp
         val TOOLTIP = "tooltip" 
         val UNTITLED = "untitled" 
 
+        val INVOKERS = mapOf<String, (AdminGroupPresentationWrapper)->Any?>(Pair("collapsed", {wrapper-> wrapper.collapsed() }) , Pair("column", {wrapper-> wrapper.column() }) , Pair("name", {wrapper-> wrapper.name() }) , Pair("order", {wrapper-> wrapper.order() }) , Pair("tooltip", {wrapper-> wrapper.tooltip() }) , Pair("untitled", {wrapper-> wrapper.untitled() }) )
         val METHODS = mapOf<String, Class<out Any>>(Pair("collapsed", Boolean::class.javaPrimitiveType!!), Pair("column", Int::class.javaPrimitiveType!!), Pair("name", String::class.java), Pair("order", Int::class.javaPrimitiveType!!), Pair("tooltip", String::class.java), Pair("untitled", Boolean::class.javaPrimitiveType!!))
         val COLLAPSED_KEY = Key<Pair<PsiElement, Boolean>?>("@collapsed")
         val COLUMN_KEY = Key<Pair<PsiElement, Int>?>("@column")

@@ -18,6 +18,7 @@ class AdminPresentationOperationTypesWrapper(annotation: PsiAnnotation) : Annota
         val REMOVE_TYPE = "removeType" 
         val UPDATE_TYPE = "updateType" 
 
+        val INVOKERS = mapOf<String, (AdminPresentationOperationTypesWrapper)->Any?>(Pair("addType", {wrapper-> wrapper.addType() }) , Pair("fetchType", {wrapper-> wrapper.fetchType() }) , Pair("inspectType", {wrapper-> wrapper.inspectType() }) , Pair("removeType", {wrapper-> wrapper.removeType() }) , Pair("updateType", {wrapper-> wrapper.updateType() }) )
         val METHODS = mapOf<String, Class<out Any>>(Pair("addType", Enum::class.java), Pair("fetchType", Enum::class.java), Pair("inspectType", Enum::class.java), Pair("removeType", Enum::class.java), Pair("updateType", Enum::class.java))
         val ADD_TYPE_KEY = Key<Pair<PsiElement, PsiField>?>("@addType")
         val FETCH_TYPE_KEY = Key<Pair<PsiElement, PsiField>?>("@fetchType")

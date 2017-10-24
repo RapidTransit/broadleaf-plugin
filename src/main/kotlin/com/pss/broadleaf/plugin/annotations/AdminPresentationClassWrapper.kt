@@ -20,6 +20,7 @@ class AdminPresentationClassWrapper(annotation: PsiAnnotation) : AnnotationWrapp
         val TAB_OVERRIDES = "tabOverrides" 
         val TABS = "tabs" 
 
+        val INVOKERS = mapOf<String, (AdminPresentationClassWrapper)->Any?>(Pair("ceilingDisplayEntity", {wrapper-> wrapper.ceilingDisplayEntity() }) , Pair("excludeFromPolymorphism", {wrapper-> wrapper.excludeFromPolymorphism() }) , Pair("friendlyName", {wrapper-> wrapper.friendlyName() }) , Pair("groupOverrides", {wrapper-> wrapper.groupOverrides() }) , Pair("populateToOneFields", {wrapper-> wrapper.populateToOneFields() }) , Pair("tabOverrides", {wrapper-> wrapper.tabOverrides() }) , Pair("tabs", {wrapper-> wrapper.tabs() }) )
         val METHODS = mapOf<String, Class<out Any>>(Pair("ceilingDisplayEntity", String::class.java), Pair("excludeFromPolymorphism", Boolean::class.javaPrimitiveType!!), Pair("friendlyName", String::class.java), Pair("groupOverrides)", Array<Annotation>::class.java), Pair("populateToOneFields", Enum::class.java), Pair("tabOverrides)", Array<Annotation>::class.java), Pair("tabs)", Array<Annotation>::class.java))
         val CEILING_DISPLAY_ENTITY_KEY = Key<Pair<PsiElement, String>?>("@ceilingDisplayEntity")
         val EXCLUDE_FROM_POLYMORPHISM_KEY = Key<Pair<PsiElement, Boolean>?>("@excludeFromPolymorphism")

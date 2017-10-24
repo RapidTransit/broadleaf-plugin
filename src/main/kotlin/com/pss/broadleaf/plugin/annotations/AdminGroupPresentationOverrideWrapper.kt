@@ -17,6 +17,7 @@ class AdminGroupPresentationOverrideWrapper(annotation: PsiAnnotation) : Annotat
         val TAB_NAME = "tabName" 
         val VALUE = "value" 
 
+        val INVOKERS = mapOf<String, (AdminGroupPresentationOverrideWrapper)->Any?>(Pair("groupName", {wrapper-> wrapper.groupName() }) , Pair("property", {wrapper-> wrapper.property() }) , Pair("tabName", {wrapper-> wrapper.tabName() }) , Pair("value", {wrapper-> wrapper.value() }) )
         val METHODS = mapOf<String, Class<out Any>>(Pair("groupName", String::class.java), Pair("property", String::class.java), Pair("tabName", String::class.java), Pair("value", String::class.java))
         val GROUP_NAME_KEY = Key<Pair<PsiElement, String>?>("@groupName")
         val PROPERTY_KEY = Key<Pair<PsiElement, String>?>("@property")

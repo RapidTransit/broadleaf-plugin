@@ -16,6 +16,7 @@ class AdminTabPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapper
         val NAME = "name" 
         val ORDER = "order" 
 
+        val INVOKERS = mapOf<String, (AdminTabPresentationWrapper)->Any?>(Pair("groups", {wrapper-> wrapper.groups() }) , Pair("name", {wrapper-> wrapper.name() }) , Pair("order", {wrapper-> wrapper.order() }) )
         val METHODS = mapOf<String, Class<out Any>>(Pair("groups)", Array<Annotation>::class.java), Pair("name", String::class.java), Pair("order", Int::class.javaPrimitiveType!!))
         val GROUPS_KEY = Key<List<PsiAnnotation>?>("@groups")
         val NAME_KEY = Key<Pair<PsiElement, String>?>("@name")

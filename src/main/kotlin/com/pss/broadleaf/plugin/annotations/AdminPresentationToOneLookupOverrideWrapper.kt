@@ -15,6 +15,7 @@ class AdminPresentationToOneLookupOverrideWrapper(annotation: PsiAnnotation) : A
         val NAME = "name" 
         val VALUE = "value" 
 
+        val INVOKERS = mapOf<String, (AdminPresentationToOneLookupOverrideWrapper)->Any?>(Pair("name", {wrapper-> wrapper.name() }) , Pair("value", {wrapper-> wrapper.value() }) )
         val METHODS = mapOf<String, Class<out Any>>(Pair("name", String::class.java), Pair("value)", Annotation::class.java))
         val NAME_KEY = Key<Pair<PsiElement, String>?>("@name")
         val VALUE_KEY = Key<PsiAnnotation?>("@value")

@@ -14,6 +14,7 @@ class AdminPresentationMergeOverridesWrapper(annotation: PsiAnnotation) : Annota
         val CLASS_NAME_SET = setOf("org.broadleafcommerce.common.presentation.override.AdminPresentationMergeOverrides")
         val VALUE = "value" 
 
+        val INVOKERS = mapOf<String, (AdminPresentationMergeOverridesWrapper)->Any?>(Pair("value", {wrapper-> wrapper.value() }) )
         val METHODS = mapOf<String, Class<out Any>>(Pair("value)", Array<Annotation>::class.java))
         val VALUE_KEY = Key<List<PsiAnnotation>?>("@value")
     }

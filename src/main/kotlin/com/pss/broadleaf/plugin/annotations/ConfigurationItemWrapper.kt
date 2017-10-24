@@ -15,6 +15,7 @@ class ConfigurationItemWrapper(annotation: PsiAnnotation) : AnnotationWrapper(an
         val ITEM_NAME = "itemName" 
         val ITEM_VALUE = "itemValue" 
 
+        val INVOKERS = mapOf<String, (ConfigurationItemWrapper)->Any?>(Pair("itemName", {wrapper-> wrapper.itemName() }) , Pair("itemValue", {wrapper-> wrapper.itemValue() }) )
         val METHODS = mapOf<String, Class<out Any>>(Pair("itemName", String::class.java), Pair("itemValue", String::class.java))
         val ITEM_NAME_KEY = Key<Pair<PsiElement, String>?>("@itemName")
         val ITEM_VALUE_KEY = Key<Pair<PsiElement, String>?>("@itemValue")

@@ -16,6 +16,7 @@ class AdminTabPresentationOverrideWrapper(annotation: PsiAnnotation) : Annotatio
         val TAB_NAME = "tabName" 
         val VALUE = "value" 
 
+        val INVOKERS = mapOf<String, (AdminTabPresentationOverrideWrapper)->Any?>(Pair("property", {wrapper-> wrapper.property() }) , Pair("tabName", {wrapper-> wrapper.tabName() }) , Pair("value", {wrapper-> wrapper.value() }) )
         val METHODS = mapOf<String, Class<out Any>>(Pair("property", String::class.java), Pair("tabName", String::class.java), Pair("value", String::class.java))
         val PROPERTY_KEY = Key<Pair<PsiElement, String>?>("@property")
         val TAB_NAME_KEY = Key<Pair<PsiElement, String>?>("@tabName")

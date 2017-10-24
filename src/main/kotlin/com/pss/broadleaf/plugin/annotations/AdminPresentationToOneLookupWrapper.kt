@@ -19,6 +19,7 @@ class AdminPresentationToOneLookupWrapper(annotation: PsiAnnotation) : Annotatio
         val LOOKUP_TYPE = "lookupType" 
         val USE_SERVER_SIDE_INSPECTION_CACHE = "useServerSideInspectionCache" 
 
+        val INVOKERS = mapOf<String, (AdminPresentationToOneLookupWrapper)->Any?>(Pair("customCriteria", {wrapper-> wrapper.customCriteria() }) , Pair("enableTypeaheadLookup", {wrapper-> wrapper.enableTypeaheadLookup() }) , Pair("forcePopulateChildProperties", {wrapper-> wrapper.forcePopulateChildProperties() }) , Pair("lookupDisplayProperty", {wrapper-> wrapper.lookupDisplayProperty() }) , Pair("lookupType", {wrapper-> wrapper.lookupType() }) , Pair("useServerSideInspectionCache", {wrapper-> wrapper.useServerSideInspectionCache() }) )
         val METHODS = mapOf<String, Class<out Any>>(Pair("customCriteria", Array<String>::class.java), Pair("enableTypeaheadLookup", Boolean::class.javaPrimitiveType!!), Pair("forcePopulateChildProperties", Boolean::class.javaPrimitiveType!!), Pair("lookupDisplayProperty", String::class.java), Pair("lookupType", Enum::class.java), Pair("useServerSideInspectionCache", Boolean::class.javaPrimitiveType!!))
         val CUSTOM_CRITERIA_KEY = Key<List<Pair<PsiElement, String>>>("@customCriteria")
         val ENABLE_TYPEAHEAD_LOOKUP_KEY = Key<Pair<PsiElement, Boolean>?>("@enableTypeaheadLookup")
