@@ -16,13 +16,13 @@ class ValidationConfigurationWrapper(annotation: PsiAnnotation) : AnnotationWrap
         val VALIDATION_IMPLEMENTATION = "validationImplementation" 
 
         val INVOKERS = mapOf<String, (ValidationConfigurationWrapper)->Any?>(Pair("configurationItems", {wrapper-> wrapper.configurationItems() }) , Pair("validationImplementation", {wrapper-> wrapper.validationImplementation() }) )
-        val METHODS = mapOf<String, Class<out Any>>(Pair("configurationItems)", Array<Annotation>::class.java), Pair("validationImplementation", String::class.java))
+        val METHODS = mapOf<String, OverrideType>(Pair("configurationItems)", OverrideType.ANNOTATION_ARRAY), Pair("validationImplementation", OverrideType.STRING))
         val CONFIGURATION_ITEMS_KEY = Key<List<PsiAnnotation>?>("@configurationItems")
         val VALIDATION_IMPLEMENTATION_KEY = Key<Pair<PsiElement, String>?>("@validationImplementation")
     }
 
 
-    override fun getMethods(): Map<String, Class<out Any>> {
+    override fun getMethods(): Map<String, OverrideType> {
         return METHODS
     }
 

@@ -17,14 +17,14 @@ class OptionFilterParamWrapper(annotation: PsiAnnotation) : AnnotationWrapper(an
         val VALUE = "value" 
 
         val INVOKERS = mapOf<String, (OptionFilterParamWrapper)->Any?>(Pair("param", {wrapper-> wrapper.param() }) , Pair("paramType", {wrapper-> wrapper.paramType() }) , Pair("value", {wrapper-> wrapper.value() }) )
-        val METHODS = mapOf<String, Class<out Any>>(Pair("param", String::class.java), Pair("paramType", Enum::class.java), Pair("value", String::class.java))
+        val METHODS = mapOf<String, OverrideType>(Pair("param", OverrideType.STRING), Pair("paramType", OverrideType.ENUM), Pair("value", OverrideType.STRING))
         val PARAM_KEY = Key<Pair<PsiElement, String>?>("@param")
         val PARAM_TYPE_KEY = Key<Pair<PsiElement, PsiField>?>("@paramType")
         val VALUE_KEY = Key<Pair<PsiElement, String>?>("@value")
     }
 
 
-    override fun getMethods(): Map<String, Class<out Any>> {
+    override fun getMethods(): Map<String, OverrideType> {
         return METHODS
     }
 

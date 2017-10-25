@@ -1,0 +1,6 @@
+package com.pss.broadleaf.plugin.annotations
+
+enum class OverrideType {
+    STRING, STRING_ARRAY, BOOLEAN, BOOLEAN_ARRAY, INT, INT_ARRAY, LONG, LONG_ARRAY, FLOAT, FLOAT_ARRAY, DOUBLE,
+    DOUBLE_ARRAY, ENUM, ENUM_ARRAY, ANNOTATION, ANNOTATION_ARRAY
+}

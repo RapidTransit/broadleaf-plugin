@@ -117,6 +117,10 @@ task GenerateAnnotationHandlers {
                 AdminPresentationToOneLookupOverride,
                 AdminTabPresentationOverride
         ]
+        List<String> enumTypes = new ArrayList<>()
+        List<String> annotationTypes = new ArrayList<>()
+        List<String> enumArrayTypes = new ArrayList<>()
+        List<String> annotationArrayTypes = new ArrayList<>()
                 classes.each {
 
             StringBuilder sb = new StringBuilder()
@@ -124,6 +128,8 @@ task GenerateAnnotationHandlers {
             List<String> keys = new ArrayList<>()
             List<String> mapKeys = new ArrayList<>()
             List<String> invokers = new ArrayList<>()
+
+
             sb.append("package com.pss.broadleaf.plugin.annotations\n\n")
             sb.append("import com.intellij.openapi.util.Key\n")
             sb.append("import com.intellij.psi.PsiAnnotation\n")
@@ -145,103 +151,112 @@ task GenerateAnnotationHandlers {
                 sb.repeat(2).append("""val ${screamingSnake} = "${it.name}" """).append('\n')
                 switch(it.returnType){
                     case String:
-                        mapKeys.add("Pair(\"${it.name}\", String::class.java)")
+                        mapKeys.add("Pair(\"${it.name}\", OverrideType.STRING)")
                         keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, String>?>("@${it.name}")\n""")
                         methodDefs.add(generateSingular(it.name, "String", screamingSnake,  "String"))
                         invokers.add("""Pair("${it.name}", {wrapper-> wrapper.${it.name}() }) """)
                         break
                     case String[]:
-                        mapKeys.add("Pair(\"${it.name}\", Array<String>::class.java)")
+                        mapKeys.add("Pair(\"${it.name}\", OverrideType.STRING_ARRAY)")
                         keys.add("""val ${screamingSnake}_KEY = Key<List<Pair<PsiElement, String>>>("@${it.name}")\n""")
                         methodDefs.add(generateArray(it.name, "String", screamingSnake, "String"))
                         invokers.add("""Pair("${it.name}", {wrapper-> wrapper.${it.name}() }) """)
                         break
                     case float:
-                        mapKeys.add("Pair(\"${it.name}\", Float::class.javaPrimitiveType!!)")
+                        mapKeys.add("Pair(\"${it.name}\", OverrideType.FLOAT)")
                         keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, Float>?>("@${it.name}")\n""")
                         methodDefs.add(generateSingular(it.name, "Float", screamingSnake,  "Float"))
                         invokers.add("""Pair("${it.name}", {wrapper-> wrapper.${it.name}() }) """)
                         break
                     case float[]:
-                        mapKeys.add("Pair(\"${it.name}\", Array<Float>::class.javaPrimitiveType!!)")
+                        mapKeys.add("Pair(\"${it.name}\", OverrideType.FLOAT_ARRAY)")
                         keys.add("""val ${screamingSnake}_KEY = Key<List<Pair<PsiElement, Float>>>("@${it.name}")\n""")
                         methodDefs.add(generateArray(it.name, "Float", screamingSnake, "Float"))
                         invokers.add("""Pair("${it.name}", {wrapper-> wrapper.${it.name}() }) """)
                         break
                     case long:
-                        mapKeys.add("Pair(\"${it.name}\", Long::class.javaPrimitiveType!!)")
+                        mapKeys.add("Pair(\"${it.name}\", OverrideType.LONG)")
                         keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, Long>?>("@${it.name}")\n""")
                         methodDefs.add(generateSingular(it.name, "Long", screamingSnake,  "Long"))
                         invokers.add("""Pair("${it.name}", {wrapper-> wrapper.${it.name}() }) """)
                         break
                     case long[]:
-                        mapKeys.add("Pair(\"${it.name}\", Array<Long>::class.javaPrimitiveType!!)")
+                        mapKeys.add("Pair(\"${it.name}\", OverrideType.LONG_ARRAY)")
                         keys.add("""val ${screamingSnake}_KEY = Key<List<Pair<PsiElement, Long>>>("@${it.name}")\n""")
                         methodDefs.add(generateArray(it.name, "Long", screamingSnake, "Long"))
                         invokers.add("""Pair("${it.name}", {wrapper-> wrapper.${it.name}() }) """)
                         break
                     case double :
-                        mapKeys.add("Pair(\"${it.name}\", Double::class.javaPrimitiveType!!)")
+                        mapKeys.add("Pair(\"${it.name}\", OverrideType.DOUBLE)")
                         keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, Double>?>("@${it.name}")\n""")
                         methodDefs.add(generateSingular(it.name, "Double", screamingSnake,  "Double"))
                         invokers.add("""Pair("${it.name}", {wrapper-> wrapper.${it.name}() }) """)
                         break
                     case double[]:
-                        mapKeys.add("Pair(\"${it.name}\", Array<Double>::class.javaPrimitiveType!!)")
+                        mapKeys.add("Pair(\"${it.name}\", OverrideType.DOUBLE_ARRAY)")
                         keys.add("""val ${screamingSnake}_KEY = Key<List<Pair<PsiElement, Double>>>("@${it.name}")\n""")
                         methodDefs.add(generateArray(it.name, "Double", screamingSnake, "Double"))
                         invokers.add("""Pair("${it.name}", {wrapper-> wrapper.${it.name}() }) """)
                         break
                     case int:
-                        mapKeys.add("Pair(\"${it.name}\", Int::class.javaPrimitiveType!!)")
+                        mapKeys.add("Pair(\"${it.name}\", OverrideType.INT)")
                         keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, Int>?>("@${it.name}")\n""")
                         methodDefs.add(generateSingular(it.name, "Int", screamingSnake,  "Int"))
                         invokers.add("""Pair("${it.name}", {wrapper-> wrapper.${it.name}() }) """)
                         break
                     case int[]:
-                        mapKeys.add("Pair(\"${it.name}\", Array<Int>::class.javaPrimitiveType!!)")
+                        mapKeys.add("Pair(\"${it.name}\", OverrideType.INT_ARRAY)")
                         keys.add("""val ${screamingSnake}_KEY = Key<List<Pair<PsiElement, Int>>>("@${it.name}")\n""")
                         methodDefs.add(generateArray(it.name, "Int", screamingSnake, "Int"))
                         invokers.add("""Pair("${it.name}", {wrapper-> wrapper.${it.name}() }) """)
                         break
                     case boolean:
-                        mapKeys.add("Pair(\"${it.name}\", Boolean::class.javaPrimitiveType!!)")
+                        mapKeys.add("Pair(\"${it.name}\", OverrideType.BOOLEAN)")
                         keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, Boolean>?>("@${it.name}")\n""")
                         methodDefs.add(generateSingular(it.name, "Boolean", screamingSnake, "Boolean"))
                         invokers.add("""Pair("${it.name}", {wrapper-> wrapper.${it.name}() }) """)
                         break
                     case boolean[]:
-                        mapKeys.add("Pair(\"${it.name}\", Array<Boolean>::class.javaPrimitiveType!!)")
+                        mapKeys.add("Pair(\"${it.name}\", OverrideType.BOOLEAN_ARRAY)")
                         keys.add("""val ${screamingSnake}_KEY = Key<List<Pair<PsiElement, Boolean>>>("@${it.name}")\n""")
                         methodDefs.add(generateArray(it.name, "Boolean", screamingSnake, "Boolean"))
                         invokers.add("""Pair("${it.name}", {wrapper-> wrapper.${it.name}() }) """)
                         break
                     case Enum:
-                        mapKeys.add("Pair(\"${it.name}\", Enum::class.java)")
+                        if(!name.contains("Override")) {
+                            enumTypes.add("""Pair("${it.name}", ${name}.CLASS_NAME_SET)""")
+                        }
+                        mapKeys.add("Pair(\"${it.name}\", OverrideType.ENUM)")
                         keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, PsiField>?>("@${it.name}")\n""")
                         methodDefs.add(generateSingular(it.name, "PsiField", screamingSnake, "Enum"))
                         invokers.add("""Pair("${it.name}", {wrapper-> wrapper.${it.name}() }) """)
                         break
                     case Enum[]:
-                        mapKeys.add("Pair(\"${it.name}\", Array<Enum>::class.java)")
+                        if(!name.contains("Override")) {
+                            enumArrayTypes.add("""Pair("${it.name}", ${name}.CLASS_NAME_SET)""")
+                        }
+                        mapKeys.add("Pair(\"${it.name}\", OverrideType.ENUM_ARRAY)")
                         keys.add("""val ${screamingSnake}_KEY = Key<List<Pair<PsiElement, PsiField>>>("@${it.name}")\n""")
                         methodDefs.add(generateArray(it.name, "PsiField", screamingSnake, "Enum"))
                         invokers.add("""Pair("${it.name}", {wrapper-> wrapper.${it.name}() }) """)
                         break
                     case Class:
-                        mapKeys.add("Pair(\"${it.name}\", Class::class.java)")
+                        mapKeys.add("Pair(\"${it.name}\", OverrideType.CLASS)")
                         keys.add("""val ${screamingSnake}_KEY = Key<Pair<PsiElement, PsiClass>?>("@${it.name}")\n""")
                         methodDefs.add(generateSingular(it.name, "PsiClass", screamingSnake, "Class"))
                         invokers.add("""Pair("${it.name}", {wrapper-> wrapper.${it.name}() }) """)
                         break
                     case Class[]:
-                        mapKeys.add("Pair(\"${it.name})\", Array<Class>::class.java)")
+                        mapKeys.add("Pair(\"${it.name})\", OverrideType.CLASS_ARRAY)")
                         keys.add("""val ${screamingSnake}_KEY = Key<List<Pair<PsiElement, PsiClass>>>("@${it.name}")\n""")
                         methodDefs.add(generateArray(it.name, "PsiClass", screamingSnake, "Class"))
                         invokers.add("""Pair("${it.name}", {wrapper-> wrapper.${it.name}() }) """)
                         break
                     case Annotation:
-                        mapKeys.add("Pair(\"${it.name})\", Annotation::class.java)")
+                        if(!name.contains("Override")) {
+                            annotationTypes.add("""Pair("${it.name}", ${name}.CLASS_NAME_SET)""")
+                        }
+                        mapKeys.add("Pair(\"${it.name})\", OverrideType.ANNOTATION)")
                         keys.add("""val ${screamingSnake}_KEY = Key<PsiAnnotation?>("@${it.name}")\n""")
                         invokers.add("""Pair("${it.name}", {wrapper-> wrapper.${it.name}() }) """)
                         methodDefs.add(
@@ -265,7 +280,10 @@ task GenerateAnnotationHandlers {
                         )
                         break
                     case Annotation[]:
-                        mapKeys.add("Pair(\"${it.name})\", Array<Annotation>::class.java)")
+                        if(!name.contains("Override")) {
+                            annotationArrayTypes.add("""Pair("${it.name}", ${name}.CLASS_NAME_SET)""")
+                        }
+                        mapKeys.add("Pair(\"${it.name})\", OverrideType.ANNOTATION_ARRAY)")
                         keys.add("""val ${screamingSnake}_KEY = Key<List<PsiAnnotation>?>("@${it.name}")\n""")
                         invokers.add("""Pair("${it.name}", {wrapper-> wrapper.${it.name}() }) """)
                         methodDefs.add(
@@ -292,13 +310,13 @@ task GenerateAnnotationHandlers {
             }
             sb.append('\n')
             sb.repeat(2).append("""val INVOKERS = mapOf<String, (${name})->Any?>(${invokers.join(", ")})\n""")
-            sb.repeat(2).append("""val METHODS = mapOf<String, Class<out Any>>(${mapKeys.join(", ")})\n""")
+            sb.repeat(2).append("""val METHODS = mapOf<String, OverrideType>(${mapKeys.join(", ")})\n""")
             keys.each {
                 sb.repeat(2).append(it)
             }
             sb.repeat(1).append("}\n\n")
 sb.append("""
-    override fun getMethods(): Map<String, Class<out Any>> {
+    override fun getMethods(): Map<String, OverrideType> {
         return METHODS
     }
 """)
@@ -315,6 +333,10 @@ import com.intellij.psi.PsiAnnotation
 
 object AnnotationFactory {
 
+    val ENUM_TYPES = mapOf<String, Set<String>>(${enumTypes.join(", ")})
+    val ENUM_ARRAY_TYPES = mapOf<String, Set<String>>(${enumArrayTypes.join(", ")})
+    val ANNOTATION_TYPES = mapOf<String, Set<String>>(${annotationTypes.join(", ")})
+    val ANNOTATION_ARRAY_TYPES = mapOf<String, Set<String>>(${annotationArrayTypes.join(", ")})
     private val MAP_FACTORY: MutableMap<String, (PsiAnnotation)-> AnnotationWrapper> = mutableMapOf()
 
     init {

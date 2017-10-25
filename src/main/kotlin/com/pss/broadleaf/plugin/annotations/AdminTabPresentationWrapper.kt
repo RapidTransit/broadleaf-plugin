@@ -17,14 +17,14 @@ class AdminTabPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapper
         val ORDER = "order" 
 
         val INVOKERS = mapOf<String, (AdminTabPresentationWrapper)->Any?>(Pair("groups", {wrapper-> wrapper.groups() }) , Pair("name", {wrapper-> wrapper.name() }) , Pair("order", {wrapper-> wrapper.order() }) )
-        val METHODS = mapOf<String, Class<out Any>>(Pair("groups)", Array<Annotation>::class.java), Pair("name", String::class.java), Pair("order", Int::class.javaPrimitiveType!!))
+        val METHODS = mapOf<String, OverrideType>(Pair("groups)", OverrideType.ANNOTATION_ARRAY), Pair("name", OverrideType.STRING), Pair("order", OverrideType.INT))
         val GROUPS_KEY = Key<List<PsiAnnotation>?>("@groups")
         val NAME_KEY = Key<Pair<PsiElement, String>?>("@name")
         val ORDER_KEY = Key<Pair<PsiElement, Int>?>("@order")
     }
 
 
-    override fun getMethods(): Map<String, Class<out Any>> {
+    override fun getMethods(): Map<String, OverrideType> {
         return METHODS
     }
 

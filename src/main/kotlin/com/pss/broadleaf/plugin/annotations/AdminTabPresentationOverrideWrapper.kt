@@ -17,14 +17,14 @@ class AdminTabPresentationOverrideWrapper(annotation: PsiAnnotation) : Annotatio
         val VALUE = "value" 
 
         val INVOKERS = mapOf<String, (AdminTabPresentationOverrideWrapper)->Any?>(Pair("property", {wrapper-> wrapper.property() }) , Pair("tabName", {wrapper-> wrapper.tabName() }) , Pair("value", {wrapper-> wrapper.value() }) )
-        val METHODS = mapOf<String, Class<out Any>>(Pair("property", String::class.java), Pair("tabName", String::class.java), Pair("value", String::class.java))
+        val METHODS = mapOf<String, OverrideType>(Pair("property", OverrideType.STRING), Pair("tabName", OverrideType.STRING), Pair("value", OverrideType.STRING))
         val PROPERTY_KEY = Key<Pair<PsiElement, String>?>("@property")
         val TAB_NAME_KEY = Key<Pair<PsiElement, String>?>("@tabName")
         val VALUE_KEY = Key<Pair<PsiElement, String>?>("@value")
     }
 
 
-    override fun getMethods(): Map<String, Class<out Any>> {
+    override fun getMethods(): Map<String, OverrideType> {
         return METHODS
     }
 

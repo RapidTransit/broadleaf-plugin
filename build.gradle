@@ -36,7 +36,6 @@ version '1.0-SNAPSHOT'
 //
 //apply plugin: 'org.jetbrains.grammarkit'
 apply plugin: 'kotlin'
-
 apply from: 'generation.gradle'
 apply from: 'annotation-handlers.gradle'
 repositories {
@@ -58,6 +57,8 @@ configurations{
 }
 
 dependencies {
+    compile gradleApi()
+    compile localGroovy()
     compile group: 'org.broadleafcommerce', name: 'broadleaf-framework', version: blc
     compile group: 'org.broadleafcommerce', name: 'broadleaf-framework-web', version: blc
     compile group: 'org.broadleafcommerce', name: 'broadleaf-profile', version: blc

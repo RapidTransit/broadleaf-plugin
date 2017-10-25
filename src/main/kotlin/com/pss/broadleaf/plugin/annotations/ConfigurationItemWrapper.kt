@@ -16,13 +16,13 @@ class ConfigurationItemWrapper(annotation: PsiAnnotation) : AnnotationWrapper(an
         val ITEM_VALUE = "itemValue" 
 
         val INVOKERS = mapOf<String, (ConfigurationItemWrapper)->Any?>(Pair("itemName", {wrapper-> wrapper.itemName() }) , Pair("itemValue", {wrapper-> wrapper.itemValue() }) )
-        val METHODS = mapOf<String, Class<out Any>>(Pair("itemName", String::class.java), Pair("itemValue", String::class.java))
+        val METHODS = mapOf<String, OverrideType>(Pair("itemName", OverrideType.STRING), Pair("itemValue", OverrideType.STRING))
         val ITEM_NAME_KEY = Key<Pair<PsiElement, String>?>("@itemName")
         val ITEM_VALUE_KEY = Key<Pair<PsiElement, String>?>("@itemValue")
     }
 
 
-    override fun getMethods(): Map<String, Class<out Any>> {
+    override fun getMethods(): Map<String, OverrideType> {
         return METHODS
     }
 

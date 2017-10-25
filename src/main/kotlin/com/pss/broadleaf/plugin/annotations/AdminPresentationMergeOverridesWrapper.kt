@@ -15,12 +15,12 @@ class AdminPresentationMergeOverridesWrapper(annotation: PsiAnnotation) : Annota
         val VALUE = "value" 
 
         val INVOKERS = mapOf<String, (AdminPresentationMergeOverridesWrapper)->Any?>(Pair("value", {wrapper-> wrapper.value() }) )
-        val METHODS = mapOf<String, Class<out Any>>(Pair("value)", Array<Annotation>::class.java))
+        val METHODS = mapOf<String, OverrideType>(Pair("value)", OverrideType.ANNOTATION_ARRAY))
         val VALUE_KEY = Key<List<PsiAnnotation>?>("@value")
     }
 
 
-    override fun getMethods(): Map<String, Class<out Any>> {
+    override fun getMethods(): Map<String, OverrideType> {
         return METHODS
     }
 

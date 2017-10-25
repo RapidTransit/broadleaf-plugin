@@ -20,7 +20,7 @@ class AdminGroupPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapp
         val UNTITLED = "untitled" 
 
         val INVOKERS = mapOf<String, (AdminGroupPresentationWrapper)->Any?>(Pair("collapsed", {wrapper-> wrapper.collapsed() }) , Pair("column", {wrapper-> wrapper.column() }) , Pair("name", {wrapper-> wrapper.name() }) , Pair("order", {wrapper-> wrapper.order() }) , Pair("tooltip", {wrapper-> wrapper.tooltip() }) , Pair("untitled", {wrapper-> wrapper.untitled() }) )
-        val METHODS = mapOf<String, Class<out Any>>(Pair("collapsed", Boolean::class.javaPrimitiveType!!), Pair("column", Int::class.javaPrimitiveType!!), Pair("name", String::class.java), Pair("order", Int::class.javaPrimitiveType!!), Pair("tooltip", String::class.java), Pair("untitled", Boolean::class.javaPrimitiveType!!))
+        val METHODS = mapOf<String, OverrideType>(Pair("collapsed", OverrideType.BOOLEAN), Pair("column", OverrideType.INT), Pair("name", OverrideType.STRING), Pair("order", OverrideType.INT), Pair("tooltip", OverrideType.STRING), Pair("untitled", OverrideType.BOOLEAN))
         val COLLAPSED_KEY = Key<Pair<PsiElement, Boolean>?>("@collapsed")
         val COLUMN_KEY = Key<Pair<PsiElement, Int>?>("@column")
         val NAME_KEY = Key<Pair<PsiElement, String>?>("@name")
@@ -30,7 +30,7 @@ class AdminGroupPresentationWrapper(annotation: PsiAnnotation) : AnnotationWrapp
     }
 
 
-    override fun getMethods(): Map<String, Class<out Any>> {
+    override fun getMethods(): Map<String, OverrideType> {
         return METHODS
     }
 

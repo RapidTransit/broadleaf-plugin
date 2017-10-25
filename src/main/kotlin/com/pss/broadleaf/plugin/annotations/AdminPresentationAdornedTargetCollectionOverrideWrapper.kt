@@ -16,13 +16,13 @@ class AdminPresentationAdornedTargetCollectionOverrideWrapper(annotation: PsiAnn
         val VALUE = "value" 
 
         val INVOKERS = mapOf<String, (AdminPresentationAdornedTargetCollectionOverrideWrapper)->Any?>(Pair("name", {wrapper-> wrapper.name() }) , Pair("value", {wrapper-> wrapper.value() }) )
-        val METHODS = mapOf<String, Class<out Any>>(Pair("name", String::class.java), Pair("value)", Annotation::class.java))
+        val METHODS = mapOf<String, OverrideType>(Pair("name", OverrideType.STRING), Pair("value)", OverrideType.ANNOTATION))
         val NAME_KEY = Key<Pair<PsiElement, String>?>("@name")
         val VALUE_KEY = Key<PsiAnnotation?>("@value")
     }
 
 
-    override fun getMethods(): Map<String, Class<out Any>> {
+    override fun getMethods(): Map<String, OverrideType> {
         return METHODS
     }
 

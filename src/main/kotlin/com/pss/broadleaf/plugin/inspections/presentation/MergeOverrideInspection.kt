@@ -9,6 +9,7 @@ import com.pss.broadleaf.plugin.PropertyPath
 import com.pss.broadleaf.plugin.annotations.AdminPresentationMergeEntryWrapper as ME
 import com.pss.broadleaf.plugin.annotations.AdminPresentationMergeOverridesWrapper
 import com.pss.broadleaf.plugin.annotations.AnnotationFactory
+import com.pss.broadleaf.plugin.annotations.OverrideType
 import org.funktionale.either.Either
 import org.jetbrains.uast.java.annotations
 import kotlin.reflect.full.declaredFunctions
@@ -31,6 +32,7 @@ class MergeOverrideInspection {
         val LONG_INSPECT =  BaseChecker(INTEGER_OR_LONG, Long.javaClass)
         val DOUBLE_INSPECT =  BaseChecker(DOUBLE_OR_FLOAT, Double.javaClass)
         val FLOAT_INSPECT =  BaseChecker(DOUBLE_OR_FLOAT, Float.javaClass)
+        val BOOLEAN_INSPECT = BoolChecker(BOOLEAN)
     }
 
 
@@ -50,47 +52,58 @@ class MergeOverrideInspection {
                         } else {
                             val resolvedWrappers = resolvedAnnotations.mapNotNull{AnnotationFactory.getFactory().get(it.qualifiedName)?.invoke(it)}
                             mergeOverride.mergeEntries().forEach { mergeEntry ->
-                                mergeEntry.propertyType()?.let { pair ->
-                                    val wrapper = resolvedWrappers.firstOrNull { it.getMethods().containsKey(pair.second) }
+                                mergeEntry.propertyType()?.let { (element, value) ->
+                                    val wrapper = resolvedWrappers.firstOrNull { it.getMethods().containsKey(value) }
                                     if(wrapper != null){
-                                        val typeMap =  wrapper::class.declaredFunctions.associateBy{ it.name }
-                                        val klass = wrapper.getMethods().get(pair.second)
+                                        val type = wrapper.getMethods()[value]
                                         val override = mergeEntry.overrideValue()
-                                        when{
-                                            klass == Int::class.javaPrimitiveType -> {
+                                        when(type){
+                                            OverrideType.STRING ->{
+
+                                            }
+                                            OverrideType.STRING_ARRAY ->{
+
+                                            }
+                                            OverrideType.BOOLEAN->{
+                                                BOOLEAN_INSPECT.check(holder, override, mergeEntry.booleanOverrideValue(), mergeEntry)
+                                            }
+                                            OverrideType.BOOLEAN_ARRAY->{
+
+                                            }
+                                            OverrideType.INT -> {
                                                 INT_INSPECT.check(holder, override, mergeEntry.intOverrideValue(), mergeEntry)
                                             }
-                                            klass == IntArray::class.javaPrimitiveType ->{
+                                            OverrideType.INT_ARRAY ->{
 
                                             }
-                                            klass == Long::class.javaPrimitiveType -> {
+                                            OverrideType.LONG -> {
                                                 LONG_INSPECT.check(holder, override, mergeEntry.longOverrideValue(), mergeEntry)
                                             }
-                                            klass == LongArray::class.javaPrimitiveType ->{
+                                            OverrideType.LONG_ARRAY ->{
 
                                             }
-                                            klass == Float::class.javaPrimitiveType -> {
+                                            OverrideType.FLOAT -> {
                                                 FLOAT_INSPECT.check(holder, override, mergeEntry.floatOverrideValue(), mergeEntry)
                                             }
-                                            klass == FloatArray::class.javaPrimitiveType ->{
+                                            OverrideType.FLOAT_ARRAY  ->{
 
                                             }
-                                            klass == Double::class.javaPrimitiveType ->{
+                                            OverrideType.DOUBLE ->{
                                                 DOUBLE_INSPECT.check(holder, override, mergeEntry.doubleOverrideValue(), mergeEntry)
                                             }
-                                            klass == DoubleArray::class.javaPrimitiveType ->{
+                                            OverrideType.DOUBLE_ARRAY ->{
 
                                             }
-                                            klass == Enum::class.java ->{
+                                            OverrideType.ENUM ->{
 
                                             }
-                                            (klass?.isArray == true && klass.componentType.isEnum)->{
+                                            OverrideType.ENUM_ARRAY->{
 
                                             }
-                                            klass == Annotation::class.java ->{
+                                            OverrideType.ANNOTATION ->{
 
                                             }
-                                            (klass?.isArray == true && klass.componentType.isAnnotation)->{
+                                            OverrideType.ANNOTATION_ARRAY->{
 
                                             }
                                         }
@@ -151,6 +164,41 @@ class MergeOverrideInspection {
         }
 
     }
+    class BoolChecker(val regex: Regex,   val nullOrEmpty: List<(ME)-> Pair<PsiElement, Any>?> = emptyList()) {
 
+        fun check(holder: ProblemsHolder, x: Pair<PsiElement, String>?, y: Pair<PsiElement, Any>?,  me: ME){
+            if((x != null) xor (y != null)){
+                if(x != null){
+                    val (element, value) = x;
+                    if(value.isEmpty()){
+
+                        holder.registerProblem(element, "merge.override.value.blank")
+                    } else if(!regex.matches(x.value())){
+                        holder.registerProblem(element, "merge.override.value.not-a-boolean")
+                    } else {
+                        try {
+                            val number = value.toBoolean()
+                        } catch (e: Exception){
+                            holder.registerProblem(element, "merge.override.value.not-a-number")
+                        }
+                    }
+                    //mapValue(holder, me)
+                } else if(y != null){
+                    val (element, value) = y;
+                    //mapValue(holder, me)
+                }
+            }
+        }
+
+        protected fun mapValue(holder: ProblemsHolder, me: ME){
+            val mapped = nullOrEmpty.mapNotNull { it(me) }
+            if(mapped.isNotEmpty()){
+                mapped.forEach {
+                    holder.registerProblem(it.first, "")
+                }
+            }
+        }
+
+    }
 
 }

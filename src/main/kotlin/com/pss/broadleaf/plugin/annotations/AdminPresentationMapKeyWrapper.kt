@@ -16,13 +16,13 @@ class AdminPresentationMapKeyWrapper(annotation: PsiAnnotation) : AnnotationWrap
         val KEY_NAME = "keyName" 
 
         val INVOKERS = mapOf<String, (AdminPresentationMapKeyWrapper)->Any?>(Pair("friendlyKeyName", {wrapper-> wrapper.friendlyKeyName() }) , Pair("keyName", {wrapper-> wrapper.keyName() }) )
-        val METHODS = mapOf<String, Class<out Any>>(Pair("friendlyKeyName", String::class.java), Pair("keyName", String::class.java))
+        val METHODS = mapOf<String, OverrideType>(Pair("friendlyKeyName", OverrideType.STRING), Pair("keyName", OverrideType.STRING))
         val FRIENDLY_KEY_NAME_KEY = Key<Pair<PsiElement, String>?>("@friendlyKeyName")
         val KEY_NAME_KEY = Key<Pair<PsiElement, String>?>("@keyName")
     }
 
 
-    override fun getMethods(): Map<String, Class<out Any>> {
+    override fun getMethods(): Map<String, OverrideType> {
         return METHODS
     }
 

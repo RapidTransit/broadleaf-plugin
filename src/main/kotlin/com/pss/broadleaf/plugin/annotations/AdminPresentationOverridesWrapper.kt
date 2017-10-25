@@ -20,7 +20,7 @@ class AdminPresentationOverridesWrapper(annotation: PsiAnnotation) : AnnotationW
         val VALUE = "value" 
 
         val INVOKERS = mapOf<String, (AdminPresentationOverridesWrapper)->Any?>(Pair("adornedTargetCollections", {wrapper-> wrapper.adornedTargetCollections() }) , Pair("collections", {wrapper-> wrapper.collections() }) , Pair("dataDrivenEnums", {wrapper-> wrapper.dataDrivenEnums() }) , Pair("maps", {wrapper-> wrapper.maps() }) , Pair("toOneLookups", {wrapper-> wrapper.toOneLookups() }) , Pair("value", {wrapper-> wrapper.value() }) )
-        val METHODS = mapOf<String, Class<out Any>>(Pair("adornedTargetCollections)", Array<Annotation>::class.java), Pair("collections)", Array<Annotation>::class.java), Pair("dataDrivenEnums)", Array<Annotation>::class.java), Pair("maps)", Array<Annotation>::class.java), Pair("toOneLookups)", Array<Annotation>::class.java), Pair("value)", Array<Annotation>::class.java))
+        val METHODS = mapOf<String, OverrideType>(Pair("adornedTargetCollections)", OverrideType.ANNOTATION_ARRAY), Pair("collections)", OverrideType.ANNOTATION_ARRAY), Pair("dataDrivenEnums)", OverrideType.ANNOTATION_ARRAY), Pair("maps)", OverrideType.ANNOTATION_ARRAY), Pair("toOneLookups)", OverrideType.ANNOTATION_ARRAY), Pair("value)", OverrideType.ANNOTATION_ARRAY))
         val ADORNED_TARGET_COLLECTIONS_KEY = Key<List<PsiAnnotation>?>("@adornedTargetCollections")
         val COLLECTIONS_KEY = Key<List<PsiAnnotation>?>("@collections")
         val DATA_DRIVEN_ENUMS_KEY = Key<List<PsiAnnotation>?>("@dataDrivenEnums")
@@ -30,7 +30,7 @@ class AdminPresentationOverridesWrapper(annotation: PsiAnnotation) : AnnotationW
     }
 
 
-    override fun getMethods(): Map<String, Class<out Any>> {
+    override fun getMethods(): Map<String, OverrideType> {
         return METHODS
     }
 

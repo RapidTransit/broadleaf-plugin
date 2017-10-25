@@ -7,7 +7,7 @@ abstract class AnnotationWrapper(val annotation: PsiAnnotation) {
 
     val evaluater: PsiConstantEvaluationHelper = JavaPsiFacade.getInstance(annotation.project).constantEvaluationHelper
 
-    abstract fun getMethods(): Map<String,  Class<out Any>>
+    abstract fun getMethods(): Map<String,  OverrideType>
 
     protected fun resolveDeclaredString(name: String): Pair<PsiElement, String>? {
         val value = annotation.findDeclaredAttributeValue(name)

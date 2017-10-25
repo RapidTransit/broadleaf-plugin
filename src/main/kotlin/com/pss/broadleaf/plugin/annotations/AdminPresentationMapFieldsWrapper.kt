@@ -17,14 +17,14 @@ class AdminPresentationMapFieldsWrapper(annotation: PsiAnnotation) : AnnotationW
         val TO_ONE_TARGET_PROPERTY = "toOneTargetProperty" 
 
         val INVOKERS = mapOf<String, (AdminPresentationMapFieldsWrapper)->Any?>(Pair("mapDisplayFields", {wrapper-> wrapper.mapDisplayFields() }) , Pair("toOneParentProperty", {wrapper-> wrapper.toOneParentProperty() }) , Pair("toOneTargetProperty", {wrapper-> wrapper.toOneTargetProperty() }) )
-        val METHODS = mapOf<String, Class<out Any>>(Pair("mapDisplayFields)", Array<Annotation>::class.java), Pair("toOneParentProperty", String::class.java), Pair("toOneTargetProperty", String::class.java))
+        val METHODS = mapOf<String, OverrideType>(Pair("mapDisplayFields)", OverrideType.ANNOTATION_ARRAY), Pair("toOneParentProperty", OverrideType.STRING), Pair("toOneTargetProperty", OverrideType.STRING))
         val MAP_DISPLAY_FIELDS_KEY = Key<List<PsiAnnotation>?>("@mapDisplayFields")
         val TO_ONE_PARENT_PROPERTY_KEY = Key<Pair<PsiElement, String>?>("@toOneParentProperty")
         val TO_ONE_TARGET_PROPERTY_KEY = Key<Pair<PsiElement, String>?>("@toOneTargetProperty")
     }
 
 
-    override fun getMethods(): Map<String, Class<out Any>> {
+    override fun getMethods(): Map<String, OverrideType> {
         return METHODS
     }
 

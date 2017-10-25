@@ -19,7 +19,7 @@ class AdminPresentationOperationTypesWrapper(annotation: PsiAnnotation) : Annota
         val UPDATE_TYPE = "updateType" 
 
         val INVOKERS = mapOf<String, (AdminPresentationOperationTypesWrapper)->Any?>(Pair("addType", {wrapper-> wrapper.addType() }) , Pair("fetchType", {wrapper-> wrapper.fetchType() }) , Pair("inspectType", {wrapper-> wrapper.inspectType() }) , Pair("removeType", {wrapper-> wrapper.removeType() }) , Pair("updateType", {wrapper-> wrapper.updateType() }) )
-        val METHODS = mapOf<String, Class<out Any>>(Pair("addType", Enum::class.java), Pair("fetchType", Enum::class.java), Pair("inspectType", Enum::class.java), Pair("removeType", Enum::class.java), Pair("updateType", Enum::class.java))
+        val METHODS = mapOf<String, OverrideType>(Pair("addType", OverrideType.ENUM), Pair("fetchType", OverrideType.ENUM), Pair("inspectType", OverrideType.ENUM), Pair("removeType", OverrideType.ENUM), Pair("updateType", OverrideType.ENUM))
         val ADD_TYPE_KEY = Key<Pair<PsiElement, PsiField>?>("@addType")
         val FETCH_TYPE_KEY = Key<Pair<PsiElement, PsiField>?>("@fetchType")
         val INSPECT_TYPE_KEY = Key<Pair<PsiElement, PsiField>?>("@inspectType")
@@ -28,7 +28,7 @@ class AdminPresentationOperationTypesWrapper(annotation: PsiAnnotation) : Annota
     }
 
 
-    override fun getMethods(): Map<String, Class<out Any>> {
+    override fun getMethods(): Map<String, OverrideType> {
         return METHODS
     }
 
